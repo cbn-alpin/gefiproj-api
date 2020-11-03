@@ -26,7 +26,7 @@ Ce projet utilise les bibliothèques Python et outils suivant :
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) : pour réaliser les web services.
 - [SqlAlchemy](https://www.sqlalchemy.org/) : ORM permettant d'intéroger la base de données.
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/) : permet de gérer l'installation de la base de donnée et ses migrations futures.
-
+- Installer votre dependance avec la commande suivante : pip install -r requirements
 
 
 ## Tester les webservices
