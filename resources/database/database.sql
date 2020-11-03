@@ -1,96 +1,160 @@
--- Schema
-CREATE SCHEMA IF NOT EXISTS taxon_concept AUTHORIZATION jpm;
+/*===========================================*/
+-- TABLES CREATION SCRIPT
+/*===========================================*/
 
--- Drop table
+/*===========================================*/
+-- NOTE :
+-- prevoir trigger sur le projet correspondant
 
--- DROP TABLE taxon_concept.description;
--- DROP TABLE taxon_concept.description_media;
+-- Statut projet - False : non soldé | True : soldé
 
--- Tables
+-- ANTR : actif non totalement rattaché
+-- ATR : actif totalement rattaché
+-- SOLDE : soldé
+/*===========================================*/
 
-CREATE TABLE taxon_concept.description (
-	id serial NOT NULL, -- Identifiant de la description.
-    mnemonic varchar(250) NOT NULL, -- Libellé permettant d'identifier la description facilement dans la publication.
-    "rank" varchar(50) NOT NULL, -- Rang du taxon décrit.
-	raw_text text NOT NULL, -- Texte brute copié/collé de la publication.
-    "order" varchar(5) NULL, -- Code/numéro d'ordre de la description dans la publication.
-    sciname varchar(150) NULL, -- Nom scientifique complet avec auteurs, année et publication.
-    relationships text NULL, -- Citations du taxon dans d'autres ouvrages.
-    zoobank varchar(250) NULL, -- URL vers la référence dans Zoobank.
-    type_locality text NULL, -- Localité du type.
-    material_examined text NULL, -- Informations sur les spécimens examinés et la typification.
-    diagnosis text NULL, -- Diagnose du taxon.
-	"description" text NULL, -- Description brute d'origine issue de la taxon_concept.
-    subtaxa text NULL, -- Description des sous-taxons éventuels.
-    bionomics text NULL, -- Information sur la biologie du taxon.
-    "distribution" text NULL, -- Répartition du taxon.
-    etymology text NULL, -- Origine du nom donné (derivatio nominis).
-    comments text NULL, -- Commentaire sur la description.
-    meta_user_id int NOT NULL DEFAULT 0, -- Identifiant de l'utilisateur ayant fait la dernière modification sur l'enregistrement. Anonyme = 0.
-    meta_date timestamp NOT NULL DEFAULT NOW(), -- Date et heure de dernière modification de l'enregistrement.
-    meta_state char(1) NOT NULL -- Indique l'état de l'enregistrement à l'aide d'une lettre : C (créé), U (mise à jour), D (supprimé)
+
+/*clean database*/
+DROP TABLE IF EXISTS role_acces CASCADE;
+DROP TABLE IF EXISTS utilsateur CASCADE;
+DROP TABLE IF EXISTS role_utilisateur CASCADE;
+DROP TABLE IF EXISTS financeur CASCADE;
+DROP TABLE IF EXISTS depense CASCADE;
+DROP TABLE IF EXISTS projet CASCADE;
+DROP TABLE IF EXISTS financement CASCADE;
+DROP TABLE IF EXISTS recette CASCADE;
+DROP TABLE IF EXISTS montant_affecte CASCADE;
+
+/*create data tables*/
+CREATE TABLE IF NOT EXISTS role_acces (
+    id_ra serial NOT NULL, -- Identifiant du role.
+    nom_ra varchar(250) NOT NULL, -- Libellé du role
+    code_ra Int NOT NULL, -- Libellé du code role
+    CONSTRAINT pk_ra PRIMARY KEY (id_ra)    
 );
 
 
-CREATE TABLE taxon_concept.description_media (
-    id serial NOT NULL, -- Identifiant du media.
-    description_id int NOT NULL, -- Identifiant de la description à laquelle ce media appartient.
-    raw_text text NULL, -- Texte brute accompagnant le media.
-    file_path varchar(250) NOT NULL, -- Chemin vers le fichier.
-    file_hash varchar(32) NOT NULL -- Hash md5 du fichier.
+CREATE TABLE IF NOT EXISTS utilisateur (
+    id_u serial NOT NULL,
+    nom_u varchar(250),
+    prenom_u varchar(250),
+    initiales_u varchar(3) NOT NULL UNIQUE,
+    email_u varchar(250) NOT NULL UNIQUE,
+    password_u varchar(250) NOT NULL,
+    active_u boolean NOT NULL,
+    CONSTRAINT pk_u PRIMARY KEY (id_u)
 );
 
 
--- Column comments
-COMMENT ON COLUMN taxon_concept.description.id IS 'Identifiant de la fiche.';
-COMMENT ON COLUMN taxon_concept.description.mnemonic IS 'Libellé permettant d''identifier la description facilement dans l''ouvrage.';
-COMMENT ON COLUMN taxon_concept.description.rank IS 'Rang du taxon décrit.';
-COMMENT ON COLUMN taxon_concept.description.raw_text IS 'Texte brute copié/collé de la publication.';
-COMMENT ON COLUMN taxon_concept.description.order IS 'Code/numéro d''ordre de la description dans la publication';
-COMMENT ON COLUMN taxon_concept.description.sciname IS 'Nom scientifique complet avec auteurs, année et publication.';
-COMMENT ON COLUMN taxon_concept.description.relationships IS 'Citations du taxon dans d''autres ouvrages.';
-COMMENT ON COLUMN taxon_concept.description.zoobank IS 'URL vers la référence dans Zoobank.';
-COMMENT ON COLUMN taxon_concept.description.type_locality IS 'Localité du type.';
-COMMENT ON COLUMN taxon_concept.description.material_examined IS 'Informations sur les spécimens examinés et la typification.';
-COMMENT ON COLUMN taxon_concept.description.diagnosis IS 'Diagnose du taxon.';
-COMMENT ON COLUMN taxon_concept.description.description IS 'Description brute d''origine issue de la taxon_concept.';
-COMMENT ON COLUMN taxon_concept.description.subtaxa IS 'Description des sous-taxons éventuels';
-COMMENT ON COLUMN taxon_concept.description.bionomics IS 'Information sur la biologie, écologie du taxon.';
-COMMENT ON COLUMN taxon_concept.description.distribution IS 'Répartition du taxon.';
-COMMENT ON COLUMN taxon_concept.description.etymology IS 'Origine du nom donné (derivatio nominis).';
-COMMENT ON COLUMN taxon_concept.description.comments IS 'Commentaire sur la description.';
-COMMENT ON COLUMN taxon_concept.description.meta_user_id IS 'Identifiant de l''utilisateur ayant fait la dernière modification sur l''enregistrement.';
-COMMENT ON COLUMN taxon_concept.description.meta_date IS 'Date et heure de dernière modification de l''enregistrement.';
-COMMENT ON COLUMN taxon_concept.description.meta_state IS 'Indique l''état de l''enregistrement à l''aide d''une lettre : A (ajouté), U (mise à jour), D (supprimé)';
+CREATE TABLE IF NOT EXISTS role_utilisateur (
+    id_ra Int NOT NULL,
+    id_u Int NOT NULL,
+    CONSTRAINT pk_id_role_utilisateur PRIMARY KEY (id_ra, id_u),
+    CONSTRAINT pk_role FOREIGN KEY (id_ra) REFERENCES role_acces(id_ra),
+    CONSTRAINT pk_utilisateur FOREIGN KEY (id_u) REFERENCES utilisateur(id_u)
+);
 
 
-COMMENT ON COLUMN taxon_concept.description_media.id IS 'Identifiant du media.';
-COMMENT ON COLUMN taxon_concept.description_media.description_id IS 'Identifiant de la description à laquelle ce media appartient.';
-COMMENT ON COLUMN taxon_concept.description_media.raw_text IS 'Texte brute accompagnant le media.';
-COMMENT ON COLUMN taxon_concept.description_media.file_path IS 'Chemin vers le fichier.';
-COMMENT ON COLUMN taxon_concept.description_media.file_hash IS 'Hash md5 du fichier.';
+CREATE TABLE IF NOT EXISTS financeur (
+    id_financeur serial NOT NULL,
+    nom_financeur varchar(250) NOT NULL UNIQUE,
+    ref_arret_attributif_financeur varchar(250),
+    CONSTRAINT pk_financeur PRIMARY KEY (id_financeur)
+);
 
 
--- Primary keys
-ALTER TABLE ONLY taxon_concept.description
-    ADD CONSTRAINT pk_description PRIMARY KEY (id);
-
-ALTER TABLE ONLY taxon_concept.description_media
-    ADD CONSTRAINT pk_description_media PRIMARY KEY (id);
-
-
--- Foreign keys
-ALTER TABLE ONLY taxon_concept.description_media
-    ADD CONSTRAINT fk_dm_description FOREIGN KEY (description_id)
-    REFERENCES taxon_concept.description (id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS depense (
+    id_d serial NOT NULL,
+    annee_d Int NOT NULL UNIQUE,
+    montant_d float NOT NULL,
+    CONSTRAINT pk_d PRIMARY KEY (id_d)
+);
 
 
--- Permissions
-ALTER TABLE taxon_concept.description OWNER TO jpm;
-GRANT ALL ON TABLE taxon_concept.description TO jpm;
+CREATE TABLE IF NOT EXISTS projet(
+    id_p serial NOT NULL,
+    code_p varchar(4) NOT NULL UNIQUE,
+    nom_p varchar(250) NOT NULL UNIQUE,
+    statut_p boolean NOT NULL DEFAULT FALSE,
+    id_u Int NOT NULL,
+    CONSTRAINT pk_p PRIMARY KEY (id_p),
+    CONSTRAINT fk_p_responsable FOREIGN KEY (id_u) REFERENCES utilisateur(id_u)
+);
 
 
-ALTER TABLE taxon_concept.description_media OWNER TO jpm;
-GRANT ALL ON TABLE taxon_concept.description_media TO jpm;
+CREATE TABLE IF NOT EXISTS financement (
+    id_f serial NOT NULL,
+    id_p Int NOT NULL,
+    id_financeur Int NOT NULL,
+    montant_arrete_f float,
+    date_arrete_f date,
+    date_limite_solde_f date,
+    statut_f varchar(250) NOT NULL,
+    date_solde_f date NOT NULL,
+    commentaire_admin_f varchar(250),
+    commentaire_resp_f varchar(250),
+    numero_titre_f varchar(250),
+    annee_titre_f varchar(250),
+    imputation_f varchar(250),
+    CONSTRAINT pk_f PRIMARY KEY (id_f),
+    CONSTRAINT fk_f_p FOREIGN KEY (id_p) REFERENCES projet(id_p),
+    CONSTRAINT fk_f_f FOREIGN KEY (id_financeur) REFERENCES financeur(id_financeur),
+    CONSTRAINT ck_statut CHECK (statut_f IN ('ANTR', 'ATR', 'SOLDE'))
+);
+
+
+CREATE TABLE IF NOT EXISTS recette (
+    id_r serial NOT NULL,
+    id_f Int NOT NULL,
+    montant_r float,
+    annee_r Int,
+    CONSTRAINT pk_r PRIMARY KEY (id_r),
+    CONSTRAINT fk_recette_financement FOREIGN KEY (id_f) REFERENCES financement(id_f)
+);
+
+
+CREATE TABLE IF NOT EXISTS montant_affecte (
+    id_ma serial NOT NULL,
+    montant_ma float NOT NULL,
+    annee_ma Int NOT NULL,
+    id_r Int NOT NULL,
+    CONSTRAINT pk_ma PRIMARY KEY (id_ma),
+    CONSTRAINT fk_ma_recette FOREIGN KEY (id_r) REFERENCES recette(id_r)
+);
+
+
+CREATE TABLE IF NOT EXISTS historique (
+    id_h serial NOT NULL,
+    id_u Int NOT NULL,
+    date_h Date NOT NULL,
+    description_h varchar(250) NULL,
+    id_p Int NOT NULL,
+    CONSTRAINT pk_h PRIMARY KEY (id_h),
+    CONSTRAINT fk_h_utilisateur FOREIGN KEY (id_u) REFERENCES utilisateur(id_u),
+    CONSTRAINT fk_h_projet FOREIGN KEY (id_p) REFERENCES projet(id_p)
+);
+-- prevoir trigger sur le projet correspondant
+
+
+/*drop index*/
+DROP INDEX IF EXISTS ux_role_utilisateur;
+DROP INDEX IF EXISTS ux_projet;
+DROP INDEX IF EXISTS ux_financement;
+DROP INDEX IF EXISTS ux_recette;
+DROP INDEX IF EXISTS ux_montant_affecte;
+DROP INDEX IF EXISTS ux_historique;
+
+
+/*create index*/
+CREATE UNIQUE INDEX ux_role_utilisateur ON role_utilisateur(id_ra, id_u);
+CREATE INDEX ux_projet ON projet(id_u);
+CREATE INDEX ux_financement ON financement(id_p, id_financeur);
+CREATE INDEX ux_recette ON recette(id_f);
+CREATE INDEX ux_montant_affecte ON montant_affecte(id_r);
+CREATE INDEX ux_historique ON historique(id_u, id_p);
+
+
+/*insert row*/
+INSERT INTO role_acces (nom_ra, code_ra) VALUES ('administrateur', 1);
+INSERT INTO role_acces (nom_ra, code_ra) VALUES ('consultant', 2);
+

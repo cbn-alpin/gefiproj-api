@@ -1,0 +1,83 @@
+# Loggin levels :
+# 1. DEBUG: Detailed information, for diagnosing problems. Value=10.
+# 2. INFO: Confirm things are working as expected. Value=20.
+# 3. WARNING: Something unexpected happened, or indicative of some problem.
+#    But the software is still working as expected. This is the default basic logging level. Value=30.
+# 4. ERROR: More serious problem, the software is not able to perform some function. Value=40
+# 5. CRITICAL: A serious error, the program itself may be unable to continue running. Value=50
+
+version: 1
+disable_existing_loggers: true
+
+root:
+    level: INFO
+    handlers: [console, file]
+    propagate: yes
+
+loggers:
+    src.main: # My flask app. Use with : app.logger.INFO()
+        level: NOTSET
+        handlers: [wsgi, file]
+        propagate: no
+
+    werkzeug: # Aka Flask logs
+        level: NOTSET
+        handlers: [wsgi_raw, file_raw]
+        propagate: no
+
+    sqlalchemy:
+        level: WARNING
+        handlers: [wsgi]
+        propagate: no
+
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: standard
+        stream: ext://sys.stdout
+
+    file:
+        class: logging.handlers.RotatingFileHandler
+        level: NOTSET
+        formatter: standard
+        filename: '{logfilepath}'
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+    file_raw:
+        class: logging.handlers.RotatingFileHandler
+        level: NOTSET
+        formatter: raw_time
+        filename: '{logfilepath}'
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+    wsgi:
+        class: logging.StreamHandler
+        level: NOTSET
+        formatter: standard
+        stream: ext://flask.logging.wsgi_errors_stream
+
+    wsgi_raw:
+        class: logging.StreamHandler
+        level: NOTSET
+        formatter: raw
+        stream: ext://flask.logging.wsgi_errors_stream
+
+formatters:
+    raw:
+        format: '%(message)s'
+        datefmt:
+    raw_time:
+        format: '[%(asctime)s] - %(message)s'
+        datefmt: '%Y-%m-%d %H:%M:%S'
+    standard:
+        format: '[%(asctime)s] - %(name)s - %(levelname)s - %(message)s'
+        datefmt: '%Y-%m-%d %H:%M:%S'
+    error:
+        format: '[%(asctime)s] - %(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s'
+        datefmt: '%Y-%m-%d %H:%M:%S'
