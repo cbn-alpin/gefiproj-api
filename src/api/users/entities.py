@@ -1,5 +1,6 @@
 from api import db
 from marshmallow import Schema, fields
+from passlib.hash import pbkdf2_sha256 as sha256
 from shared.entity import Base
 from sqlalchemy import Column
 
@@ -21,7 +22,11 @@ class User(Base, db.Model):
         self.prenom = prenom
         self.mail = mail
         self.login = login
-        self.password = password
+        self.password = self.generate_hash(password)
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
 
 
 class UserSchema(Schema):

@@ -40,6 +40,8 @@ def get_all_users():
 def get_user_by_id(userId):
     current_app.logger.debug('In GET /api/users/<int:descId>')
 
+    check_user_exists(userId)
+
     session = Session()
     user_object = session.query(User).filter_by(id=userId).first()
 
@@ -61,6 +63,7 @@ def update_user(userId):
         data['id'] = userId
 
     # Check if user exists
+    check_user_exists(userId)
 
     data = UserSchema(only=('id', 'nom', 'prenom', 'mail', 'login', 'password')) \
         .load(data)
@@ -73,3 +76,19 @@ def update_user(userId):
     updated_user = UserSchema().dump(user)
     session.close()
     return jsonify(updated_user), 200
+
+
+def check_user_exists(userId):
+    try:
+        session = Session()
+        existing_user = session.query(User).filter_by(id=userId).first()
+        session.close()
+        if (existing_user == None):
+            raise ValueError('This user does not exist')
+    except ValueError:
+        resp = jsonify({"error": {
+            'code': 'USER_NOT_FOUND',
+            'message': f'User with id {userId} does not exist.'
+        }})
+        resp.status_code = 404
+        return resp
