@@ -6,23 +6,23 @@ from sqlalchemy import Column
 
 
 class User(Base, db.Model):
-    __tablename__ = "users"
+    __tablename__ = "utilisateur"
 
-    id = Column(db.Integer, primary_key=True)
-    nom = Column(db.String(120), unique=False, nullable=False)
-    prenom = Column(db.String(120), unique=False, nullable=False)
-    mail = Column(db.String(120), unique=True, nullable=False)
-    login = Column(db.String(120), unique=True, nullable=False)
-    password = Column(db.String(120), nullable=False)
+    id_u = Column(db.Integer, primary_key=True)
+    nom_u = Column(db.String(120), unique=False, nullable=False)
+    prenom_u = Column(db.String(120), unique=False, nullable=False)
+    initiales_u = Column(db.String(120), unique=False, nullable=False)
+    email_u = Column(db.String(120), unique=True, nullable=False)
+    password_u = Column(db.String(120), nullable=False)
 
-    def __init__(self, nom, prenom, mail, login, password, id=''):
-        if id != '':
-            self.id = id
-        self.nom = nom
-        self.prenom = prenom
-        self.mail = mail
-        self.login = login
-        self.password = self.generate_hash(password)
+    def __init__(self, nom_u, prenom_u, email_u, initiales_u, password_u, id_u=''):
+        if id_u != '':
+            self.id_u = id_u
+        self.nom_u = nom_u
+        self.prenom_u = prenom_u
+        self.initiales_u = initiales_u
+        self.email_u = email_u
+        self.password_u = self.generate_hash(password_u)
 
     @staticmethod
     def generate_hash(password):
@@ -30,9 +30,9 @@ class User(Base, db.Model):
 
 
 class UserSchema(Schema):
-    id = fields.Integer()
-    nom = fields.Str()
-    prenom = fields.Str()
-    mail = fields.Str()
-    login = fields.Str()
-    password = fields.Str()
+    id_u = fields.Integer()
+    nom_u = fields.Str()
+    prenom_u = fields.Str()
+    email_u = fields.Str()
+    initiales_u = fields.Str()
+    password_u = fields.Str()
