@@ -4,7 +4,8 @@ Ce dépôt contient le backend du projet GEFIPROJ.
 ## Installation et utilisation
 
 Pour installer ce projet :
-- Cloner le projet dans votre "workspace" local : `git clone https://github.com/yakuzhanh/gefiproj-api.git`
+- Cloner le projet dans votre "workspace" local : `git clone https://github.com/cbn-alpin/gefiproj-api`
+- Installer les dépendances : `pip install -r requirements.txt`
 - Lancer avec Flask :
     - Exporter des variables sur votre terminal : `export FLASK_APP=src/main.py`
     - Configurer : `set FLASK_APP=src/main.py`
@@ -12,6 +13,7 @@ Pour installer ce projet :
     - Lancer le projet : `flask run`
 - Lancer avec pipenv : 
     - Lancer le projet : `pipenv run python src/main.py`
+
 
 ### Configuration
 
