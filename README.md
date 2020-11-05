@@ -8,10 +8,10 @@ Pour installer ce projet :
 - Lancer avec Flask :
     - Exporter des variables sur votre terminal : `export FLASK_APP=src/main.py`
     - Configurer : `set FLASK_APP=src/main.py`
+    - Mode Debug : `export FLASK_DEBUG=true`
     - Lancer le projet : `flask run`
 - Lancer avec pipenv : 
     - Lancer le projet : `pipenv run python src/main.py`
-
 
 ### Configuration
 

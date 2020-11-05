@@ -16,7 +16,7 @@
 
 /*clean database*/
 DROP TABLE IF EXISTS role_acces CASCADE;
-DROP TABLE IF EXISTS utilsateur CASCADE;
+DROP TABLE IF EXISTS utilisateur CASCADE;
 DROP TABLE IF EXISTS role_utilisateur CASCADE;
 DROP TABLE IF EXISTS financeur CASCADE;
 DROP TABLE IF EXISTS depense CASCADE;
@@ -24,12 +24,13 @@ DROP TABLE IF EXISTS projet CASCADE;
 DROP TABLE IF EXISTS financement CASCADE;
 DROP TABLE IF EXISTS recette CASCADE;
 DROP TABLE IF EXISTS montant_affecte CASCADE;
+DROP TABLE IF EXISTS historique CASCADE;
 
 /*create data tables*/
 CREATE TABLE IF NOT EXISTS role_acces (
     id_ra serial NOT NULL, -- Identifiant du role.
     nom_ra varchar(250) NOT NULL, -- Libellé du role
-    code_ra Int NOT NULL, -- Libellé du code role
+    code_ra serial NOT NULL, -- Libellé du code role
     CONSTRAINT pk_ra PRIMARY KEY (id_ra)    
 );
 
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS utilisateur (
     initiales_u varchar(3) NOT NULL UNIQUE,
     email_u varchar(250) NOT NULL UNIQUE,
     password_u varchar(250) NOT NULL,
-    active_u boolean NOT NULL,
+    active_u boolean DEFAULT TRUE,
     CONSTRAINT pk_u PRIMARY KEY (id_u)
 );
 
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS projet(
     id_p serial NOT NULL,
     code_p varchar(4) NOT NULL UNIQUE,
     nom_p varchar(250) NOT NULL UNIQUE,
-    statut_p boolean NOT NULL DEFAULT FALSE,
+    statut_p boolean DEFAULT FALSE,
     id_u Int NOT NULL,
     CONSTRAINT pk_p PRIMARY KEY (id_p),
     CONSTRAINT fk_p_responsable FOREIGN KEY (id_u) REFERENCES utilisateur(id_u)
@@ -86,8 +87,8 @@ CREATE TABLE IF NOT EXISTS financement (
     id_f serial NOT NULL,
     id_p Int NOT NULL,
     id_financeur Int NOT NULL,
-    montant_arrete_f float,
-    date_arrete_f date,
+    montant_arrete_f float NOT NULL,
+    date_arrete_f date ,
     date_limite_solde_f date,
     statut_f varchar(250) NOT NULL,
     date_solde_f date NOT NULL,
@@ -106,8 +107,8 @@ CREATE TABLE IF NOT EXISTS financement (
 CREATE TABLE IF NOT EXISTS recette (
     id_r serial NOT NULL,
     id_f Int NOT NULL,
-    montant_r float,
-    annee_r Int,
+    montant_r float NOT NULL,
+    annee_r Int NOT NULL,
     CONSTRAINT pk_r PRIMARY KEY (id_r),
     CONSTRAINT fk_recette_financement FOREIGN KEY (id_f) REFERENCES financement(id_f)
 );
@@ -127,7 +128,7 @@ CREATE TABLE IF NOT EXISTS historique (
     id_h serial NOT NULL,
     id_u Int NOT NULL,
     date_h Date NOT NULL,
-    description_h varchar(250) NULL,
+    description_h varchar(250),
     id_p Int NOT NULL,
     CONSTRAINT pk_h PRIMARY KEY (id_h),
     CONSTRAINT fk_h_utilisateur FOREIGN KEY (id_u) REFERENCES utilisateur(id_u),
@@ -155,6 +156,6 @@ CREATE INDEX ux_historique ON historique(id_u, id_p);
 
 
 /*insert row*/
-INSERT INTO role_acces (nom_ra, code_ra) VALUES ('administrateur', 1);
-INSERT INTO role_acces (nom_ra, code_ra) VALUES ('consultant', 2);
+INSERT INTO role_acces (nom_ra) VALUES ('administrateur');
+INSERT INTO role_acces (nom_ra) VALUES ('consultant');
 
