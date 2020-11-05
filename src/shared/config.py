@@ -20,13 +20,14 @@ def get():
 
 
 def get_engine_uri():
+    db_uri = ''
     cfg = get()
     db_cfg = cfg['database']
     engine = db_cfg['engine']
-    if (engine == 'sqlite'):
+    if engine == 'sqlite':
         path = db_cfg['path']
         db_uri = f'{engine}:///{path}'
-    elif (engine == 'postgresql'):
+    elif engine == 'postgresql':
         user = db_cfg['user']
         password = db_cfg['password']
         host = db_cfg['host']
@@ -34,6 +35,20 @@ def get_engine_uri():
         name = db_cfg['name']
         db_uri = f'{engine}://{user}:{password}@{host}:{port}/{name}'
     return db_uri
+
+
+def get_jwt_secret():
+    cfg = get()
+    jwt_cfg = cfg['jwt']
+
+    return jwt_cfg['secret']
+
+
+def get_jwt_expirationt():
+    cfg = get()
+    jwt_exp_cfg = cfg['jwt']
+
+    return jwt_exp_cfg['expires_in']
 
 
 print('DB URI:' + get_engine_uri())
