@@ -14,7 +14,7 @@ class User(Base, db.Model):
     initiales_u = Column(db.String(3), unique=False, nullable=False)
     email_u = Column(db.String(120), unique=True, nullable=False)
     password_u = Column(db.String(120), nullable=False)
-    active_u = Column(db.String(5), nullable=False)
+    active_u = Column(db.Boolean(5), default=True)
 
     def __init__(self, nom_u, prenom_u, email_u, initiales_u, active_u, password_u, id_u=''):
         if id_u != '':
@@ -45,5 +45,5 @@ class UserSchema(Schema):
     prenom_u = fields.Str()
     email_u = fields.Str()
     initiales_u = fields.Str()
-    active_u = fields.Str()
+    active_u = fields.Bool()
     password_u = fields.Str()

@@ -1,10 +1,7 @@
-from datetime import datetime
-
 from api import db
 from marshmallow import Schema, fields
 from shared.entity import Base
-from sqlalchemy import Column, String, Integer, Text, Float, Date
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, Integer, Float, Date
 
 
 class Financement(Base, db.Model):
@@ -40,6 +37,7 @@ class Financement(Base, db.Model):
         self.numero_titre_f = numero_titre_f
         self.annee_titre_f = annee_titre_f
         self.imputation_f = imputation_f
+
 
 class FinancementSchema(Schema):
     id_f = fields.Integer()
