@@ -39,7 +39,12 @@ def login():
         refresh_token = create_refresh_token(identity=data['login'])
 
         return {
-            'message': 'Logged in as {}'.format(current_user.email_u),
+            'id_u': current_user.id_u,
+            'nom_u': current_user.nom_u,
+            'prenom_u': current_user.prenom_u,
+            'initiales_u': current_user.initiales_u,
+            'email_u': current_user.email_u,
+            'active_u': current_user.active_u,
             'access_token': access_token,
             'refresh_token': refresh_token
         }
