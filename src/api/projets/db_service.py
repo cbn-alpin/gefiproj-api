@@ -32,13 +32,35 @@ class ProjectDBService():
     @staticmethod
     def get_projet_by_id(proj_id: int):
         session = Session()
-        projet_object = session.query(Projet).filter_by(id_p=proj_id).all()
+        projet_object = session.query(Projet).filter_by(id_p=proj_id).first()
 
         # Transforming into JSON-serializable objects
-        schema = ProjetSchema(many=True)
+        schema = ProjetSchema(many=False)
         projet = schema.dump(projet_object)
 
         # Serializing as JSON
+        session.close()
+        return projet
+
+    @staticmethod
+    def get_projet_by_code(code_p: str):
+        session = Session()
+        projet_object = session.query(Projet).filter_by(code_p=code_p).first()
+
+        schema = ProjetSchema(many=False)
+        projet = schema.dump(projet_object)
+
+        session.close()
+        return projet
+
+    @staticmethod
+    def get_projet_by_nom(nom_p: str):
+        session = Session()
+        projet_object = session.query(Projet).filter_by(nom_p=nom_p).first()
+
+        schema = ProjetSchema(many=False)
+        projet = schema.dump(projet_object)
+
         session.close()
         return projet
 
@@ -54,13 +76,8 @@ class ProjectDBService():
 
     @staticmethod
     def check_projet_exists_by_id(proj_id: int):
-        try:
-            session = Session()
-            existing_proj = session.query(Projet).filter_by(id_p=proj_id).first()
-            session.close()
-            if existing_proj is None:
-                raise ValueError(project_not_exist_msg)
-        except ValueError:
+        existing_proj = ProjectDBService.get_projet_by_id(proj_id)
+        if 'id_p' not in existing_proj:
             msg = {
                 'code': 'PROJET_NOT_FOUND',
                 'message': f'Projet with id <{proj_id}> does not exist.'
@@ -70,13 +87,8 @@ class ProjectDBService():
 
     @staticmethod
     def check_projet_exists_by_name(project_name: str):
-        try:
-            session = Session()
-            existing_proj = session.query(Projet).filter_by(nom_p=project_name).first()
-            session.close()
-            if existing_proj is None:
-                raise ValueError(project_not_exist_msg)
-        except ValueError:
+        existing_proj = ProjectDBService.get_projet_by_nom(project_name)
+        if 'id_p' not in existing_proj:
             msg = {
                 'code': 'PROJET_NOT_FOUND',
                 'message': f'Projet with name <{project_name}> does not exist.'
@@ -86,16 +98,18 @@ class ProjectDBService():
 
     @staticmethod
     def check_projet_exists_by_code(project_code):
-        try:
-            session = Session()
-            existing_proj = session.query(Projet).filter_by(code_p=project_code).first()
-            session.close()
-            if existing_proj is None:
-                raise ValueError(project_not_exist_msg)
-        except ValueError:
+        existing_proj = ProjectDBService.get_projet_by_code(project_code)
+        if 'id_p' not in existing_proj:
             msg = {
                 'code': 'PROJET_NOT_FOUND',
                 'message': f'Projet with code <{project_code}> does not exist.'
             }
 
             return msg
+
+    @staticmethod
+    def get_total_count():
+        session = Session()
+        count = session.query(Projet).count()
+        session.close()
+        return count

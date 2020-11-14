@@ -6,6 +6,18 @@ class ProjetValidationService:
     def validate_post(project):
         errors = []
 
+        # project id validation
+        try:
+            if 'id_p' in project:
+                int(project['id_p'])
+        except ValueError:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': 'id_p',
+                'message': '<id_p> must be a number',
+            })
+
         # user id validation
         if 'id_u' not in project:
             errors.append({
@@ -52,7 +64,7 @@ class ProjetValidationService:
                 'message': 'Parameter <statut_p> is missing',
             })
 
-        if 'statut_p' in project and not (project['statut_p'] == "false" or project['statut_p'] == "true"):
+        if 'statut_p' in project and project['statut_p'] not in ["false", "true"]:
             errors.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',

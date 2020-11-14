@@ -89,21 +89,51 @@ def get_projet_by_id(proj_id):
 
 @resources.route('/api/projets/<int:proj_id>', methods=['PUT'])
 @jwt_required
-def update_user(proj_id):
+def update_projet(proj_id):
     current_app.logger.info('In PUT /api/projets/<int>')
 
-    data = dict(request.get_json())
-    if id not in data:
-        data['id'] = proj_id
+    posted_data = request.get_json()
+    if 'id_p' not in posted_data:
+        posted_data['id_p'] = proj_id
 
-    # Check if project exists
-    ProjectDBService.check_projet_exists_by_id(proj_id)
+    # validate fields to update
+    validation_errors = ProjetValidationService.validate_post(posted_data)
+    if len(validation_errors) > 0:
+        return jsonify({
+            'message': 'A validation error occured',
+            'errors': validation_errors
+        }), 422
 
-    data = ProjetSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u')) \
-        .load(data)
-    projet = Projet(**data)
+    posted_data = ProjetSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u', 'id_p')) \
+        .load(posted_data)
+    project_to_update = Projet(**posted_data)
 
-    return jsonify(ProjectDBService.update_projet(projet)), 200
+    # check if the project exists
+    exist_error = ProjectDBService.check_projet_exists_by_id(proj_id)
+    if exist_error is not None:
+        return jsonify(exist_error), 404
+
+    # check if user with id_u exists
+    user_error = check_user_exists_by_id(project_to_update.id_u)
+    if user_error is not None:
+        return jsonify(user_error), 404
+
+    # check project code and name are not used
+    project_by_code = ProjectDBService.get_projet_by_code(project_to_update.code_p)
+    if 'id_p' in project_by_code and project_by_code.get('id_p') != proj_id:
+        return jsonify({
+            'code': 'CODE_PROJET_ALREADY_EXISTS',
+            'message': f'A project with code <{project_to_update.code_p}> already exists'
+        }), 422
+
+    project_by_name = ProjectDBService.get_projet_by_nom(project_to_update.nom_p)
+    if 'id_p' in project_by_name and project_by_name.get('id_p') != proj_id:
+        return jsonify({
+            'code': 'NAME_PROJET_ALREADY_EXISTS',
+            'message': f'A project with name <{project_to_update.nom_p}> already exists'
+        }), 422
+
+    return jsonify(ProjectDBService.update_projet(project_to_update)), 200
 
 
 @resources.route('/api/projets/<int:proj_id>', methods=['DELETE'])
