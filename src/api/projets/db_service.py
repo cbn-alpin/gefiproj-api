@@ -75,6 +75,16 @@ class ProjectDBService():
         return updated_projet
 
     @staticmethod
+    def delete_projet(projet_id: int) -> int:
+        session = Session()
+        projet = session.query(Projet).filter_by(id_p=projet_id).first()
+        session.delete(projet)
+        session.commit()
+        session.close()
+
+        return projet_id
+
+    @staticmethod
     def check_projet_exists_by_id(proj_id: int):
         existing_proj = ProjectDBService.get_projet_by_id(proj_id)
         if 'id_p' not in existing_proj:
