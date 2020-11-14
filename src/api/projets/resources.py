@@ -2,10 +2,10 @@ from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from shared.entity import Session
 
-from .db_service import check_projet_exists_by_id, check_projet_exists_by_code, check_projet_exists_by_name
+from .db_service import ProjectDBService
 from .entities import Projet, ProjetSchema
-from .validation_service import validate_post
-from ..users.resources import check_user_exists_by_id
+from .validation_service import ProjetValidationService
+from ..users.db_services import check_user_exists_by_id
 
 resources = Blueprint('projets', __name__)
 
@@ -13,11 +13,11 @@ resources = Blueprint('projets', __name__)
 @resources.route('/api/projets', methods=['POST'])
 @jwt_required
 def add_projet():
-    current_app.logger.debug('In POST /projets')
+    current_app.logger.debug('In POST /api/projets')
     posted_data = request.get_json()
 
     # check posted data fields
-    validation_errors = validate_post(posted_data)
+    validation_errors = ProjetValidationService.validate_post(posted_data)
     if len(validation_errors) > 0:
         return jsonify({
             'message': 'A validation error occured',
@@ -30,10 +30,12 @@ def add_projet():
     projet = Projet(**posted_projet)
 
     # check if user with id_u exists
-    check_user_exists_by_id(projet.id_u)
+    user_error = check_user_exists_by_id(projet.id_u)
+    if user_error is not None:
+        return jsonify(user_error), 404
 
     # check if project code doesn't already exist
-    project_by_code = check_projet_exists_by_code(projet.code_p)
+    project_by_code = ProjectDBService.check_projet_exists_by_code(projet.code_p)
     if project_by_code is None:
         return jsonify({
             'code': 'CODE_PROJET_ALREADY_EXISTS',
@@ -41,7 +43,7 @@ def add_projet():
         }), 422
 
     # check if project name doesn't already exist
-    project_by_name = check_projet_exists_by_name(projet.nom_p)
+    project_by_name = ProjectDBService.check_projet_exists_by_name(projet.nom_p)
     if project_by_name is None:
         return jsonify({
             'code': 'NAME_PROJET_ALREADY_EXISTS',
@@ -60,70 +62,59 @@ def add_projet():
 @resources.route('/api/projets', methods=['GET'])
 @jwt_required
 def get_all_projets():
-    current_app.logger.info('In GET /projets')
-    session = Session()
-    projets_objects = session.query(Projet).all()
+    current_app.logger.info('In GET /api/projets')
 
-    # Transforming into JSON-serializable objects
-    schema = ProjetSchema(many=True)
-    projets = schema.dump(projets_objects)
+    query_params = request.args
+    query_error = ProjetValidationService.validate_get_all(query_params)
+    if len(query_error) > 0:
+        return jsonify(query_error), 422
 
-    # Serializing as JSON
-    session.close()
-    return jsonify(projets)
+    limit = query_params.get('limit', default=10)
+    offset = query_params.get('offset', default=0)
+    return jsonify(ProjectDBService.get_all_projets(limit, offset))
 
 
 @resources.route('/api/projets/<int:proj_id>', methods=['GET'])
 @jwt_required
 def get_projet_by_id(proj_id):
-    current_app.logger.info('In GET /projets/<int>')
+    current_app.logger.info('In GET /api/projets/<int>')
 
     # check if the project exists
-    exist_error = check_projet_exists_by_id(proj_id)
+    exist_error = ProjectDBService.check_projet_exists_by_id(proj_id)
     if exist_error is not None:
         return jsonify(exist_error), 404
 
-    session = Session()
-    projet_object = session.query(Projet).filter_by(id_p=proj_id).all()
-
-    # Transforming into JSON-serializable objects
-    schema = ProjetSchema(many=True)
-    projet = schema.dump(projet_object)
-
-    # Serializing as JSON
-    session.close()
-    return jsonify(projet)
+    return jsonify(ProjectDBService.get_projet_by_id(proj_id))
 
 
 @resources.route('/api/projets/<int:proj_id>', methods=['PUT'])
 @jwt_required
 def update_user(proj_id):
-    current_app.logger.info('In PUT /projets/<int>')
+    current_app.logger.info('In PUT /api/projets/<int>')
 
     data = dict(request.get_json())
     if id not in data:
         data['id'] = proj_id
 
     # Check if project exists
-    check_projet_exists_by_id(proj_id)
+    ProjectDBService.check_projet_exists_by_id(proj_id)
 
     data = ProjetSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u')) \
         .load(data)
     projet = Projet(**data)
 
-    session = Session()
-    session.merge(projet)
-    session.commit()
-
-    updated_projet = ProjetSchema().dump(projet)
-    session.close()
-    return jsonify(updated_projet), 200
+    return jsonify(ProjectDBService.update_projet(projet)), 200
 
 
 @resources.route('/api/projets/<int:proj_id>', methods=['DELETE'])
 @jwt_required
 def delete_projet(proj_id):
-    check_projet_exists_by_id(proj_id)
+    current_app.logger.info('In DELETE /api/projets/<int>')
+
+    ProjectDBService.check_projet_exists_by_id(proj_id)
+
+    # only if this projet is not linked to any financement
+    # ??? droit de supprimer si projet non soldé
 
     session = Session()
     projet = session.query(Projet).filter_by(id_f=proj_id).first()
@@ -133,4 +124,3 @@ def delete_projet(proj_id):
     return jsonify({
         'message': f'Le projet avec l\'identifiant {proj_id} a été supprimé'
     }), 204
-
