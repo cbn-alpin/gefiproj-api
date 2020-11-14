@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from shared.entity import Session
 
-from .db_service import check_projet_exists_by_id
+from .db_service import check_projet_exists_by_id, check_projet_exists_by_code, check_projet_exists_by_name
 from .entities import Projet, ProjetSchema
 from .validation_service import validate_post
 from ..users.resources import check_user_exists_by_id
@@ -18,13 +18,13 @@ def add_projet():
 
     # check posted data fields
     validation_errors = validate_post(posted_data)
-    print(validation_errors)
     if len(validation_errors) > 0:
         return jsonify({
             'message': 'A validation error occured',
             'errors': validation_errors
         }), 422
 
+    # convert posted data into project
     posted_projet = ProjetSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u')) \
         .load(posted_data)
     projet = Projet(**posted_projet)
@@ -32,6 +32,23 @@ def add_projet():
     # check if user with id_u exists
     check_user_exists_by_id(projet.id_u)
 
+    # check if project code doesn't already exist
+    project_by_code = check_projet_exists_by_code(projet.code_p)
+    if project_by_code is None:
+        return jsonify({
+            'code': 'CODE_PROJET_ALREADY_EXISTS',
+            'message': f'A project with code <{projet.code_p}> already exists'
+        }), 422
+
+    # check if project name doesn't already exist
+    project_by_name = check_projet_exists_by_name(projet.nom_p)
+    if project_by_name is None:
+        return jsonify({
+            'code': 'NAME_PROJET_ALREADY_EXISTS',
+            'message': f'A project with name <{projet.nom_p}> already exists'
+        })
+
+    # add the projet to db and return it
     session = Session()
     session.add(projet)
     session.commit()

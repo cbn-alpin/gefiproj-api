@@ -1,21 +1,75 @@
 def validate_post(project):
-    print(project)
     errors = []
 
+    # user id validation
+    if 'id_u' not in project:
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'MISSING_PARAMETER',
+            'field': 'id_u',
+            'message': 'Parameter <id_u> is missing',
+        })
+
     try:
-        project['id_u'] = int(project['id_u'])
+        if 'id_u' in project:
+            project['id_u'] = int(project['id_u'])
     except ValueError:
         errors.append({
             'code': 'VALIDATION_ERROR',
+            'type': 'VALUE_ERROR',
             'field': 'id_u',
-            'message': 'id_u must be a number',
+            'message': '<id_u> must be a number',
         })
 
-    if len(project['code_p']) > 4:
+    # code validation
+    if 'code_p' not in project:
         errors.append({
             'code': 'VALIDATION_ERROR',
+            'type': 'MISSING_PARAMETER',
             'field': 'code_p',
-            'message': 'code_p must be at most 4 char',
+            'message': 'Paramter <code_p> is missing',
+        })
+
+    if 'code_p' in project and len(project['code_p']) > 4:
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'VALUE_ERROR',
+            'field': 'code_p',
+            'message': '<code_p> must be at most 4 char',
+        })
+
+    # statut validation
+    if 'statut_p' not in project:
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'MISSING_PARAMETER',
+            'field': 'statut_p',
+            'message': 'Parameter <statut_p> is missing',
+        })
+
+    if 'statut_p' in project and not (project['statut_p'] == "false" or project['statut_p'] == "true"):
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'VALUE_ERROR',
+            'field': 'statut_p',
+            'message': '<statut_p> must be either <true> or <false>',
+        })
+
+    # nom validation
+    if 'nom_p' not in project:
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'MISSING_PARAMETER',
+            'field': 'nom_p',
+            'message': 'Parameter <nom_p> is missing',
+        })
+
+    if 'nom_p' in project and (len(project['nom_p']) < 3 or len(project['nom_p']) > 250):
+        errors.append({
+            'code': 'VALIDATION_ERROR',
+            'type': 'VALUE_ERROR',
+            'field': 'nom_p',
+            'message': '<nom_p> must be 3 to 250 char long',
         })
 
     return errors
