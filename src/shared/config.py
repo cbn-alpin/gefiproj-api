@@ -51,5 +51,5 @@ def get_jwt_expirationt():
     return jwt_exp_cfg['expires_in']
 
 
-print('DB URI:' + get_engine_uri())
+# print('DB URI:' + get_engine_uri())
 print('LOADDING CONFIG !')
