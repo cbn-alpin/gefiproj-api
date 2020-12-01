@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS utilisateur (
 );
 
 
-CREATE TABLE IF NOT EXISTS role_utilisateur (
-    id_ra Int NOT NULL,
-    id_u Int NOT NULL,
-    CONSTRAINT pk_id_role_utilisateur PRIMARY KEY (id_ra, id_u),
-    CONSTRAINT pk_role FOREIGN KEY (id_ra) REFERENCES role_acces(id_ra),
-    CONSTRAINT pk_utilisateur FOREIGN KEY (id_u) REFERENCES utilisateur(id_u)
+CREATE TABLE IF NOT EXISTS role_utilisateur(
+                                               id_ra Int NOT NULL,
+                                               id_u  Int NOT NULL,
+                                               CONSTRAINT pk_id_role_utilisateur PRIMARY KEY (id_ra, id_u),
+                                               CONSTRAINT fk_role_access FOREIGN KEY (id_ra) REFERENCES role_acces (id_ra),
+                                               CONSTRAINT fk_utilisateur FOREIGN KEY (id_u) REFERENCES utilisateur (id_u)
 );
 
 
@@ -83,23 +83,24 @@ CREATE TABLE IF NOT EXISTS projet(
 );
 
 
-CREATE TABLE IF NOT EXISTS financement (
-    id_f serial NOT NULL,
-    id_p Int NOT NULL,
-    id_financeur Int NOT NULL,
-    montant_arrete_f float NOT NULL,
-    date_arrete_f date ,
+CREATE TABLE IF NOT EXISTS financement
+(
+    id_f                serial       NOT NULL,
+    id_p                Int          NOT NULL,
+    id_financeur        Int          NOT NULL,
+    montant_arrete_f    float        NOT NULL,
+    date_arrete_f       date,
     date_limite_solde_f date,
-    statut_f varchar(250) NOT NULL,
-    date_solde_f date NOT NULL,
+    date_solde_f        date,
+    statut_f            varchar(250) NOT NULL,
     commentaire_admin_f varchar(250),
-    commentaire_resp_f varchar(250),
-    numero_titre_f varchar(250),
-    annee_titre_f varchar(250),
-    imputation_f varchar(250),
+    commentaire_resp_f  varchar(250),
+    numero_titre_f      varchar(250),
+    annee_titre_f       varchar(250),
+    imputation_f        varchar(250),
     CONSTRAINT pk_f PRIMARY KEY (id_f),
-    CONSTRAINT fk_f_p FOREIGN KEY (id_p) REFERENCES projet(id_p),
-    CONSTRAINT fk_f_f FOREIGN KEY (id_financeur) REFERENCES financeur(id_financeur),
+    CONSTRAINT fk_f_p FOREIGN KEY (id_p) REFERENCES projet (id_p),
+    CONSTRAINT fk_f_f FOREIGN KEY (id_financeur) REFERENCES financeur (id_financeur),
     CONSTRAINT ck_statut CHECK (statut_f IN ('ANTR', 'ATR', 'SOLDE'))
 );
 

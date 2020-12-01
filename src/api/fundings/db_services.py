@@ -1,12 +1,12 @@
 from shared.entity import Session
 
-from ..financements.entities import Financement
+from ..fundings.entities import Funding
 
 
 class FundingDBService:
     @staticmethod
     def get_funding_by_project_id(project_id):
         session = Session()
-        fin_found = session.query(Financement).filter_by(id_p=project_id).all()
+        found_funding = session.query(Funding).filter_by(id_p=project_id).all()
         session.close()
-        return fin_found
+        return found_funding

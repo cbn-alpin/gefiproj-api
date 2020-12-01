@@ -1,25 +1,22 @@
-from flask import Blueprint, current_app, jsonify, request
-from shared.auth import AuthError
+from flask import Blueprint, current_app, jsonify
 from shared.entity import Session
 
-from .entities import RoleAcces, RoleAccesSchema
+from .entities import RoleAccess, RoleAccessSchema
 
-# Versions infos
-
-resources = Blueprint('role_acces', __name__)
+resources = Blueprint('role_access', __name__)
 
 
-@resources.route('/role_acces', methods=['GET'])
+@resources.route('/role_access', methods=['GET'])
 def get_all_role_acces():
-    current_app.logger.info('In GET /role_acces')
+    current_app.logger.info('In GET /role_access')
     # Fetching from the database
     session = Session()
-    role_acces_objects = session.query(RoleAcces).all()
+    role_access_objects = session.query(RoleAccess).all()
 
     # Transforming into JSON-serializable objects
-    schema = RoleAccesSchema(many=True)
-    role_acces = schema.dump(role_acces_objects)
+    schema = RoleAccessSchema(many=True)
+    role_access = schema.dump(role_access_objects)
 
     # Serializing as JSON
     session.close()
-    return jsonify(role_acces)
+    return jsonify(role_access)
