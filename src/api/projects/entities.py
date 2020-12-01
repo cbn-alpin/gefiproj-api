@@ -4,7 +4,7 @@ from shared.entity import Base
 from sqlalchemy import Column
 
 
-class Projet(Base, db.Model):
+class Project(Base, db.Model):
     __tablename__ = "projet"
 
     id_p = Column(db.Integer, primary_key=True)
@@ -22,7 +22,7 @@ class Projet(Base, db.Model):
         self.id_u = id_u
 
 
-class ProjetSchema(Schema):
+class ProjectSchema(Schema):
     id_p = fields.Integer()
     code_p = fields.Str()
     nom_p = fields.Str()

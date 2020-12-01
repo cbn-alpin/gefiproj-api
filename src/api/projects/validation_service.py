@@ -1,7 +1,7 @@
 ERROR_CODE = 'VALIDATION_ERROR'
 
 
-class ProjetValidationService:
+class ProjectValidationService:
     @staticmethod
     def validate_post(project):
         errors = []
