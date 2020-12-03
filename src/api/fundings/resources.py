@@ -86,24 +86,7 @@ def update_funding(funding_id):
     # Checks
     check_fuding_exists(data['id_f'])
 
-    # Convert date format
-    print('before convert>>>>>>>>>')
-    print(data)
     data = convert_funding_dates(data)
-
-    if data['annee_titre_f'] is None:
-        data['annee_titre_f'] = ''
-    if data['imputation_f'] is None:
-        data['imputation_f'] = ''
-    if data['numero_titre_f'] is None:
-        data['numero_titre_f'] = ''
-    if data['commentaire_resp_f'] is None:
-        data['commentaire_resp_f'] = ''
-    if data['commentaire_admin_f'] is None:
-        data['commentaire_admin_f'] = ''
-
-    print('>>>>>>>>>>after convert')
-    print(data)
 
     # Mount funding object
     data = FundingSchema(only=(
@@ -157,20 +140,14 @@ def convert_funding_dates(funding):
     if 'date_solde_f' in funding \
             and funding['date_solde_f'] is not None:
         funding['date_solde_f'] = date_convert(funding['date_solde_f'])
-    else:
-        funding['date_solde_f'] = ''
 
     if 'date_arrete_f' in funding \
             and funding['date_arrete_f'] is not None:
         funding['date_arrete_f'] = date_convert(funding['date_arrete_f'])
-    else:
-        funding['date_arrete_f'] = ''
 
     if 'date_limite_solde_f' in funding \
             and funding['date_limite_solde_f'] is not None:
         funding['date_limite_solde_f'] = date_convert(funding['date_limite_solde_f'])
-    else:
-        funding['date_limite_solde_f'] = ''
 
     return funding
 
