@@ -5,8 +5,6 @@ from shared.entity import Session
 
 from .entities import Funding, FundingSchema
 
-# Versions infos
-
 resources = Blueprint('funding', __name__)
 
 
@@ -48,18 +46,22 @@ def get_fundings_by_project(project_id):
 # @requires_auth
 def add_funding():
     current_app.logger.debug('In POST /funding')
-    body = request.get_json()
+
+    posted_funding = request.get_json()
     # Convert date format
-    body = convert_funding_dates(body)
+    posted_funding = convert_funding_dates(posted_funding)
     # Init statut funding
-    if 'statut_f' not in body:
-        body['statut_f'] = 'ANTR'
+    if 'statut_f' not in posted_funding:
+        posted_funding['statut_f'] = 'ANTR'
+
+    print('>>>>>>>>>>>>>>>>>>>>>')
+    print(posted_funding)
 
     # Mount funding object
     posted_funding = FundingSchema(only=(
         'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f', 'date_limite_solde_f',
         'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f', 'imputation_f')) \
-        .load(body)
+        .load(posted_funding)
     data = Funding(**posted_funding)
 
     # Persist funding
@@ -137,23 +139,26 @@ def check_fuding_exists(funding_id):
 
 
 def convert_funding_dates(funding):
-    if 'date_solde_f' in funding \
-            and funding['date_solde_f'] is not None:
+    if 'date_solde_f' in funding:
         funding['date_solde_f'] = date_convert(funding['date_solde_f'])
+    else:
+        funding['date_solde_f'] = None
 
-    if 'date_arrete_f' in funding \
-            and funding['date_arrete_f'] is not None:
+    if 'date_arrete_f' in funding:
         funding['date_arrete_f'] = date_convert(funding['date_arrete_f'])
+    else:
+        funding['date_arrete_f'] = None
 
-    if 'date_limite_solde_f' in funding \
-            and funding['date_limite_solde_f'] is not None:
+    if 'date_limite_solde_f' in funding:
         funding['date_limite_solde_f'] = date_convert(funding['date_limite_solde_f'])
+    else:
+        funding['date_limite_solde_f'] = None
 
     return funding
 
 
 def date_convert(date_time_str):
-    ##### date_time_str : "2018-06-29 08:15:27.243860"
+    # date_time_str : "2018-06-29 08:15:27.243860"
     date = None
     if date_time_str is not None:
         date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
