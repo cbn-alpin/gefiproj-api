@@ -57,12 +57,12 @@ def login():
 def get_all_users():
     current_app.logger.debug('In GET /api/users')
     session = Session()
-    users_objects = session.query(User).all()
+    users_objects = session.query(User) \
+        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
+        .all()
 
     schema = UserSchema(many=True)
     users = schema.dump(users_objects)
-    for u in users:
-        u.pop('password_u', None)
 
     session.close()
     return jsonify(users)
@@ -76,12 +76,13 @@ def get_user_by_id(user_id):
     check_user_exists_by_id(user_id)
 
     session = Session()
-    user_object = session.query(User).filter_by(id_u=user_id).first()
+    user_object = session.query(User) \
+        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
+        .filter_by(id_u=user_id).first()
 
     # Transforming into JSON-serializable objects
     schema = UserSchema(many=False)
     user = schema.dump(user_object)
-    user.pop('password_u', None)
 
     # Serializing as JSON
     session.close()
