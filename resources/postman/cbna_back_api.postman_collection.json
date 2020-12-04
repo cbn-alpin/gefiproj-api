@@ -1,0 +1,432 @@
+{
+  "info": {
+    "_postman_id": "a3db5515-2fa0-405d-b00c-3cfac7f15a73",
+    "name": "cbna_back",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "localhost:5000/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"nom_u\":\"monnom\",\n\t\"prenom_u\":\"super\",\n\t\"initiales_u\":\"msu\",\n\t\"password_u\":\"admin\",\n\t\"email_u\":\"testimaill@mail.ml\",\n\t\"active_u\": \"true\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/auth/register",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"login\": \"testimaill@mail.ml\",\n\t\"password\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/auth/login",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/api/users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDUzNDg0OTgsIm5iZiI6MTYwNTM0ODQ5OCwianRpIjoiYjAxMTg1OTktMmE4Mi00ZTNlLTllNWEtNGMxYTdiYmFhODdlIiwiZXhwIjoxNjA1Mzc3Mjk4LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.IVH4jt9LsSM4wZQQ6W0OlnAaTJ7A85X0Yptnq6yOkiI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/api/users",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "localhost:5000/api/projects/1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDY4MDkwMDMsIm5iZiI6MTYwNjgwOTAwMywianRpIjoiYjYzNWI3MGMtNTU5NS00ZmEwLWI3ODYtYmM3N2U0NzZhZDJkIiwiZXhwIjoxNjA2ODM3ODAzLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.v2PRz98krmHqX1j9RANad4h7twfIGPjMMUHB4un151o",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/api/projects/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "projects",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "2",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/api/projects",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDY4MDkwMDMsIm5iZiI6MTYwNjgwOTAwMywianRpIjoiYjYzNWI3MGMtNTU5NS00ZmEwLWI3ODYtYmM3N2U0NzZhZDJkIiwiZXhwIjoxNjA2ODM3ODAzLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.v2PRz98krmHqX1j9RANad4h7twfIGPjMMUHB4un151o",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/api/projects",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/api/projects",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDY4MDkwMDMsIm5iZiI6MTYwNjgwOTAwMywianRpIjoiYjYzNWI3MGMtNTU5NS00ZmEwLWI3ODYtYmM3N2U0NzZhZDJkIiwiZXhwIjoxNjA2ODM3ODAzLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.v2PRz98krmHqX1j9RANad4h7twfIGPjMMUHB4un151o",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"code_p\": \"e\",\n\t\"nom_p\": \"test project 0\",\n\t\"statut_p\": \"false\",\n\t\"id_u\": \"1\"\n}"
+            },
+            "url": {
+              "raw": "localhost:5000/api/projects",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/api/projects/13",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDY4MDkwMDMsIm5iZiI6MTYwNjgwOTAwMywianRpIjoiYjYzNWI3MGMtNTU5NS00ZmEwLWI3ODYtYmM3N2U0NzZhZDJkIiwiZXhwIjoxNjA2ODM3ODAzLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.v2PRz98krmHqX1j9RANad4h7twfIGPjMMUHB4un151o",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "localhost:5000/api/projects/15",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "projects",
+                "15"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "fundings",
+      "item": [
+        {
+          "name": "get funding by project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update funding",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n        \"annee_titre_f\": null,\n        \"commentaire_admin_f\": null,\n        \"commentaire_resp_f\": null,\n        \"date_arrete_f\": null,\n        \"date_limite_solde_f\": null,\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 2,\n        \"imputation_f\": null,\n        \"montant_arrete_f\": 44344.0,\n        \"numero_titre_f\": null,\n        \"statut_f\": \"ANTR\"\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/funding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/funding",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create funding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 4,\n        \"montant_arrete_f\": 44344.0\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete funding",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n    \"id_financeur\": 1,\n    \"id_p\": 4,\n    \"montant_arrete_f\": 44344.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "localhost:5000/status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:5000/status",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "status"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "protocolProfileBehavior": {}
+}
