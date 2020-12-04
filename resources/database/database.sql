@@ -170,3 +170,4 @@ INSERT INTO role_acces (nom_ra)
 VALUES ('administrateur');
 INSERT INTO role_acces (nom_ra)
 VALUES ('consultant');
+

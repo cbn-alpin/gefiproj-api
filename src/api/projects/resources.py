@@ -5,7 +5,7 @@ from shared.entity import Session
 from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService
-from ..financements.db_services import FundingDBService
+from ..fundings.db_services import FundingDBService
 from ..users.db_services import check_user_exists_by_id
 
 resources = Blueprint('projects', __name__)
@@ -146,12 +146,12 @@ def delete_project(proj_id):
     if exist_error is not None:
         return jsonify(exist_error), 404
 
-    # can delete not linked to any financement
+    # can delete not linked to any funding
     linked_fin = FundingDBService.get_funding_by_project_id(proj_id)
     if 'id_f' in linked_fin:
         return jsonify({
             'code': 'PROJECT_HAS_FNANCEMENT',
-            'message': f'Cannot delete project <{proj_id}> because it is linked to financement <{linked_fin.id_f}>'
+            'message': f'Cannot delete project <{proj_id}> because it is linked to funding <{linked_fin.id_f}>'
         }), 403
 
     # ??? droit de supprimer si projet non soldé

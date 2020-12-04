@@ -111,7 +111,7 @@
       "protocolProfileBehavior": {}
     },
     {
-      "name": "Projet",
+      "name": "Projects",
       "item": [
         {
           "name": "localhost:5000/api/projects/1",
@@ -254,6 +254,153 @@
                 "api",
                 "projects",
                 "15"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "fundings",
+      "item": [
+        {
+          "name": "get funding by project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update funding",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n        \"annee_titre_f\": null,\n        \"commentaire_admin_f\": null,\n        \"commentaire_resp_f\": null,\n        \"date_arrete_f\": null,\n        \"date_limite_solde_f\": null,\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 2,\n        \"imputation_f\": null,\n        \"montant_arrete_f\": 44344.0,\n        \"numero_titre_f\": null,\n        \"statut_f\": \"ANTR\"\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "localhost:5000/funding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:5000/funding",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create funding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 4,\n        \"montant_arrete_f\": 44344.0\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete funding",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n    \"id_financeur\": 1,\n    \"id_p\": 4,\n    \"montant_arrete_f\": 44344.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:5000/funding/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "funding",
+                "1"
               ]
             }
           },
