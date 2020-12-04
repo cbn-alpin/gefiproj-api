@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Blueprint, current_app, jsonify, request
 from shared.entity import Session
 
+from sqlalchemy.orm import subqueryload
 from .entities import Funding, FundingSchema
 
 resources = Blueprint('funding', __name__)
@@ -13,7 +14,8 @@ def get_all_fundings():
     current_app.logger.info('In GET /funding')
     # Fetching from the database
     session = Session()
-    funding_objects = session.query(Funding).all()
+    funding_objects = session.query(Funding) \
+        .options(subqueryload(Funding.financeur)).all()
 
     # Transforming into JSON-serializable objects
     schema = FundingSchema(many=True)
