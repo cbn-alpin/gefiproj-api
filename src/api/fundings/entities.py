@@ -24,14 +24,12 @@ class Funding(Base, db.Model):
     annee_titre_f = Column(String(250))
     imputation_f = Column(String(250))
 
-    def __init__(self, id_p, id_financeur, montant_arrete_f, statut_f, date_solde_f, financeur = None, date_arrete_f='',
-                 date_limite_solde_f='', commentaire_admin_f='', commentaire_resp_f='', numero_titre_f='',
+    def __init__(self, id_p, id_financeur, montant_arrete_f, statut_f, date_solde_f = None, date_arrete_f=None,
+                 date_limite_solde_f=None, commentaire_admin_f='', commentaire_resp_f='', numero_titre_f='',
                  annee_titre_f='', imputation_f='', id_f=''):
         if id_f != '':
             self.id_f = id_f
         self.id_p = id_p
-        if financeur != None:
-            self.financeur = financeur
         self.id_financeur = id_financeur
         self.montant_arrete_f = montant_arrete_f
         self.statut_f = statut_f
