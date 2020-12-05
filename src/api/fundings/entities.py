@@ -3,7 +3,8 @@ from marshmallow import Schema, fields
 from shared.entity import Base
 from sqlalchemy import Column, String, Integer, Float, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from ..funder.entities import Funder, FunderSchema
+from ..funders.entities import Funder, FunderSchema
+
 
 class Funding(Base, db.Model):
     __tablename__ = 'financement'
@@ -23,14 +24,15 @@ class Funding(Base, db.Model):
     annee_titre_f = Column(String(250))
     imputation_f = Column(String(250))
 
-    def __init__(self, id_p, id_financeur, montant_arrete_f, statut_f, date_solde_f, date_arrete_f='',
+    def __init__(self, id_p, id_financeur, montant_arrete_f, statut_f, date_solde_f, financeur = None, date_arrete_f='',
                  date_limite_solde_f='', commentaire_admin_f='', commentaire_resp_f='', numero_titre_f='',
                  annee_titre_f='', imputation_f='', id_f=''):
         if id_f != '':
             self.id_f = id_f
         self.id_p = id_p
-        if financeur != '':
+        if financeur != None:
             self.financeur = financeur
+        self.id_financeur = id_financeur
         self.montant_arrete_f = montant_arrete_f
         self.statut_f = statut_f
         self.date_solde_f = date_solde_f
@@ -46,6 +48,7 @@ class Funding(Base, db.Model):
 class FundingSchema(Schema):
     id_f = fields.Integer()
     id_p = fields.Integer()
+    id_financeur = fields.Integer()
     financeur = fields.Nested(FunderSchema)
     montant_arrete_f = fields.Float()
     statut_f = fields.Str()
@@ -57,3 +60,4 @@ class FundingSchema(Schema):
     numero_titre_f = fields.Str(allow_none=True)
     annee_titre_f = fields.Str(allow_none=True)
     imputation_f = fields.Str(allow_none=True)
+    difference = fields.Float(allow_none=True)
