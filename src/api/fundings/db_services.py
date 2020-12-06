@@ -21,34 +21,20 @@ class FundingDBService:
 
     @staticmethod
     def check_project_exists(project_id):
-        response = Response()
-        try:
-            session = Session()
-            existing_desc = session.query(Project).filter_by(id_p=project_id).first()
-            session.close()
-            if existing_desc is None:
-                raise ValueError(f'This project {project_id} does not exist',404)
-        except ValueError as error:
-            response.data = str(error.args[0])
-            response.status_code = error.args[1]
-        finally:  
-            return response
+        session = Session()
+        existing_project = session.query(Project).filter_by(id_p=project_id).first()
+        session.close()
+        if existing_project is None:
+            raise ValueError(f'Le projet {project_id} n\'existe pas.',404)
 
 
     @staticmethod
     def check_funding_exists(funding_id):
-        response = Response()
-        try:
-            session = Session()
-            existing_desc = session.query(Funding).filter_by(id_f=funding_id).first()
-            session.close()
-            if existing_desc is None:
-                raise ValueError(f'This funding {funding_id} does not exist',404)
-        except ValueError as error:
-            response.data = str(error.args[0])
-            response.status_code = error.args[1]
-        finally:  
-            return response
+        session = Session()
+        existing_funding = session.query(Funding).filter_by(id_f=funding_id).first()
+        session.close()
+        if existing_funding is None:
+            raise ValueError(f'Le financement {funding_id} n\'existe pas.',404)
 
 
     @staticmethod
@@ -91,82 +77,65 @@ class FundingDBService:
 
     @staticmethod
     def insert_funding(posted_funding):
-        response = Response()
-        try:
-            # Convert date format
-            # posted_funding = convert_funding_dates(posted_funding)
-            if posted_funding['statut_f'] == 'SOLDE' and (\
-                posted_funding['montant_arrete_f'] == None or
-                posted_funding['id_financeur'] == None or
-                posted_funding['statut_f'] == None or
-                posted_funding['date_solde_f'] == None ):
-                raise ValueError('This funding can\'t be solde.')
-        
-            # Init statut funding
-            if 'statut_f' not in posted_funding:
-                posted_funding['statut_f'] = 'ANTR'
+        # Convert date format
+        # posted_funding = convert_funding_dates(posted_funding)
 
-            posted_funding['montant_arrete_f'] = float(posted_funding['montant_arrete_f'])
-            # Mount funding object
-            posted_funding = FundingSchema(only=(
-                'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f', 'date_limite_solde_f',
-                'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f', 'imputation_f')) \
-                .load(posted_funding)
-            data = Funding(**posted_funding)
+        if posted_funding['statut_f'] == 'SOLDE' and \
+        any(key not in posted_funding for key in ['montant_arrete_f','id_financeur','statut_f','date_solde_f']):
+            raise ValueError(f'Le statut du financement ne peut pas être soldé.',403)
 
-            # Persist funding
-            session = Session()
-            session.add(data)
-            session.commit()
+        # Init statut funding
+        if 'statut_f' not in posted_funding:
+            posted_funding['statut_f'] = 'ANTR'
 
-            # Return created funding
-            new_funding = FundingSchema().dump(data)
-            session.close()
-            response = jsonify(new_funding)
-        except ValueError as error:
-            response.data = str(error.args[0])
-            response.status_code = error.args[1]
-        finally:  
-            return response
+        posted_funding['montant_arrete_f'] = float(posted_funding['montant_arrete_f'])
+        # Mount funding object
+        posted_funding = FundingSchema(only=(
+            'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f', 'date_limite_solde_f',
+            'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f', 'imputation_f')) \
+            .load(posted_funding)
+        data = Funding(**posted_funding)
+
+        # Persist funding
+        session = Session()
+        session.add(data)
+        session.commit()
+
+        # Return created funding
+        new_funding = FundingSchema().dump(data)
+        session.close()
+        return jsonify(new_funding)
 
 
     @staticmethod
     def update_funding(funding):
-        response = Response()
-        try:
-            # Convert date format
-            #data = convert_funding_dates(data)
+        # Convert date format
+        #data = convert_funding_dates(data)
 
-            if funding['statut_f'] == 'SOLDE' and (\
-                funding['montant_arrete_f'] == None or
-                funding['id_financeur'] == None or
-                funding['statut_f'] == None or
-                funding['date_solde_f'] == None ):
-                raise ValueError('This funding can\'t be solde.')
-            
-            # Mount funding object
-            funding = FundingSchema(only=(
-                'id_f', 'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f',
-                'date_limite_solde_f', 'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f',
-                'imputation_f')) \
-                .load(funding)
-            funding = Funding(**funding)
-            # Start DB session
-            session = Session()
-            session.merge(funding)
-            session.commit()
+        if funding['statut_f'] == 'SOLDE' and (\
+            funding['montant_arrete_f'] == None or
+            funding['id_financeur'] == None or
+            funding['statut_f'] == None or
+            funding['date_solde_f'] == None ):
+            id_f = funding['id_f']
+            raise ValueError(f'Le statut du financement {id_f} ne peut pas être soldé.',403)
+        
+        # Mount funding object
+        funding = FundingSchema(only=(
+            'id_f', 'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f',
+            'date_limite_solde_f', 'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f',
+            'imputation_f')) \
+            .load(funding)
+        funding = Funding(**funding)
+        # Start DB session
+        session = Session()
+        session.merge(funding)
+        session.commit()
 
-            # Return updated funding
-            updated_funding = FundingSchema().dump(funding)
-            session.close()
-            reponse = jsonify(updated_funding)
-        except ValueError as error:
-            response = Response(str(error.data),status=404)
-        except Exception as error:
-            response.data = str(error)
-            response.status_code = 400
-        finally:
-            return response
+        # Return updated funding
+        updated_funding = FundingSchema().dump(funding)
+        session.close()
+        return jsonify(updated_funding)
 
 
     @staticmethod
@@ -178,9 +147,11 @@ class FundingDBService:
             session.delete(funding)
             session.commit()
             session.close()
-            reponse = funding
+            reponse = jsonify({
+                'message': f'Le financement {funding_id} a été supprimé'
+            }), 204
         except ValueError as error:
-            response = Response(str(error.data),status=404)
+            response = Response(str(error),status=404)
         except Exception as error:
             response.data = str(error)
             response.status_code = 400

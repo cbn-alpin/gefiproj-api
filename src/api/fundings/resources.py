@@ -10,10 +10,10 @@ def get_fundings_by_project(project_id):
     try:
         current_app.logger.debug('In GET /api/funding/<int:project_id>')
         # Checks
-        FundingDBService.check_project_exists(project_id)
+        FundingDBService.check_project_exists(project_id)  
         response = FundingDBService.get_funding_by_projects(project_id)
     except ValueError as error:
-        response = Response(str(error.data),status=404)
+        response = Response(str(error.args[0]),status=error.args[1])
     except Exception as error:
         response.data = str(error)
         response.status_code = 400
@@ -33,7 +33,7 @@ def add_funding():
         FundingDBService.check_project_exists(posted_funding['id_p'])
         response = FundingDBService.insert_funding(posted_funding)
     except ValueError as error:
-        response = Response(str(error.data),status=404)
+        response = Response(str(error.args[0]),status=error.args[1])
     except Exception as error:
         response.data = str(error)
         response.status_code = 400
@@ -55,7 +55,7 @@ def update_funding(funding_id):
         FundingDBService.check_funding_exists(data['id_f'])
         reponse = FundingDBService.update_funding(data)
     except ValueError as error:
-        response = Response(str(error.data),status=404)
+        response = Response(str(error.args[0]),status=error.args[1])
     except Exception as error:
         response.data = str(error)
         response.status_code = 400
@@ -72,7 +72,7 @@ def delete_funding(funding_id):
         FundingDBService.check_funding_exists(funding_id)
         response = FundingDBService.delete_funding(funding_id)
     except ValueError as error:
-        response = Response(str(error.data),status=404)
+        response = Response(str(error.args[0]),status=error.args[1])
     except Exception as error:
         response.data = str(error)
         response.status_code = 400
