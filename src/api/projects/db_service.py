@@ -6,7 +6,7 @@ from .entities import Project, ProjectSchema
 project_not_exist_msg = 'This projcet does not exist'
 
 
-class ProjectDBService():
+class ProjectDBService:
     @staticmethod
     def insert_project(project: Project):
         session = Session()
@@ -44,11 +44,12 @@ class ProjectDBService():
             .filter_by(id_p=proj_id).first()
 
         # Transforming into JSON-serializable objects
-        schema = ProjectSchema(many=False)
+        schema = ProjectSchema()
         project = schema.dump(project_object)
 
-        project.pop('id_u', None)
-        project['responsable'].pop('password_u', None)
+        if project:
+            project.pop('id_u', None)
+            project['responsable'].pop('password_u', None)
 
         # Serializing as JSON
         session.close()

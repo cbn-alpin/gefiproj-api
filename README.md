@@ -8,12 +8,13 @@ Pour installer ce projet :
 - Installer les dépendances : `pip install -r requirements.txt`
 - Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
 Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le fichier `config/` du projet.
+- Lancer les tests avec `python -m unittest discover src/api/*/tests -p '*_tests.py'`
 - Lancer soit
     - avec Flask :
         - Exporter des variables sur votre terminal : `export FLASK_APP=src/main.py`
         - Configurer : `set FLASK_APP=src/main.py`
         - Mode Debug : `export FLASK_DEBUG=true`
-    - Lancer le projet : `flask run`
+        - Lancer le projet : `flask run`
     - ou avec pipenv : 
         - Lancer le projet : `pipenv run python src/main.py`
 
