@@ -1,8 +1,11 @@
 import unittest
 
 from src.api.projects.db_service import ProjectDBService
-# Postgresql unittest example: https://github.com/axelcdv/flask-testing/
+from src.api.projects.entities import Project
 from src.shared.test_base import DBBaseTestCase
+
+
+# Postgresql unittest example: https://github.com/axelcdv/flask-testing/
 
 
 class DBServiceTestCase(DBBaseTestCase):
@@ -10,23 +13,29 @@ class DBServiceTestCase(DBBaseTestCase):
         project = ProjectDBService.get_project_by_id(0)
         self.assertEqual(project, {})
 
-        # TODO: using test database insert an element then get it
-        project = ProjectDBService.get_project_by_id(1)
-        self.assertEqual(project['id_p'], 1)
+        new_project = Project(nom_p='auto test', code_p='OC77', statut_p=True, id_u=1)
+        self.db.session.add(new_project)
+        self.db.session.commit()
+        project = ProjectDBService.get_project_by_id(new_project.id_p)
+        self.assertEqual(project['id_p'], new_project.id_p)
 
     def test_get_all_projects(self):
-        with self.app.app_context():
-            projects = ProjectDBService.get_all_projects()
-            self.assertGreaterEqual(len(projects), 0)
+        all_projects = ProjectDBService.get_all_projects()
+        self.assertEqual(len(all_projects), 0)
+
+        new_project1 = Project(nom_p='auto test', code_p='OC01', statut_p=True, id_u=1)
+        new_project2 = Project(nom_p='OC10 test', code_p='OC10', statut_p=True, id_u=1)
+        self.db.session.bulk_save_objects([new_project1, new_project2])
+        self.db.session.commit()
+
+        all_projects = ProjectDBService.get_all_projects()
+        self.assertEqual(len(all_projects), 2)
 
     def test_get_project_name(self):
-        with self.app.app_context():
-            project = ProjectDBService.get_project_by_id(100)
-            self.assertEqual(project, {})
+        project = ProjectDBService.get_project_by_id(100)
+        self.assertEqual(project, {})
 
-            project = ProjectDBService.get_project_by_id(1)
-            self.assertEqual(project['id_p'], 1)
-
+    # TODO: test the other methods
 
 if __name__ == '__main__':
     unittest.main()
