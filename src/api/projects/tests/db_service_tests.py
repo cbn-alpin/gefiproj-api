@@ -10,7 +10,7 @@ from src.shared.test_base import DBBaseTestCase
 
 class DBServiceTestCase(DBBaseTestCase):
     def test_get_project_by_id(self):
-        project = ProjectDBService.get_project_by_id(0)
+        project = ProjectDBService.get_project_by_id(10)
         self.assertEqual(project, {})
 
         new_project = Project(nom_p='auto test', code_p='OC77', statut_p=True, id_u=1)
@@ -36,6 +36,7 @@ class DBServiceTestCase(DBBaseTestCase):
         self.assertEqual(project, {})
 
     # TODO: test the other methods
+
 
 if __name__ == '__main__':
     unittest.main()

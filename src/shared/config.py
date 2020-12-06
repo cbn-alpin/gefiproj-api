@@ -44,6 +44,11 @@ def get_jwt_secret():
     return jwt_cfg['secret']
 
 
+def get_test_token():
+    cfg = get()
+    return cfg['test_token']['token']
+
+
 def get_jwt_expirationt():
     cfg = get()
     jwt_exp_cfg = cfg['jwt']
