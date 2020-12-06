@@ -1,6 +1,6 @@
-from shared.entity import Session
 from sqlalchemy.orm import subqueryload
 
+from src.shared.entity import Session
 from .entities import Project, ProjectSchema
 
 project_not_exist_msg = 'This projcet does not exist'

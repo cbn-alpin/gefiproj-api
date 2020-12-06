@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
-from shared.entity import Session
 
+from src.shared.entity import Session
 from .entities import Funding, FundingSchema
 
 resources = Blueprint('funding', __name__)

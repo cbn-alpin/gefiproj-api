@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-from shared.entity import Session
 
+from src.shared.entity import Session
 from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService

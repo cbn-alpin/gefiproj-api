@@ -1,8 +1,9 @@
-from api import db
 from marshmallow import Schema, fields
 from passlib.hash import pbkdf2_sha256 as sha256
-from shared.entity import Base
 from sqlalchemy import Column
+
+from src.api import db
+from src.shared.entity import Base
 
 
 class User(Base, db.Model):

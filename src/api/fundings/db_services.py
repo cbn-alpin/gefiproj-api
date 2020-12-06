@@ -1,4 +1,4 @@
-from shared.entity import Session
+from src.shared.entity import Session
 
 from ..fundings.entities import Funding
 

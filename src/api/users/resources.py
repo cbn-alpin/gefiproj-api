@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required
-from shared.entity import Session
 
+from src.shared.entity import Session
 from .entities import UserSchema, User
 
 resources = Blueprint('users', __name__)

@@ -1,5 +1,3 @@
-import unittest
-
 from ..validation_service import ProjectValidationService
 
 
