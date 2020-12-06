@@ -9,7 +9,7 @@ __version__ = '0.1.0'
 db = SQLAlchemy()
 
 
-def create_api(env=None):
+def create_api(env='dev'):
     """
     Create API with Flask.
     """
