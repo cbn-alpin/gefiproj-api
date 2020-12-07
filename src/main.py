@@ -7,6 +7,7 @@ from api.projects.resources import resources as projects_ressources
 from api.status.resources import resources as status_ressources
 from api.users.resources import resources as users_ressources
 from api.funders.resources import resources as funders_ressources
+from api.receipts.resources import resources as receipts_ressources
 from flask_cors import CORS
 # External libraries
 from flask_migrate import Migrate
@@ -38,3 +39,4 @@ api.register_blueprint(funding_ressources)
 api.register_blueprint(users_ressources)
 api.register_blueprint(projects_ressources)
 api.register_blueprint(funders_ressources)
+api.register_blueprint(receipts_ressources)
