@@ -9,6 +9,7 @@ from ..receipts.entities import Receipt, ReceiptSchema
 from ..projects.entities import Project, ProjectSchema
 
 STATUS_DEFAULT = 'ANTR'
+STATUS_SOLDE = 'SOLDE'
 
 class FundingDBService:
     @staticmethod
@@ -57,8 +58,10 @@ class FundingDBService:
             
             for i,f in enumerate(funding):
                 if rest_amount_funding[i]['id_f'] == f['id_f']:
-                    ##### TODO: trouver une alternative avec le FRONT
-                    f['financeur'] = f['financeur']['nom_financeur']
+                    if f['statut_f'] == STATUS_SOLDE:
+                        f['solde'] = True
+                    else:
+                        f['solde'] = False
 
                     if rest_amount_funding[i]['difference'] == None:
                         f['difference'] = 0
