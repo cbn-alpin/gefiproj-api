@@ -42,28 +42,26 @@ python -m unittest discover -v -s tests/ -p '*_tests.py'
 
 <b>Note importante</b> ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
 avec les informations d'une base de donnée autre que celle de la production et un token valide.
+ 
+## Lancement du framwork *Flask* 🚀
+- Exporter des variables sur votre terminal : 
+    ```shell
+    export FLASK_APP=src/main.py
+    ```
 
-- Lancer soit
-    - avec Flask :
-        - Exporter des variables sur votre terminal : 
-            ```shell
-            export FLASK_APP=src/main.py
-            ```
-        
-        - Configurer : 
-        
-            ```shell
-            set FLASK_APP=src/main.py
-            ```
-        
-        - Mode Debug : 
-            ```shell
-                export FLASK_DEBUG=true
-            ```
-        
-        - Lancer le projet : 
-            ```shell
-                flask run
-            ```
+- Configurer : 
+    ```shell
+    set FLASK_APP=src/main.py
+    ```
+
+- Mode Debug : 
+    ```shell
+    export FLASK_DEBUG=true
+    ```
+
+- Lancer le projet : 
+    ```shell
+    flask run
+    ```
 
 Vérifier que le projet est lancé en allant sur  `/status` et voir que la reponse est `ok`
