@@ -7,6 +7,7 @@ from src.shared import config
 __version__ = '0.1.0'
 
 db = SQLAlchemy()
+jwt = JWTManager()
 
 
 def create_api(env='dev'):
@@ -19,6 +20,6 @@ def create_api(env='dev'):
     app.config['JWT_SECRET_KEY'] = config.get_jwt_secret()
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = config.get_jwt_expirationt()
 
-    jwt = JWTManager(app)
+    jwt.init_app(app)
     db.init_app(app)
     return app

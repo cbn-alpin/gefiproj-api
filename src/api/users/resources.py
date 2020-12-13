@@ -8,6 +8,7 @@ from sqlalchemy.orm import subqueryload
 from src.shared.entity import Session
 from .db_services import UserDBService
 from .entities import UserSchema, User
+from .. import jwt
 
 resources = Blueprint('users', __name__)
 
@@ -153,9 +154,14 @@ def admin_required(fn):
     def wrapper(*args, **kwargs):
         verify_jwt_in_request()
         claims = get_jwt_claims()
-        if claims['roles'] != 'admin':
-            return jsonify(msg='Admins only!'), 403
+        if 'administrateur' not in claims['roles']:
+            return jsonify(msg='This operation is permitted to admins only!'), 403
         else:
             return fn(*args, **kwargs)
 
     return wrapper
+
+
+@jwt.user_claims_loader
+def add_claims_to_access_token(identity):
+    return {'roles': identity['roles']}
