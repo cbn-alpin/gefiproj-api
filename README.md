@@ -24,22 +24,3 @@ avec les informations d'une base de donnée autre que celle de la production et 
         - Lancer le projet : `pipenv run python src/main.py`
 
 Vérifier que le projet est lancé en allant sur  `/status` et voir que la reponse est `ok`
-
-## Prérequis
-### Dépendances
-
-Ce projet utilise les bibliothèques Python et outils suivant :
-- [Python 3.9](https://www.python.org/downloads/3.9) : pour installer python
-- [Pyenv](https://github.com/pyenv/pyenv) : pour installer dans l'espace de l'utilisateur courant une version spécifique de Python (créer un fichier `config/settings.ini` pour surcoucher la version spécifique de Python 3 définie par défaut dans le fichier `config/settings.default.ini`).
-- [Flask](https://flask.palletsprojects.com/en/1.1.x/) : pour réaliser les web services.
-- [SqlAlchemy](https://www.sqlalchemy.org/) : ORM permettant d'intéroger la base de données.
-- [Alembic](https://alembic.sqlalchemy.org/en/latest/) : permet de gérer l'installation de la base de donnée et ses migrations futures.
-- [Pipenv](https://pipenv.pypa.io/en/latest/) : 
-Pour installer l'environnement virtuel et gérer les dépendances Python :
-```bash
-pip3 install pipenv
-```
-Executez la commande suivant dans votre dossier project pour installer des dépendances:
-```bash
-pipenv install --dev
-```
