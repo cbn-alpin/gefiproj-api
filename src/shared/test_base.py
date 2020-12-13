@@ -3,13 +3,22 @@ import unittest
 from flask_sqlalchemy import SQLAlchemy
 
 from src.api import create_api
-from src.shared.entity import Base
+from src.api.projects.entities import Project
+from src.api.role_acces.entities import RoleAccess
+from src.api.user_role.user_role import UserRole
+from src.api.users.entities import User
 
 
 def clean_db(db):
-    for table in reversed(Base.metadata.sorted_tables):
-        # print('Clear table %s' % table)
-        db.session.execute(table.delete())
+    ordered_tables = [UserRole, RoleAccess, Project, User]
+    for table in ordered_tables:
+        db.session.query(table).delete()
+
+    # insert initial roles
+    db.session.execute("INSERT INTO public.role_acces (id_ra, nom_ra, code_ra) VALUES (1, 'administrateur', 1)")
+    db.session.execute("INSERT INTO public.role_acces (id_ra, nom_ra, code_ra) VALUES (2, 'consultant', 2)")
+
+    # insert initial user
     db.session.execute("INSERT INTO public.utilisateur (id_u, nom_u, prenom_u, initiales_u, email_u, password_u, "
                        "active_u) VALUES (1, 'monnom', 'super', 'ms', 'testmaill@mail.ml', "
                        "'$pbkdf2-sha256$29000$fo8xBsD4f6.1FiLEeK/V.g$tAVL90p3.1hZilV7vDVci2hywMdoGrE5nVnFWsmtW4A', "
