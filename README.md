@@ -11,7 +11,7 @@ Pour installer ce projet :
 - Installer les dépendances : `pip install -r requirements.txt`
 - Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
 Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le fichier `config/` du projet.
-- Lancer les tests avec `python -m unittest discover src/api/*/tests -p '*_tests.py'`  
+- Lancer les tests avec `python -m unittest discover -v -s tests/ -p '*_tests.py'`  
 <b>Note importante</b> ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
 avec les informations d'une base de donnée autre que celle de la production et un token valide.
 - Lancer soit
