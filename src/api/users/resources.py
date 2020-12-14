@@ -42,8 +42,7 @@ def login():
 
     if User.verify_hash(data['password'], current_user.password_u):
         roles = UserDBService.get_user_role_names_by_user_id(current_user.id_u)
-        print(f'user id is {current_user.id_u}')
-        print(roles)
+
         identity = {
             'login': data['login'],
             'roles': roles

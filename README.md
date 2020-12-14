@@ -24,7 +24,7 @@ python -m venv cbna_env
 
 - Activer l'environnement virtuel : 
 ```shell
-. ./venv/bin/activate
+. ./cbna_env/bin/activate
 ```
 
 - Installer les dépendances : 
