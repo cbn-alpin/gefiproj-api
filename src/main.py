@@ -32,7 +32,7 @@ CORS(api)
 
 
 # Normal routes
-@api.route('/api/docs')
+@api.route('/')
 def get_swagger_docs():
     return render_template('swaggerui.html')
 
