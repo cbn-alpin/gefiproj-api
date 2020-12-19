@@ -1,5 +1,5 @@
 # Python libraries
-
+from flask import render_template
 from flask_cors import CORS
 # External libraries
 from flask_migrate import Migrate
@@ -29,6 +29,13 @@ migrate = Migrate(api, db)
 
 # TODO: configure allowed url for CORS with config file parameters.
 CORS(api)
+
+
+# Normal routes
+@api.route('/api/docs')
+def get_swagger_docs():
+    return render_template('swaggerui.html')
+
 
 # Register blueprints
 api.register_blueprint(status_ressources)
