@@ -11,7 +11,7 @@ def get_fundings_by_project(project_id):
         current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
         # Checks
         FundingDBService.check_project_exists(project_id)  
-        response = FundingDBService.get_funding_by_projects(project_id)
+        response = FundingDBService.get_funding_by_project(project_id)
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
