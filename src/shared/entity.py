@@ -1,10 +1,6 @@
-from shared import config
-from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(config.get_engine_uri())
-
-Session = sessionmaker(bind=engine)
+Session = SQLAlchemy().session
 
 Base = declarative_base()

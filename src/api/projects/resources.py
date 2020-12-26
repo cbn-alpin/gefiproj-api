@@ -1,12 +1,12 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-from shared.entity import Session
 
+from src.shared.entity import Session
 from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
-from ..users.db_services import check_user_exists_by_id
+from ..users.resources import check_user_exists_by_id
 
 resources = Blueprint('projects', __name__)
 

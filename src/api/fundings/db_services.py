@@ -1,12 +1,12 @@
 from datetime import datetime
 import json
 from flask import Blueprint, current_app, jsonify, request, Response
-from shared.entity import Session
 from sqlalchemy import func, desc
 from sqlalchemy.orm import join
 from .entities import Funding, FundingSchema
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..projects.entities import Project, ProjectSchema
+from src.shared.entity import Session
 
 STATUS_DEFAULT = 'ANTR'
 STATUS_SOLDE = 'SOLDE'
@@ -177,7 +177,6 @@ class FundingDBService:
             funding['date_limite_solde_f'] = date_convert(funding['date_limite_solde_f'])
         else:
             funding['date_limite_solde_f'] = None
-
         return funding
 
 

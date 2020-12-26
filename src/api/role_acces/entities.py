@@ -1,7 +1,8 @@
-from api import db
 from marshmallow import Schema, fields
-from shared.entity import Base
 from sqlalchemy import Column, String, Integer
+
+from src.api import db
+from src.shared.entity import Base
 
 
 class RoleAccess(Base, db.Model):

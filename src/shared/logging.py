@@ -4,7 +4,8 @@ from os import path
 from pathlib import Path
 
 import yaml
-from shared import config
+
+from src.shared import config
 
 
 # Logging managment

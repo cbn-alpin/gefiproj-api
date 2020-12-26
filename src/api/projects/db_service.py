@@ -1,11 +1,12 @@
-from shared.entity import Session
+from sqlalchemy.orm import subqueryload
 
+from src.shared.entity import Session
 from .entities import Project, ProjectSchema
 
 project_not_exist_msg = 'This projcet does not exist'
 
 
-class ProjectDBService():
+class ProjectDBService:
     @staticmethod
     def insert_project(project: Project):
         session = Session()
@@ -19,11 +20,17 @@ class ProjectDBService():
     def get_all_projects(limit=10, offset=0):
         session = Session()
         projects_objects = session.query(Project) \
-            .limit(limit).offset(offset).all()
+            .options(
+            subqueryload(Project.responsable)
+        ).limit(limit).offset(offset).all()
 
         # Transforming into JSON-serializable objects
         schema = ProjectSchema(many=True)
         projects = schema.dump(projects_objects)
+
+        for p in projects:
+            p.pop('id_u', None)
+            p['responsable'].pop('password_u', None)
 
         # Serializing as JSON
         session.close()
@@ -32,11 +39,17 @@ class ProjectDBService():
     @staticmethod
     def get_project_by_id(proj_id: int):
         session = Session()
-        project_object = session.query(Project).filter_by(id_p=proj_id).first()
+        project_object = session.query(Project) \
+            .options(subqueryload(Project.responsable)) \
+            .filter_by(id_p=proj_id).first()
 
         # Transforming into JSON-serializable objects
-        schema = ProjectSchema(many=False)
+        schema = ProjectSchema()
         project = schema.dump(project_object)
+
+        if project:
+            project.pop('id_u', None)
+            project['responsable'].pop('password_u', None)
 
         # Serializing as JSON
         session.close()

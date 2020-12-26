@@ -19,21 +19,21 @@ def get():
     return config
 
 
-def get_engine_uri():
+def get_engine_uri(env):
     db_uri = ''
     cfg = get()
-    db_cfg = cfg['database']
-    engine = db_cfg['engine']
-    if engine == 'sqlite':
-        path = db_cfg['path']
-        db_uri = f'{engine}:///{path}'
-    elif engine == 'postgresql':
-        user = db_cfg['user']
-        password = db_cfg['password']
-        host = db_cfg['host']
-        port = db_cfg['port']
-        name = db_cfg['name']
-        db_uri = f'{engine}://{user}:{password}@{host}:{port}/{name}'
+
+    if env == 'test':
+        db_cfg = cfg['test_database']
+    else:
+        db_cfg = cfg['database']
+
+    user = db_cfg['user']
+    password = db_cfg['password']
+    host = db_cfg['host']
+    port = db_cfg['port']
+    name = db_cfg['name']
+    db_uri = f'postgresql://{user}:{password}@{host}:{port}/{name}'
     return db_uri
 
 
@@ -42,6 +42,11 @@ def get_jwt_secret():
     jwt_cfg = cfg['jwt']
 
     return jwt_cfg['secret']
+
+
+def get_test_token():
+    cfg = get()
+    return cfg['test_token']['token']
 
 
 def get_jwt_expirationt():

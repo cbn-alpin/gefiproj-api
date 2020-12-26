@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, jsonify
-from shared.entity import Session
 
+from src.shared.entity import Session
 from .entities import RoleAccess, RoleAccessSchema
 
 resources = Blueprint('role_access', __name__)

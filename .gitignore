@@ -1,5 +1,6 @@
 config/config.yml
 config/config.local.yml
+.flaskenv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

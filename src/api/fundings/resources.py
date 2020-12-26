@@ -4,11 +4,11 @@ from .db_services import FundingDBService
 resources = Blueprint('funding', __name__)
 
 
-@resources.route('/api/funding/<int:project_id>', methods=['GET'])
+@resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
 def get_fundings_by_project(project_id):
     response = Response()
     try:
-        current_app.logger.debug('In GET /api/funding/<int:project_id>')
+        current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
         # Checks
         FundingDBService.check_project_exists(project_id)  
         response = FundingDBService.get_funding_by_projects(project_id)
