@@ -1,6 +1,6 @@
-from api import db
+from src.api import db
 from marshmallow import Schema, fields
-from shared.entity import Base
+from src.shared.entity import Base
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 

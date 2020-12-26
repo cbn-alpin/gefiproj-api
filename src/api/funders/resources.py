@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
-from shared.entity import Session
+from src.shared.entity import Session
 from sqlalchemy import func, desc
 from sqlalchemy.orm import join
 from .entities import Funder, FunderSchema

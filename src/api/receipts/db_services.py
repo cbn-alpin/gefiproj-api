@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from flask import Blueprint, current_app, jsonify, request, Response
-from shared.entity import Session
+from src.shared.entity import Session
 from ..fundings.entities import Funding, FundingSchema
 from .entities import Receipt, ReceiptSchema
 

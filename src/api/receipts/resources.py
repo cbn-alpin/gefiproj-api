@@ -12,7 +12,6 @@ def get_receipt_by_funding(funding_id):
         # Checks
         ReceiptDBService.check_funding_exists(funding_id)  
         response = ReceiptDBService.get_receipt_by_funding(funding_id)
-        print('coucou 3', response)
     except ValueError as error:
         response = Response(str(error.args[0]),status=error.args[1])
     except Exception as error:
