@@ -1,6 +1,4 @@
-from datetime import datetime
-import json
-from flask import Blueprint, current_app, jsonify, request, Response
+from flask import Blueprint, current_app
 from src.shared.entity import Session
 from ..fundings.entities import Funding, FundingSchema
 from .entities import Receipt, ReceiptSchema
@@ -17,22 +15,13 @@ class ReceiptDBService:
 
 
     @staticmethod
-    def get_receipt_by_funding(funding_id: int):
-        response = Response()
-        try:
-            session = Session()  
-            receipt_object = session.query(Receipt).filter_by(id_f=funding_id).all()
+    def get_receipts_by_funding(funding_id: int):
+        session = Session()  
+        receipt_object = session.query(Receipt).filter_by(id_f=funding_id).all()
 
-            # Transforming into JSON-serializable objects
-            schema = ReceiptSchema(many=True)
-            receipt = schema.dump(receipt_object)
-            # Serializing as JSON
-            session.close()
-            print('here 2')
-            response = jsonify(receipt)
-            print('here 4')
-        except ValueError as error:
-            response.data = str(error.args[0])
-            response.status_code = error.args[1]
-        finally:  
-            return response
+        # Transforming into JSON-serializable objects
+        schema = ReceiptSchema(many=True)
+        receipt = schema.dump(receipt_object)
+        # Serializing as JSON
+        session.close()
+        return receipt

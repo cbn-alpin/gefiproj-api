@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request, Response
 from .db_services import FundingDBService
 from .validation_service import FundingValidationService
-resources = Blueprint('funding', __name__)
+resources = Blueprint('fundings', __name__)
 
 
 @resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
