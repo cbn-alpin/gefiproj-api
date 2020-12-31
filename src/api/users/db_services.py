@@ -7,13 +7,23 @@ from ..user_role.user_role import UserRole
 
 class UserDBService:
     @staticmethod
-    def get_user_role_names_by_user_id(user_id: int):
+    def get_user_role_names_by_user_id_or_email(criteria):
         session = Session()
-        roles = session.query(User, UserRole, RoleAccess) \
-            .filter(User.id_u == UserRole.id_u) \
-            .filter(UserRole.id_ra == RoleAccess.id_ra) \
-            .filter(User.id_u == user_id) \
-            .with_entities(RoleAccess.nom_ra).all()
+
+        try:
+            int(criteria)
+            roles = session.query(User, UserRole, RoleAccess) \
+                .filter(User.id_u == UserRole.id_u) \
+                .filter(UserRole.id_ra == RoleAccess.id_ra) \
+                .filter(User.id_u == criteria) \
+                .with_entities(RoleAccess.nom_ra).all()
+        except ValueError:
+            roles = session.query(User, UserRole, RoleAccess) \
+                .filter(User.id_u == UserRole.id_u) \
+                .filter(UserRole.id_ra == RoleAccess.id_ra) \
+                .filter(User.email_u == criteria) \
+                .with_entities(RoleAccess.nom_ra).all()
+
         session.close()
 
         roles = RoleAccessSchema(many=True).dump(roles)
