@@ -1,9 +1,9 @@
-from src.api import db
 from marshmallow import Schema, fields
+from sqlalchemy import Column, Integer, Float
+
+from src.api import db
 from src.shared.entity import Base
-from sqlalchemy import Column, String, Integer, Float, Date, ForeignKey
-from sqlalchemy.orm import relationship
-from ..receipts.entities import Receipt, ReceiptSchema
+
 
 class Amount(Base, db.Model):
     __tablename__ = 'montant_affecte'
@@ -12,8 +12,9 @@ class Amount(Base, db.Model):
     montant_ma = Column(Float, nullable=False)
     annee_ma = Column(Integer, nullable=False)
     id_r = Column(Integer, nullable=False)
-    #id_r = Column(Integer, ForeignKey('recette.id_r'), nullable=False)
-    #recette = relationship("Receipt")
+
+    # id_r = Column(Integer, ForeignKey('recette.id_r'), nullable=False)
+    # recette = relationship("Receipt")
 
     def __init__(self, id_r, montant_ma, annee_ma, id_ma=''):
         if id_ma != '':
@@ -28,4 +29,4 @@ class AmountSchema(Schema):
     montant_ma = fields.Float()
     annee_ma = fields.Integer()
     id_r = fields.Integer()
-    #recette = fields.Nested(ReceiptSchema)
+    # recette = fields.Nested(ReceiptSchema)

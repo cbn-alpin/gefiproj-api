@@ -6,7 +6,7 @@ from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
-from ..users.resources import check_user_exists_by_id
+from ..users.db_services import UserDBService
 
 resources = Blueprint('projects', __name__)
 
@@ -31,7 +31,7 @@ def add_project():
     project = Project(**posted_project)
 
     # check if user with id_u exists
-    user_error = check_user_exists_by_id(project.id_u)
+    user_error = UserDBService.check_user_exists_by_id(project.id_u)
     if user_error is not None:
         return jsonify(user_error), 404
 
@@ -115,7 +115,7 @@ def update_project(proj_id):
         return jsonify(exist_error), 404
 
     # check if user with id_u exists
-    user_error = check_user_exists_by_id(project_to_update.id_u)
+    user_error = UserDBService.check_user_exists_by_id(project_to_update.id_u)
     if user_error is not None:
         return jsonify(user_error), 404
 

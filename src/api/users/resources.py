@@ -112,7 +112,9 @@ def update_user(user_id):
         data['id'] = user_id
 
     # Check if user exists
-    check_user_exists_by_id(user_id)
+    exist_error = UserDBService.check_user_exists_by_id(user_id)
+    if exist_error is not None:
+        return jsonify(exist_error), 404
 
     data = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'password_u')) \
         .load(data)
