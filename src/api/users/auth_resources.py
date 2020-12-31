@@ -6,7 +6,6 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 from src.api.users.db_services import UserDBService
 from src.api.users.entities import User, UserSchema
-from src.shared.entity import Session
 from .. import jwt
 
 resources = Blueprint('auth', __name__)
@@ -50,12 +49,11 @@ def add_user():
     user = User(**posted_user)
 
     # check if user exists by initiales and email
+    user_response = UserDBService.get_user_by_email(user.email_u)
+    if user_response:
+        return jsonify({'message': 'A user with email {} is already in use'.format(user.email_u)}), 409
 
-    session = Session()
-    session.add(user)
-    session.commit()
-
-    new_user = UserSchema().dump(user)
+    new_user = UserDBService.insert_user(user)
     return jsonify(new_user), 201
 
 

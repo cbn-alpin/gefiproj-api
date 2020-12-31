@@ -1,6 +1,6 @@
 from src.shared.entity import Session
 
-from .entities import User
+from .entities import User, UserSchema
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
 
@@ -48,3 +48,50 @@ class UserDBService:
             }
 
             return resp
+
+    @staticmethod
+    def get_user_by_email(user_email):
+        session = Session()
+        user_object = session.query(User).filter_by(email_u=user_email).first()
+
+        schema = UserSchema()
+        user = schema.dump(user_object)
+
+        if user:
+            user.pop('password_u', None)
+
+        session.close()
+        return user
+
+    @staticmethod
+    def get_user_by_initiales(user_initiales):
+        session = Session()
+        user_object = session.query(User).filter_by(initiales_u=user_initiales).first()
+
+        user = UserDBService.process_get_user(user_object)
+
+        session.close()
+        return user
+
+    @staticmethod
+    def process_get_user(user_object):
+        schema = UserSchema()
+        user = schema.dump(user_object)
+
+        if user:
+            user.pop('password_u', None)
+
+        return user
+
+    @staticmethod
+    def insert_user(user):
+        session = Session()
+        session.add(user)
+        session.commit()
+
+        new_user = UserSchema().dump(user)
+        if new_user:
+            new_user.pop('password_u', None)
+
+        session.close()
+        return new_user
