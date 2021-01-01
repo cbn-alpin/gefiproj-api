@@ -78,9 +78,15 @@ def add_user():
     user_by_email = UserDBService.get_user_by_email(user.email_u)
     user_by_initiales = UserDBService.get_user_by_initiales(user.initiales_u)
     if user_by_email or user_by_initiales:
+        message = {'status': 'error', 'type': 'conflict'}
         if user_by_email:
-            return jsonify({'message': 'A user with email {} is already in use'.format(user.email_u)}), 409
-        return jsonify({'message': 'A user with initials {} is already in use'.format(user.initiales_u)}), 409
+            message['code'] = 'EMAIL_ALREADY_IN_USE'
+            message['message'] = 'A user with email <{}> is already in use'.format(user.email_u)
+            return jsonify(message), 409
+
+        message['code'] = 'INITIALS_ALREADY_IN_USE'
+        message['message'] = 'A user with initials <{}> is already in use'.format(user.initiales_u)
+        return jsonify(message), 409
 
     new_user = UserDBService.insert_user(user)
     return jsonify(new_user), 201
