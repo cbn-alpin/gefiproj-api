@@ -21,10 +21,10 @@ def clean_db(db):
     db.session.execute("INSERT INTO public.role_acces (id_ra, nom_ra, code_ra) VALUES (1, 'administrateur', 1)")
     db.session.execute("INSERT INTO public.role_acces (id_ra, nom_ra, code_ra) VALUES (2, 'consultant', 2)")
 
-    # insert initial user
+    # insert initial user with passwod = admin
     db.session.execute("INSERT INTO public.utilisateur (id_u, nom_u, prenom_u, initiales_u, email_u, password_u, "
                        "active_u) VALUES (1, 'monnom', 'super', 'ms', 'testmaill@mail.ml', "
-                       "'$pbkdf2-sha256$29000$fo8xBsD4f6.1FiLEeK/V.g$tAVL90p3.1hZilV7vDVci2hywMdoGrE5nVnFWsmtW4A', "
+                       "'$pbkdf2-sha256$29000$p1SqNUao1dr7X4vR2hvDGA$B65/miob/RZAB716l.jdkqfrX5zeGlhrGZBPy0STdqE', "
                        "true)")
     db.session.commit()
 

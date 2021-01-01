@@ -1,68 +1,12 @@
-from functools import wraps
-
 from flask import Blueprint, current_app, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, verify_jwt_in_request, \
-    get_jwt_claims
+from flask_jwt_extended import jwt_required
 from sqlalchemy.orm import subqueryload
 
 from src.shared.entity import Session
 from .db_services import UserDBService
 from .entities import UserSchema, User
-from .. import jwt
 
 resources = Blueprint('users', __name__)
-
-
-@resources.route('/api/auth/register', methods=['POST'])
-def add_user():
-    current_app.logger.debug('In POST /api/auth/register')
-    posted_user = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'active_u', 'password_u')) \
-        .load(request.get_json())
-    user = User(**posted_user)
-
-    # check if user exists by initiales and email
-
-    session = Session()
-    session.add(user)
-    session.commit()
-
-    new_user = UserSchema().dump(user)
-    return jsonify(new_user), 201
-
-
-@resources.route('/api/auth/login', methods=['POST'])
-def login():
-    current_app.logger.debug('In POST /api/auth/login')
-
-    data = request.get_json()
-
-    current_user = User.find_by_login(data['login'])
-    if not current_user:
-        return {'message': 'User {} doesn\'t exist'.format(data['login'])}, 404
-
-    if User.verify_hash(data['password'], current_user.password_u):
-        roles = UserDBService.get_user_role_names_by_user_id(current_user.id_u)
-
-        identity = {
-            'login': data['login'],
-            'roles': roles
-        }
-        access_token = create_access_token(identity=identity)
-        refresh_token = create_refresh_token(identity=identity)
-
-        return {
-            'id_u': current_user.id_u,
-            'nom_u': current_user.nom_u,
-            'prenom_u': current_user.prenom_u,
-            'initiales_u': current_user.initiales_u,
-            'email_u': current_user.email_u,
-            'roles': roles,
-            'active_u': current_user.active_u,
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
-    else:
-        return {'message': 'Wrong credentials'}
 
 
 @resources.route('/api/users', methods=['GET'])
@@ -144,25 +88,3 @@ def check_user_exists_by_id(user_id):
         }})
         resp.status_code = 404
         return resp
-
-
-# Here is a custom decorator that verifies the JWT is present in
-# the request, as well as insuring that this user has a role of
-# `admin` in the access token
-# https://stackoverflow.com/questions/33597150/using-flask-security-roles-with-flask-jwt-rest-api
-def admin_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        verify_jwt_in_request()
-        claims = get_jwt_claims()
-        if 'administrateur' not in claims['roles']:
-            return jsonify(msg='This operation is permitted to admins only!'), 403
-        else:
-            return fn(*args, **kwargs)
-
-    return wrapper
-
-
-@jwt.user_claims_loader
-def add_claims_to_access_token(identity):
-    return {'roles': identity['roles']}
