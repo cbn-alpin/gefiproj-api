@@ -3,7 +3,6 @@ import unittest
 from src.api.funders.entities import Funder
 from src.api.fundings.db_services import FundingDBService
 from src.api.fundings.entities import Funding
-from src.api.projects.db_service import ProjectDBService
 from src.api.projects.entities import Project
 from src.shared.test_base import DBBaseTestCase
 
@@ -16,9 +15,8 @@ class DBServiceTestCase(DBBaseTestCase):
         funding = FundingDBService.get_funding_by_project(10)
         self.assertEqual(funding, [])
 
-        if ProjectDBService.check_project_exists_by_code('OC77') is not None:
-            new_project = Project(id_p=1, nom_p='auto test', code_p='OC77', statut_p=True, id_u=1)
-            self.db.session.add(new_project)
+        new_project = Project(id_p=1, nom_p='auto test', code_p='OC77', statut_p=True, id_u=1)
+        self.db.session.add(new_project)
 
         new_funder = Funder(id_financeur=1, nom_financeur="Jean Dupont", ref_arret_attributif_financeur=None)
         new_funding = Funding(id_p=1, id_financeur=1, montant_arrete_f=10, statut_f='ANTR',

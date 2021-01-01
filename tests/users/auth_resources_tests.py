@@ -4,9 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from src.api import create_api
 from src.api.users.auth_resources import resources
-from src.api.users.entities import User
 from src.shared import config
-from src.shared.entity import Session
 
 TEST_TOKEN = config.get_test_token()
 
@@ -36,7 +34,21 @@ class RessourceTestCase(unittest.TestCase):
         self.assertEqual(resp200.status_code, 200)
         self.assertEqual(response_json['email_u'], 'testmaill@mail.ml')
 
-    def test_add_user(self):
+    def test_add_user_invalid_data(self):
+        invalid_user_data = {'nom_u': 'Samaké', 'prenom_u': 'Zantiè', 'initiales_u': 'zas',
+                             'email_u': 'zantie.samake@mail', 'active_u': True,
+                             'password_u': 'zan@password'}
+        resp422 = self.tester.post('/api/auth/register',
+                                   headers={'content_type': 'application/json',
+                                            'Authorization': f'Bearer {TEST_TOKEN}'},
+                                   json=invalid_user_data)
+        response_json = resp422.get_json()
+
+        self.assertEqual(resp422.status_code, 422)
+        self.assertTrue('errors' in response_json)
+        self.assertEqual(response_json['errors'][0]['field'], 'email_u')
+
+    def test_add_user_ok(self):
         new_user = {'nom_u': 'Samaké', 'prenom_u': 'Zantiè', 'initiales_u': 'zas',
                     'email_u': 'zantie.samake@mail.ml',
                     'password_u': 'zan@password', 'active_u': True}
@@ -45,11 +57,6 @@ class RessourceTestCase(unittest.TestCase):
                                             'Authorization': f'Bearer {TEST_TOKEN}'},
                                    json=new_user)
         response_json = resp201.get_json()
-
-        session = Session()
-        session.query(User).filter_by(id_u=response_json['id_u'])
-        session.commit()
-        session.close()
 
         self.assertEqual(resp201.status_code, 201)
         self.assertFalse('password_u' in response_json)
