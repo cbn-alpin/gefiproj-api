@@ -1,11 +1,14 @@
 from flask import Blueprint, current_app, jsonify, request, Response
+from flask_jwt_extended import jwt_required
+from src.api.users.auth_resources import admin_required
+
 from .db_services import FundingDBService
 from .validation_service import FundingValidationService
 resources = Blueprint('fundings', __name__)
 
 
 @resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
-#@jwt_required
+@jwt_required
 def get_fundings_by_project(project_id):
     try:
         current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
@@ -18,8 +21,8 @@ def get_fundings_by_project(project_id):
 
 
 @resources.route('/api/funding', methods=['POST'])
-#@jwt_required
-# @admin_required('admin')
+@jwt_required
+@admin_required
 def add_funding():
     try:
         current_app.logger.debug('In POST /api/funding')
@@ -43,8 +46,8 @@ def add_funding():
 
 
 @resources.route('/api/funding/<int:funding_id>', methods=['PUT'])
-#@jwt_required
-# @admin_required('admin')
+@jwt_required
+@admin_required
 def update_funding(funding_id):
     try:
         current_app.logger.debug('In PUT /api/funding/<int:funding_id>')
@@ -71,8 +74,8 @@ def update_funding(funding_id):
 
 
 @resources.route('/api/funding/<int:funding_id>', methods=['DELETE'])
-# @jwt_required
-# @admin_required('admin')
+@jwt_required
+@admin_required
 def delete_funding(funding_id):
     try:
         # check
