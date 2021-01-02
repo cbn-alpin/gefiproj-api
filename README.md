@@ -1,5 +1,5 @@
 # gefiproj-api
-Ce dépôt contient le backend du projet GEFIPROJ.
+Ce dépôt contient le backend du projet GEFIPROJ. https://gefiproj.cbn-alpin.fr/
 
 ## Installation et utilisation
 **⚠️ Attention, le projet fonctionne uniquement sous Python v3.x**

@@ -18,7 +18,7 @@ def admin_required(fn):
     def wrapper(*args, **kwargs):
         verify_jwt_in_request()
         claims = get_jwt_claims()
-        if 'administrateur' not in claims['roles']:
+        if 'roles' not in claims or 'administrateur' not in claims['roles']:
             return jsonify(msg='This operation is permitted to admins only!'), 403
         else:
             return fn(*args, **kwargs)
