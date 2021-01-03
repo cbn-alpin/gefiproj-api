@@ -22,6 +22,7 @@ schemes:
   - "https"
   - "http"
 paths:
+# Projet section
   /api/projects:
     post:
       tags:
@@ -60,8 +61,6 @@ paths:
       summary: "Récupérer tous les projets"
       description: ""
       operationId: "getAllProjects"
-      consumes:
-        - "application/json"
       produces:
         - "application/json"
       responses:
@@ -170,6 +169,60 @@ paths:
         - api_key: [ ]
 
 
+  #Utilisateurs section
+  /api/users:
+    get:
+      tags:
+        - "Utilisateurs"
+      summary: "Récupérer tous les utilisateurs"
+      description: ""
+      operationId: "getAllUsers"
+      security:
+        - api_key: [ ]
+      produces:
+        - "application/json"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "422":
+          description: "Erreur de validation des entrées"
+        "200":
+          description: "Retourne une liste d'utilisateurs"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Utilisateur"
+
+  /api/users{userId}:
+    get:
+      tags:
+        - "Utilisateurs"
+      summary: "Touver un utilisateur grâce à son identifiant"
+      description: "Retourne un utilisateur"
+      operationId: "getUserById"
+      produces:
+        - "application/json"
+      security:
+        - api_key: [ ]
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "id de l'utilisateur"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Retourne un utilisateur"
+          schema:
+            $ref: "#/definitions/Utilisateur"
+        "404":
+          description: "Projet introuvable"
+
+
+  # authentication section
   /api/auth/login:
     post:
       tags:
