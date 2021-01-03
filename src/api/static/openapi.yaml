@@ -16,6 +16,8 @@ tags:
     description: "Gestion des financements"
   - name: "Utilisateurs"
     description: "Gestion des utilisateurs"
+  - name: "Athentification"
+    description: "Gestion de l'autentification"
 schemes:
   - "https"
   - "http"
@@ -168,11 +170,92 @@ paths:
         - api_key: [ ]
 
 
+  /api/auth/login:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Obtenir un jeton d'authentification"
+      description: "Retourne un token de connexion permettant d'acceder aux ressouces protegées"
+      operationId: "login"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Identifiants de l'utilisateur"
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le login indiqué est introuvable"
+        "200":
+          description: "Connexion réussie"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Obtenir un jeton nouveau d'authentification"
+      description: "Retourne un nouveau token de connexion"
+      operationId: "refreshToken"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - api_key: [ ]
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Nouveau token généré avec succès"
+          schema:
+            type: string
+            example: { access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI" }
+
+
+  /api/auth/register:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Enregistre un nouvel utilisateur"
+      description: "Retourne le nouvel utilisateur créé"
+      operationId: "registerUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informations du nouvel utilisateur"
+          required: true
+          schema:
+            $ref: "#/definitions/Utilisateur"
+      security:
+        - api_key: [ ]
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Nouvel utilisateur créé avec succès"
+          schema:
+            type: string
+            $ref: "#/definitions/Utilisateur"
+
 securityDefinitions:
   api_key:
-    type: "apiKey"
+    type: apiKey
     name: "Authorization"
-    in: "header"
+    in: header
 definitions:
   Project:
     type: "object"
@@ -200,3 +283,84 @@ definitions:
         example: "Un nom de projet"
       statut_p:
         type: "boolean"
+  Login:
+    type: object
+    required:
+      - "login"
+      - "password"
+    properties:
+      login:
+        type: string
+        description: "Email de connexion de l'utilisateur"
+        example: "testimail@mail.com"
+      password:
+        type: string
+        description: "Email de connexion de l'utilisateur"
+        example: "super mot de passe"
+  LoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI"
+        description: "Token d'accès aux ressources"
+      refresh_token:
+        type: string
+        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI"
+        description: "Token de rafraissement"
+      active_u:
+        type: boolean
+        example: true
+        description: "Status de l'utilisateur"
+      email_u:
+        type: string
+        example: "testimail@mail.com"
+        description: "email de l'utilisateur"
+      nom_u:
+        type: string
+        example: "Sanou"
+        description: "Nom de l'utilisateur"
+      prenom_u:
+        type: string
+        example: "Madou"
+        description: "Prenom de l'utilisateur"
+      initiales_u:
+        type: string
+        description: "Initiales de l'utilisateur"
+      roles:
+        type: array
+        example: [ "administrateur" ]
+        description: "Tableau des rôles de l'utilisateur"
+  Utilisateur:
+    type: object
+    required:
+      - "nom_u"
+      - "prenom_u"
+      - "initiales_u"
+      - "email_u"
+      - "active_u"
+    properties:
+      nom_u:
+        type: string
+        description: "Nom de l'utilisateur"
+        example: "Dupont"
+      prenom_u:
+        type: string
+        description: "Prenom de l'utilisateur"
+        example: "Yatimè"
+      email_u:
+        type: string
+        description: "Email de l'utilisateur"
+        example: "testimail@mail.ml"
+      initiales_u:
+        type: string
+        description: "Initiales de l'utilisateur"
+        example: "YDU"
+      password_u:
+        type: string
+        description: "Mot de passe de l'utilisateur"
+        example: "super mot de passe"
+      active_u:
+        type: boolean
+        description: "Indique si l'utilisateur est actif"
+        example: false
