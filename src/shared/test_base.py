@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from src.api import create_api
 from src.api.amounts.entities import Amount
+from src.api.expenses.entities import Expense
 from src.api.funders.entities import Funder
 from src.api.fundings.entities import Funding
 from src.api.projects.entities import Project
@@ -13,7 +14,7 @@ from src.api.users.entities import User
 
 
 def clean_db(db):
-    ordered_tables = [UserRole, RoleAccess, Funding, Project, User, Funder, Amount]
+    ordered_tables = [UserRole, RoleAccess, Funding, Project, User, Funder, Expense, Amount]
     for table in ordered_tables:
         db.session.query(table).delete()
 
