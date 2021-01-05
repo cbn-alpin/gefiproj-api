@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 from src.api.users.db_services import UserDBService
 from src.api.users.entities import User, UserSchema
-from .validation_service import UserValidationService
+from .validation_service import UserValidationService, ERROR_CODE
 from .. import jwt
 
 resources = Blueprint('auth', __name__)
@@ -34,7 +34,12 @@ def login():
 
     user = User.find_by_login(data['login'])
     if not user:
-        return {'message': 'User {} doesn\'t exist'.format(data['login'])}, 404
+        return jsonify({
+            'status': 'error',
+            'type': 'AUTHENTICATION',
+            'code': 'AUTHENTICATION_ERROR',
+            'message': 'User {} doesn\'t exist'.format(data['login'])
+        }), 404
 
     if User.verify_hash(data['password'], user.password_u):
         identity = data['login']
@@ -53,11 +58,12 @@ def login():
             'refresh_token': refresh_token
         }
 
-    return jsonify({'status': 'error',
-                    'type': 'AUTHENTICATION',
-                    'code': 'AUTHENTICATION_ERROR',
-                    'message': 'Wrong credentials'
-                    }), 403
+    return jsonify({
+        'status': 'error',
+        'type': 'AUTHENTICATION',
+        'code': 'AUTHENTICATION_ERROR',
+        'message': 'Wrong credentials'
+    }), 403
 
 
 @resources.route('/api/auth/register', methods=['POST'])
@@ -72,6 +78,9 @@ def add_user():
     validation_errors = UserValidationService.validate_post(posted_user)
     if len(validation_errors) > 0:
         return jsonify({
+            'status': 'error',
+            'type': ERROR_CODE,
+            'code': 'AUTHENTICATION_ERROR',
             'message': 'A validation error occured',
             'errors': validation_errors
         }), 422
