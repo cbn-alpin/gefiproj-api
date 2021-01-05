@@ -10,19 +10,135 @@ info:
     name: "MIT License"
     url: "https://mit-license.org/"
 tags:
+  - name: "Athentification"
+    description: "Gestion de l'autentification"
+  - name: "Dépenses"
+    description: "Gestion des dépenses"
   - name: "Projets"
     description: "Gestion des projets"
   - name: "Financements"
     description: "Gestion des financements"
   - name: "Utilisateurs"
     description: "Gestion des utilisateurs"
-  - name: "Athentification"
-    description: "Gestion de l'autentification"
 schemes:
   - "https"
   - "http"
 paths:
-# Projet section
+  # authentication section
+  /api/auth/login:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Obtenir un jeton d'authentification"
+      description: "Retourne un token de connexion permettant d'acceder aux ressouces protegées"
+      operationId: "login"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Identifiants de l'utilisateur"
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le login indiqué est introuvable"
+        "200":
+          description: "Connexion réussie"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Obtenir un jeton nouveau d'authentification"
+      description: "Retourne un nouveau token de connexion"
+      operationId: "refreshToken"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - api_key: [ ]
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Nouveau token généré avec succès"
+          schema:
+            type: string
+            example: { access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI" }
+
+
+  /api/auth/register:
+    post:
+      tags:
+        - "Athentification"
+      summary: "Enregistre un nouvel utilisateur"
+      description: "Retourne le nouvel utilisateur créé"
+      operationId: "registerUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informations du nouvel utilisateur"
+          required: true
+          schema:
+            $ref: "#/definitions/Utilisateur"
+      security:
+        - api_key: [ ]
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Nouvel utilisateur créé avec succès"
+          schema:
+            type: string
+            $ref: "#/definitions/Utilisateur"
+
+
+  # Dépenses
+  /api/expenses:
+    post:
+      tags:
+        - Dépenses
+      summary: "Enregistre une nouvelle dépense"
+      description: "Retourne la nouvelle dépense créee"
+      operationId: "createExpense"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informations de la nouvelle dépense"
+          required: true
+          schema:
+            $ref: "#/definitions/Depense"
+      security:
+        - api_key: [ ]
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Nouvelle dépense créée avec succès"
+          schema:
+            type: string
+            $ref: "#/definitions/Depense"
+
+
+        # Projet section
   /api/projects:
     post:
       tags:
@@ -169,7 +285,7 @@ paths:
         - api_key: [ ]
 
 
-  #Utilisateurs section
+  # Utilisateurs section
   /api/users:
     get:
       tags:
@@ -220,89 +336,6 @@ paths:
             $ref: "#/definitions/Utilisateur"
         "404":
           description: "Projet introuvable"
-
-
-  # authentication section
-  /api/auth/login:
-    post:
-      tags:
-        - "Athentification"
-      summary: "Obtenir un jeton d'authentification"
-      description: "Retourne un token de connexion permettant d'acceder aux ressouces protegées"
-      operationId: "login"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Identifiants de l'utilisateur"
-          required: true
-          schema:
-            $ref: "#/definitions/Login"
-      responses:
-        "401":
-          description: "Erreur d'authentification"
-        "404":
-          description: "Le login indiqué est introuvable"
-        "200":
-          description: "Connexion réussie"
-          schema:
-            $ref: "#/definitions/LoginResponse"
-
-
-  /api/auth/refresh:
-    post:
-      tags:
-        - "Athentification"
-      summary: "Obtenir un jeton nouveau d'authentification"
-      description: "Retourne un nouveau token de connexion"
-      operationId: "refreshToken"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      security:
-        - api_key: [ ]
-      responses:
-        "401":
-          description: "Erreur d'authentification"
-        "200":
-          description: "Nouveau token généré avec succès"
-          schema:
-            type: string
-            example: { access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI" }
-
-
-  /api/auth/register:
-    post:
-      tags:
-        - "Athentification"
-      summary: "Enregistre un nouvel utilisateur"
-      description: "Retourne le nouvel utilisateur créé"
-      operationId: "registerUser"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Informations du nouvel utilisateur"
-          required: true
-          schema:
-            $ref: "#/definitions/Utilisateur"
-      security:
-        - api_key: [ ]
-      responses:
-        "403":
-          description: "Erreur d'authentification"
-        "200":
-          description: "Nouvel utilisateur créé avec succès"
-          schema:
-            type: string
-            $ref: "#/definitions/Utilisateur"
 
 securityDefinitions:
   api_key:
@@ -417,3 +450,21 @@ definitions:
         type: boolean
         description: "Indique si l'utilisateur est actif"
         example: false
+  Depense:
+    type: object
+    required:
+      - "annee_d"
+      - "montant_d"
+    properties:
+      id_d:
+        type: integer
+        description: "Identifiant de la dépense"
+        example: 2
+      annee_d:
+        type: integer
+        description: "Année de la dépense"
+        example: 2019
+      montant_d:
+        type: number
+        description: "Montant de la dépense"
+        example: 3793.67
