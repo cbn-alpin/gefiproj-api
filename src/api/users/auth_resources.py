@@ -52,8 +52,12 @@ def login():
             'access_token': access_token,
             'refresh_token': refresh_token
         }
-    else:
-        return {'message': 'Wrong credentials'}
+
+    return jsonify({'status': 'error',
+                    'type': 'AUTHENTICATION',
+                    'code': 'AUTHENTICATION_ERROR',
+                    'message': 'Wrong credentials'
+                    }), 403
 
 
 @resources.route('/api/auth/register', methods=['POST'])
