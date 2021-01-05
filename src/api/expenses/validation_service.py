@@ -11,10 +11,10 @@ class ExpenseValidationService:
 
         try:
             # TODO check minimum and maximum year values of validity
-            if 'annee_d' in expense_data and expense_data['annee_d'] > 0:
+            if 'annee_d' in expense_data:
                 expense_data['annee_d'] = int(expense_data['annee_d'])
-            else:
-                raise ValueError
+                if expense_data['annee_d'] < 0:
+                    raise ValueError
         except ValueError:
             errors.append({
                 'code': ERROR_CODE,
@@ -24,10 +24,10 @@ class ExpenseValidationService:
             })
 
         try:
-            if 'montant_d' in expense_data and expense_data['montant_d'] > 0:
+            if 'montant_d' in expense_data:
                 expense_data['montant_d'] = float(expense_data['montant_d'])
-            else:
-                raise ValueError
+                if expense_data['montant_d'] < 0:
+                    raise ValueError
         except ValueError:
             errors.append({
                 'code': ERROR_CODE,
