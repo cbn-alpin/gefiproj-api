@@ -1,7 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from src.shared.entity import Session
 from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService
@@ -52,9 +51,7 @@ def add_project():
         })
 
     # add the project to db and return it
-    session = Session()
-    session.add(project)
-    session.commit()
+    project = ProjectDBService.insert_project(project)
 
     new_project = ProjectSchema().dump(project)
     return jsonify(new_project), 201

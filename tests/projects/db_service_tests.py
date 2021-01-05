@@ -1,7 +1,7 @@
 import unittest
 
 from src.api.projects.db_service import ProjectDBService
-from src.api.projects.entities import Project
+from src.api.projects.entities import Project, ProjectSchema
 from src.shared.test_base import DBBaseTestCase
 
 
@@ -30,6 +30,15 @@ class DBServiceTestCase(DBBaseTestCase):
 
         all_projects = ProjectDBService.get_all_projects()
         self.assertEqual(len(all_projects), 2)
+
+    def test_insert_project(self):
+        new_project = Project(nom_p='auto test', code_p='OC01', statut_p=True, id_u=1)
+        inserted_project = ProjectDBService.insert_project(new_project)
+
+        project_object = self.db.session.query(Project).filter_by(id_p=new_project.id_p).first()
+        project_found = ProjectSchema().dump(project_object)
+        self.assertEqual(inserted_project['id_p'], project_found['id_p'])
+        self.assertEqual(inserted_project['code_p'], project_found['code_p'])
 
     def test_get_project_name(self):
         project = ProjectDBService.get_project_by_id(100)
