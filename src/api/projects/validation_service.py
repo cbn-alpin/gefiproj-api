@@ -64,12 +64,12 @@ class ProjectValidationService:
                 'message': 'Parameter <statut_p> is missing',
             })
 
-        if 'statut_p' in project and project['statut_p'] not in ["false", "true"]:
+        if 'statut_p' in project and project['statut_p'] not in [False, True]:
             errors.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
                 'field': 'statut_p',
-                'message': '<statut_p> must be either <true> or <false>',
+                'message': '<statut_p> must be either <True> or <False>',
             })
 
         # nom validation
