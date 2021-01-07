@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 
 from src.api import create_api, db
 from src.api.amounts.resources import resources as amounts_ressources
+from src.api.expenses.resources import resources as expenses_ressources
 from src.api.funders.resources import resources as funders_ressources
 from src.api.fundings.resources import resources as fundings_ressources
 from src.api.projects.resources import resources as projects_ressources
@@ -51,3 +52,4 @@ api.register_blueprint(projects_ressources)
 api.register_blueprint(funders_ressources)
 api.register_blueprint(receipts_ressources)
 api.register_blueprint(amounts_ressources)
+api.register_blueprint(expenses_ressources)

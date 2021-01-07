@@ -5,9 +5,9 @@ from src.api.projects.entities import Project, ProjectSchema
 
 class EntitiesTestCase(unittest.TestCase):
     def test_project_entity(self):
-        project = Project('test', 'Project TEST', 'true', 4)
+        project = Project('test', 'Project étoile', 'true', 4)
         self.assertEqual(project.code_p, 'test')
-        self.assertEqual(project.nom_p, 'Project TEST')
+        self.assertEqual(project.nom_p, 'Project étoile')
         self.assertEqual(project.statut_p, 'true')
         self.assertEqual(project.id_u, 4)
 

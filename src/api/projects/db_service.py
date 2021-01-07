@@ -14,6 +14,7 @@ class ProjectDBService:
         session.commit()
 
         new_project = ProjectSchema().dump(project)
+        session.close()
         return new_project
 
     @staticmethod
