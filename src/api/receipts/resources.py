@@ -27,11 +27,9 @@ def get_receipts_by_funding(funding_id):
 @resources.route('/api/receipts', methods=['POST'])
 @jwt_required
 def add_receipt():
-    # TODO: test this method
     # to be linked to a funding
     current_app.logger.debug('In POST /api/receipts')
     posted_receipt_data = request.get_json()
-    print(posted_receipt_data)
 
     validation_errors = ReceiptValidationService.validate_post(posted_receipt_data)
     if len(validation_errors) > 0:
