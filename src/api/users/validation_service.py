@@ -20,6 +20,21 @@ class UserValidationService:
         return errors
 
     @staticmethod
+    def check_int_value(key: str, data, errors: []):
+        err = errors
+        try:
+            if key in data:
+                data[key] = int(data[key])
+        except ValueError:
+            err.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': key,
+                'message': f'<{key}> must be a number. Ex: 3',
+            })
+        return err
+
+    @staticmethod
     def validate_post(user):
         errors = []
 
