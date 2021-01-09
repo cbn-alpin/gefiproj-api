@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a3db5515-2fa0-405d-b00c-3cfac7f15a73",
+		"_postman_id": "678b4eae-9833-4156-bd59-c3dc7e36fb6c",
 		"name": "cbna_back",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -131,6 +131,57 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "expenses",
+			"item": [
+				{
+					"name": "localhost:5000/api/expenses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"annee_d\": \"machin\",\n\t\"montant_d\": 309.38\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/expenses",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "users",
 			"item": [
 				{
@@ -146,17 +197,33 @@
 								}
 							]
 						},
-						"method": "GET",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/javascript",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"annee_d\": 2021,\n\t\"montant\": 309.38\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
 						"url": {
-							"raw": "localhost:5000/api/users",
+							"raw": "localhost:5000/api/expenses",
 							"host": [
 								"localhost"
 							],
 							"port": "5000",
 							"path": [
 								"api",
-								"users"
+								"expenses"
 							]
 						}
 					},
@@ -214,7 +281,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/projects/1",
+							"raw": "localhost:5000/api/projects/1?",
 							"host": [
 								"localhost"
 							],
@@ -526,6 +593,51 @@
 							"path": [
 								"funding",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "receipts",
+			"item": [
+				{
+					"name": "localhost:5000/api/receipts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"annee_r\": \"2021\",\n\t\"montant_r\": 309.38,\n\t\"id_f\": \"1\"\n}\n"
+						},
+						"url": {
+							"raw": "localhost:5000/api/receipts",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"receipts"
 							]
 						}
 					},
