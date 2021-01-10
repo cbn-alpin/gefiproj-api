@@ -15,10 +15,7 @@ def get_receipts_by_funding(funding_id):
     try:
         current_app.logger.debug('In GET /api/funding/<int:funding_id>/receipts')
         # Checks
-        existing_funding = ReceiptDBService.check_funding_exists(funding_id)
-        if existing_funding is None:
-            raise ValueError(f'Le financement {funding_id} n\'existe pas.', 404)
-
+        ReceiptDBService.check_funding_exists(funding_id)
         response = ReceiptDBService.get_receipts_by_funding_id(funding_id)
         return jsonify(response), 200
     except ValueError as error:
