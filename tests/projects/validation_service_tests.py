@@ -12,7 +12,7 @@ class ProjectValidationServiceTestCase(unittest.TestCase):
         self.assertEqual(len(validation_errors), 0)
 
     def test_validate_post(self):
-        project = {'code_p': 'test', 'nom_p': 'Project TEST', 'statut_p': 'true', 'id_u': 4}
+        project = {'code_p': 'test', 'nom_p': 'Project TEST', 'statut_p': True, 'id_u': 4}
         validation_errors = ProjectValidationService.validate_post(project)
         self.assertEqual(len(validation_errors), 0)
 
