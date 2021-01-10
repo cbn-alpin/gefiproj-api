@@ -18,11 +18,13 @@ tags:
     description: "Gestion des projets"
   - name: "Financements"
     description: "Gestion des financements"
+  - name: "Recettes"
+    description: "Gestion des Recettes"
   - name: "Utilisateurs"
     description: "Gestion des utilisateurs"
 schemes:
-  - "https"
   - "http"
+  - "https"
 paths:
   # authentication section
   /api/auth/login:
@@ -285,7 +287,38 @@ paths:
         - api_key: [ ]
 
 
-  # Utilisateurs section
+  # Recettes
+  /api/receipts:
+    post:
+      tags:
+        - "Recettes"
+      summary: "Enregistre une nouvelle recette"
+      description: "Retourne la recette créée"
+      operationId: "createReceipt"
+      security:
+        - api_key: [ ]
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informations de la nouvelle recette"
+          required: true
+          schema:
+            $ref: "#/definitions/Recette"
+      responses:
+        "401":
+          description: "Utilisateur non autorisé. Généralement un problème de token"
+        "422":
+          description: "Erreur de validation des entrées"
+        "200":
+          description: "Recette qui a été créée"
+          schema:
+            items:
+              $ref: "#/definitions/Recette"
+
+
+        # Utilisateurs section
   /api/users:
     get:
       tags:
@@ -309,7 +342,7 @@ paths:
             items:
               $ref: "#/definitions/Utilisateur"
 
-  /api/users{userId}:
+  /api/users/{userId}:
     get:
       tags:
         - "Utilisateurs"
@@ -417,6 +450,29 @@ definitions:
         type: array
         example: [ "administrateur" ]
         description: "Tableau des rôles de l'utilisateur"
+  Recette:
+    type: object
+    properties:
+      id_r:
+        type: integer
+        description: Identifiant de la recette
+        example: 5
+      id_f:
+        type: integer
+        description: Identifiant du financement associé
+        example: 8
+      annee_r:
+        type: integer
+        description: Année de la recette
+        example: 2021
+      montant_r:
+        type: number
+        description: Montant de la recette
+        example: 2357.79
+    required:
+      - "annee_r"
+      - "montant_r"
+      - "id_f"
   Utilisateur:
     type: object
     required:

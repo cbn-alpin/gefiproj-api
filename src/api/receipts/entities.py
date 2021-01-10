@@ -1,9 +1,11 @@
-from src.api import db
 from marshmallow import Schema, fields
-from src.shared.entity import Base
-from sqlalchemy import Column, String, Integer, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from ..fundings.entities import Funding, FundingSchema
+
+from src.api import db
+from src.shared.entity import Base
+from ..fundings.entities import FundingSchema
+
 
 class Receipt(Base, db.Model):
     __tablename__ = 'recette'

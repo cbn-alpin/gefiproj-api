@@ -8,13 +8,14 @@ from src.api.expenses.entities import Expense
 from src.api.funders.entities import Funder
 from src.api.fundings.entities import Funding
 from src.api.projects.entities import Project
+from src.api.receipts.entities import Receipt
 from src.api.role_acces.entities import RoleAccess
 from src.api.user_role.user_role import UserRole
 from src.api.users.entities import User
 
 
 def clean_db(db):
-    ordered_tables = [UserRole, RoleAccess, Funding, Project, User, Funder, Expense, Amount]
+    ordered_tables = [UserRole, RoleAccess, Receipt, Funding, Project, User, Funder, Expense, Amount]
     for table in ordered_tables:
         db.session.query(table).delete()
 
