@@ -5,6 +5,7 @@ from .db_services import ReceiptDBService
 from .entities import ReceiptSchema, Receipt
 from .validation_service import ReceiptValidationService
 from ..fundings.db_services import FundingDBService
+from ..users.auth_resources import admin_required
 
 resources = Blueprint('receipts', __name__)
 
@@ -26,6 +27,7 @@ def get_receipts_by_funding(funding_id):
 
 @resources.route('/api/receipts', methods=['POST'])
 @jwt_required
+@admin_required
 def add_receipt():
     # to be linked to a funding
     current_app.logger.debug('In POST /api/receipts')
