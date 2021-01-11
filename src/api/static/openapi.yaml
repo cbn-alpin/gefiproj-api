@@ -10,7 +10,7 @@ info:
     name: "MIT License"
     url: "https://mit-license.org/"
 tags:
-  - name: "Athentification"
+  - name: "Authentification"
     description: "Gestion de l'autentification"
   - name: "Dépenses"
     description: "Gestion des dépenses"
@@ -30,7 +30,7 @@ paths:
   /api/auth/login:
     post:
       tags:
-        - "Athentification"
+        - "Authentification"
       summary: "Obtenir un jeton d'authentification"
       description: "Retourne un token de connexion permettant d'acceder aux ressouces protegées"
       operationId: "login"
@@ -59,7 +59,7 @@ paths:
   /api/auth/refresh:
     post:
       tags:
-        - "Athentification"
+        - "Authentification"
       summary: "Obtenir un jeton nouveau d'authentification"
       description: "Retourne un nouveau token de connexion"
       operationId: "refreshToken"
@@ -82,7 +82,7 @@ paths:
   /api/auth/register:
     post:
       tags:
-        - "Athentification"
+        - "Authentification"
       summary: "Enregistre un nouvel utilisateur"
       description: "Retourne le nouvel utilisateur créé"
       operationId: "registerUser"
@@ -316,6 +316,48 @@ paths:
           schema:
             items:
               $ref: "#/definitions/Recette"
+
+  /api/receipts/{receiptId}:
+    put:
+      tags:
+        - "Recettes"
+      summary: "Metre à jour une recette"
+      description: "Retourne la recette mise à jour"
+      operationId: "updateReceipt"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "receiptId"
+          in: "path"
+          description: "Identifiant de la recette à modifier"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter à la recette"
+          required: true
+          schema:
+            $ref: "#/definitions/Recette"
+      responses:
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Recette"
+        "400":
+          description: "Changement de financement détecté"
+        "401":
+          description: "Utilisateur non autorisé. Généralement un problème de token"
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Projet introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
 
 
         # Utilisateurs section
