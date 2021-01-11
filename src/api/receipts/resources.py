@@ -48,3 +48,50 @@ def add_receipt():
 
     created_receipt = ReceiptDBService.insert(receipt)
     return jsonify(created_receipt)
+
+
+@resources.route('/api/receipts/<int:id_receipt>', methods=['PUT'])
+@jwt_required
+@admin_required
+def update_receipt(id_receipt):
+    current_app.logger.debug('In PUT /api/receipts')
+
+    posted_receipt_data = request.get_json()
+    posted_receipt_data['id_r'] = id_receipt
+
+    validation_errors = ReceiptValidationService.validate_post(posted_receipt_data)
+    if len(validation_errors) > 0:
+        return jsonify({
+            'message': 'A validation error occured',
+            'errors': validation_errors
+        }), 422
+
+    posted_receipt = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).load(posted_receipt_data)
+    receipt = Receipt(**posted_receipt)
+
+    # check if receipt exists
+    existing_receipt = ReceiptDBService.get_receipt_by_id(id_receipt)
+    if not existing_receipt:
+        return jsonify({
+            'status': 'error',
+            'type': '',
+            'code': 'RECEIPT_NOT_FOUND',
+            'message': f'The receipt with id {id_receipt} does not exist'
+        }), 404
+
+    # check funding
+    FundingDBService.check_funding_exists(existing_receipt['id_f'])
+
+    # check it is the same financement
+    if 'id_f' in existing_receipt \
+            and existing_receipt['id_f'] is not receipt.id_f:
+        return jsonify({
+            'status': 'error',
+            'type': '',
+            'code': 'DIFFERENT_FUNDING',
+            'message': f"Cannot change funding while updating receipt. Original funding was {existing_receipt['id_f']},"
+                       f" provided is {id_receipt}"
+        }), 400
+
+    updated_receipt = ReceiptDBService.update(receipt)
+    return jsonify(updated_receipt)

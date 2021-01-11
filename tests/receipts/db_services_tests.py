@@ -32,6 +32,22 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
         self.db.session.commit()
 
+    def test_update_receipt(self):
+        receipt = Receipt(id_f=1, annee_r=2020, montant_r=699.3)
+        self.db.session.add(receipt)
+        self.db.session.commit()
+
+        receipt.annee_r = '2019'
+        receipt.montant_r = '3093.19'
+        updated_receipt = ReceiptDBService.update(receipt)
+
+        self.assertEqual(updated_receipt['id_r'], receipt.id_r)
+        self.assertEqual(updated_receipt['id_f'], 1)
+        self.assertEqual(updated_receipt['annee_r'], 2019)
+        self.assertEqual(updated_receipt['montant_r'], 3093.19)
+        self.db.session.query(Receipt).filter_by(id_r=receipt.id_r).delete()
+        self.db.session.commit()
+
     def test_check_receipt_exists_by_id(self):
         exists_not_found = ReceiptDBService.check_receipt_exists_by_id(13)
         self.assertEqual(exists_not_found['code'], 'RECEIPT_NOT_FOUND')
