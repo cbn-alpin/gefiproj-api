@@ -35,6 +35,24 @@ class UserValidationService:
         return err
 
     @staticmethod
+    def check_float_montant(key: str, data, errors: []):
+        err = errors
+        try:
+            if key in data:
+                data[key] = float(data[key])
+                if data[key] < 0:
+                    raise ValueError
+        except ValueError:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': key,
+                'message': f'<{key}> must be a positive double precision number. Ex: 173.59',
+            })
+
+        return err
+
+    @staticmethod
     def validate_post(user):
         errors = []
 

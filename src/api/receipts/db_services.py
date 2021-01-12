@@ -46,6 +46,16 @@ class ReceiptDBService:
         return inserted_receipt
 
     @staticmethod
+    def update(receipt: Receipt):
+        session = Session()
+        session.merge(receipt)
+        session.commit()
+
+        updated_receipt = ReceiptSchema().dump(receipt)
+        session.close()
+        return updated_receipt
+
+    @staticmethod
     def check_receipt_exists_by_id(receipt_id: int):
         existing_receipt = ReceiptDBService.get_receipt_by_id(receipt_id)
         if not existing_receipt:

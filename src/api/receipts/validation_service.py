@@ -11,18 +11,6 @@ class ReceiptValidationService:
 
         errors = UserValidationService.check_int_value('id_f', receipt_data, errors)
         errors = UserValidationService.check_int_value('annee_r', receipt_data, errors)
-
-        try:
-            if 'montant_r' in receipt_data:
-                receipt_data['montant_r'] = float(receipt_data['montant_r'])
-                if receipt_data['montant_r'] < 0:
-                    raise ValueError
-        except ValueError:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': 'montant_r',
-                'message': '<montant_r> must be a positive double precision number. Ex: 173.59',
-            })
+        errors = UserValidationService.check_float_montant('montant_r', receipt_data, errors)
 
         return errors
