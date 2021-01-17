@@ -71,7 +71,7 @@ def update_receipt(id_receipt):
     if not existing_receipt:
         return jsonify({
             'status': 'error',
-            'type': '',
+            'type': 'Not found error',
             'code': 'RECEIPT_NOT_FOUND',
             'message': f'The receipt with id {id_receipt} does not exist'
         }), 404
