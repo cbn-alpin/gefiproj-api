@@ -10,10 +10,10 @@ from ..users.auth_resources import admin_required
 resources = Blueprint('receipts', __name__)
 
 
-@resources.route('/api/funding/<int:funding_id>/receipts', methods=['GET'])
+@resources.route('/api/fundings/<int:funding_id>/receipts', methods=['GET'])
 def get_receipts_by_funding(funding_id):
     try:
-        current_app.logger.debug('In GET /api/funding/<int:funding_id>/receipts')
+        current_app.logger.debug('In GET /api/fundings/<int:funding_id>/receipts')
         # Checks
         ReceiptDBService.check_funding_exists(funding_id)
         response = ReceiptDBService.get_receipts_by_funding_id(funding_id)

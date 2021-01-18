@@ -20,12 +20,12 @@ def get_fundings_by_project(project_id):
         return jsonify(error.args[0]), error.args[1]
 
 
-@resources.route('/api/funding', methods=['POST'])
+@resources.route('/api/fundings', methods=['POST'])
 @jwt_required
 @admin_required
 def add_funding():
     try:
-        current_app.logger.debug('In POST /api/funding')
+        current_app.logger.debug('In POST /api/fundings')
         # Load data
         posted_funding = request.get_json()
         # check posted data fields
@@ -45,12 +45,12 @@ def add_funding():
         return jsonify(error.args[0]), error.args[1]
 
 
-@resources.route('/api/funding/<int:funding_id>', methods=['PUT'])
+@resources.route('/api/fundings/<int:funding_id>', methods=['PUT'])
 @jwt_required
 @admin_required
 def update_funding(funding_id):
     try:
-        current_app.logger.debug('In PUT /api/funding/<int:funding_id>')
+        current_app.logger.debug('In PUT /api/fundings/<int:funding_id>')
         # Load data
         data = request.get_json()
         if 'id_f' not in data:
@@ -73,11 +73,12 @@ def update_funding(funding_id):
         return jsonify(error.args[0]), error.args[1]
 
 
-@resources.route('/api/funding/<int:funding_id>', methods=['DELETE'])
+@resources.route('/api/fundings/<int:funding_id>', methods=['DELETE'])
 @jwt_required
 @admin_required
 def delete_funding(funding_id):
     try:
+        current_app.logger.debug('In DELETE /api/fundings/<int:funding_id>')
         # check
         FundingDBService.check_funding_exists(funding_id)
 

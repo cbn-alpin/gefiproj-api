@@ -6,12 +6,12 @@ from sqlalchemy import func, desc
 from sqlalchemy.orm import join
 from .entities import Funder, FunderSchema
 
-resources = Blueprint('funder', __name__)
+resources = Blueprint('funders', __name__)
 
 
-@resources.route('/api/funder', methods=['GET'])
+@resources.route('/api/funders', methods=['GET'])
 def get_funders():
-    current_app.logger.debug('In GET /api/funder')
+    current_app.logger.debug('In GET /api/funders')
 
     session = Session()  
     funder_object = session.query(Funder).order_by(Funder.nom_financeur).all()
