@@ -83,7 +83,6 @@ def delete_funding(funding_id):
         FundingDBService.check_funding_exists(funding_id)
 
         response = FundingDBService.delete_funding(funding_id)
-        print(response)
         return jsonify(response), 204
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
