@@ -21,8 +21,8 @@ def get_amounts_by_receipt(receipt_id):
         return jsonify(error.args[0]), error.args[1]
     
 @resources.route('/api/amounts', methods=['POST'])
-#@jwt_required
-#@admin_required
+@jwt_required
+@admin_required
 def add_amount():
     try:
         current_app.logger.debug('In POST /api/amounts')
@@ -46,8 +46,8 @@ def add_amount():
 
 
 @resources.route('/api/amounts/<int:amount_id>', methods=['PUT'])
-#@jwt_required
-#@admin_required
+@jwt_required
+@admin_required
 def update_amount(amount_id):
     try:
         current_app.logger.debug('In PUT /api/amounts/<int:amount_id>')
@@ -73,8 +73,8 @@ def update_amount(amount_id):
         return jsonify(error.args[0]), error.args[1]
 
 @resources.route('/api/amounts/<int:amount_id>', methods=['DELETE'])
-#@jwt_required
-#@admin_required
+@jwt_required
+@admin_required
 def delete_amount(amount_id):
     try:
         current_app.logger.debug('In DELETE /api/amounts/<int:amount_id>')
