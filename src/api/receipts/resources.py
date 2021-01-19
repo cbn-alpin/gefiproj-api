@@ -51,7 +51,7 @@ def add_receipt():
 @jwt_required
 @admin_required
 def update_receipt(id_receipt):
-    current_app.logger.debug('In PUT /api/receipts')
+    current_app.logger.debug('In PUT /api/receipts/<int:id_receipt>')
 
     posted_receipt_data = request.get_json()
     posted_receipt_data['id_r'] = id_receipt
@@ -92,3 +92,35 @@ def update_receipt(id_receipt):
 
     updated_receipt = ReceiptDBService.update(receipt)
     return jsonify(updated_receipt)
+
+
+@resources.route('/api/receipts/<int:id_receipt>', methods=['DELETE'])
+@jwt_required
+@admin_required
+def delete_receipt(id_receipt):
+    current_app.logger.debug('In DELETE /api/receipts/<int:id_receipt>')
+
+    # check if receipt exists
+    existing_receipt = ReceiptDBService.get_receipt_by_id(id_receipt)
+    if not existing_receipt:
+        return jsonify({
+            'status': 'error',
+            'type': 'Not found error',
+            'code': 'RECEIPT_NOT_FOUND',
+            'message': f'The receipt with id {id_receipt} does not exist'
+        }), 404
+
+    # check if project status is 'SOLDE'
+    if ReceiptDBService.is_project_solde(id_receipt):
+        return jsonify({
+            'status': 'error',
+            'type': 'Receipt project not closed',
+            'code': 'RECEIPT_PROJECT_CLOSED',
+            'message': f'The receipt with id {id_receipt} cannot be deleted. The associated project is closed'
+        }), 404
+
+    # delete the receipt
+    id_deleted = ReceiptDBService.delete(id_receipt)
+    return jsonify({
+        'message': f'Receipt identified by {id_deleted} has been deleted'
+    }), 204

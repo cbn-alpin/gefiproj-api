@@ -73,6 +73,32 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
         self.db.session.commit()
 
+    def test_get_receipts_by_funding_id(self):
+        receipt = Receipt(id_f=1, annee_r=2021, montant_r=8784)
+        self.db.session.add(receipt)
+        self.db.session.commit()
+        receipt = ReceiptSchema().dump(receipt)
+
+        receipts_of_funding_1 = ReceiptDBService.get_receipts_by_funding_id(1)
+
+        self.assertTrue('difference' in receipts_of_funding_1[0])
+        self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
+        self.db.session.commit()
+
+    def test_is_project_solde(self):
+        receipt = Receipt(id_f=1, annee_r=2020, montant_r=8784)
+        self.db.session.add(receipt)
+        self.db.session.commit()
+        receipt = ReceiptSchema().dump(receipt)
+
+        is_solde = ReceiptDBService.is_project_solde(receipt['id_r'])
+
+        self.assertTrue(is_solde)
+        self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
+        self.db.session.commit()
+
+    # TODO: test delete
+
     def tearDown(self):
         super(ReceiptDBServiceTestCase, self).tearDown()
         self.db.session.query(Funding).filter_by(id_f=1).delete()

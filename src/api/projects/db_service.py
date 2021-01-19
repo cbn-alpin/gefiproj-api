@@ -91,8 +91,7 @@ class ProjectDBService:
     @staticmethod
     def delete_project(project_id: int) -> int:
         session = Session()
-        project = session.query(Project).filter_by(id_p=project_id).first()
-        session.delete(project)
+        session.query(Project).filter_by(id_p=project_id).delete()
         session.commit()
         session.close()
 
@@ -130,10 +129,3 @@ class ProjectDBService:
             }
 
             return msg
-
-    @staticmethod
-    def get_total_count():
-        session = Session()
-        count = session.query(Project).count()
-        session.close()
-        return count

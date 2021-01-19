@@ -1,6 +1,7 @@
 from src.shared.entity import Session
 from .entities import Receipt, ReceiptSchema
 from ..fundings.entities import Funding
+from ..projects.entities import Project
 
 
 class ReceiptDBService:
@@ -68,6 +69,15 @@ class ReceiptDBService:
         return updated_receipt
 
     @staticmethod
+    def delete(receipt_id: int) -> int:
+        session = Session()
+        session.query(Receipt).filter_by(id_r=receipt_id).delete()
+        session.commit()
+        session.close()
+
+        return receipt_id
+
+    @staticmethod
     def check_receipt_exists_by_id(receipt_id: int):
         existing_receipt = ReceiptDBService.get_receipt_by_id(receipt_id)
         if not existing_receipt:
@@ -77,3 +87,20 @@ class ReceiptDBService:
             }
 
             return msg
+
+    @staticmethod
+    def is_project_solde(id_receipt):
+        session = None
+        try:
+            session = Session()
+            receipt_project_object = session.query(Receipt.id_r) \
+                .join(Funding, Funding.id_f == Receipt.id_f) \
+                .join(Project, Project.id_p == Funding.id_p) \
+                .add_columns(Project.statut_p) \
+                .filter(Receipt.id_r == id_receipt).first()
+
+            return len(receipt_project_object) > 1 and receipt_project_object[1] is True
+        except:
+            return False
+        finally:
+            session.close()
