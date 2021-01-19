@@ -79,6 +79,7 @@
               "host": [
                 "https://gefiproj.cbn-alpin.fr"
               ],
+
               "path": [
                 "api",
                 "auth",
@@ -115,10 +116,61 @@
               "host": [
                 "https://gefiproj.cbn-alpin.fr"
               ],
+
               "path": [
                 "api",
                 "auth",
                 "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "expenses",
+      "item": [
+        {
+          "name": "https://gefiproj.cbn-alpin.fr/api/expenses",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"annee_d\": \"machin\",\n\t\"montant_d\": 309.38\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gefiproj.cbn-alpin.fr/api/expenses",
+              "host": [
+                "https://gefiproj.cbn-alpin.fr"
+              ],
+              "path": [
+                "api",
+                "expenses"
               ]
             }
           },
@@ -143,16 +195,32 @@
                 }
               ]
             },
-            "method": "GET",
-            "header": [],
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/javascript",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"annee_d\": 2021,\n\t\"montant\": 309.38\n}",
+              "options": {
+                "raw": {
+                  "language": "javascript"
+                }
+              }
+            },
             "url": {
-              "raw": "https://gefiproj.cbn-alpin.fr/api/users",
+              "raw": "https://gefiproj.cbn-alpin.fr/api/expenses",
               "host": [
                 "https://gefiproj.cbn-alpin.fr"
               ],
               "path": [
                 "api",
-                "users"
+                "expenses"
               ]
             }
           },
@@ -209,7 +277,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "https://gefiproj.cbn-alpin.fr/api/projects/1",
+              "raw": "https://gefiproj.cbn-alpin.fr/api/projects/1?",
               "host": [
                 "https://gefiproj.cbn-alpin.fr"
               ],
@@ -511,6 +579,99 @@
               "path": [
                 "funding",
                 "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "receipts",
+      "item": [
+        {
+          "name": "https://gefiproj.cbn-alpin.fr/api/receipts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"annee_r\": \"2021\",\n\t\"montant_r\": 309.38,\n\t\"id_f\": \"1\"\n}\n"
+            },
+            "url": {
+              "raw": "https://gefiproj.cbn-alpin.fr/api/receipts",
+              "host": [
+                "https://gefiproj.cbn-alpin.fr"
+              ],
+              "path": [
+                "api",
+                "receipts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "https://gefiproj.cbn-alpin.fr/api/fundings/1/receipts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://gefiproj.cbn-alpin.fr/api/fundings/1/receipts",
+              "host": [
+                "https://gefiproj.cbn-alpin.fr"
+              ],
+              "path": [
+                "api",
+                "fundings",
+                "1",
+                "receipts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "https://gefiproj.cbn-alpin.fr/api/receipts/1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTEwODg2MDgsIm5iZiI6MTYxMTA4ODYwOCwianRpIjoiM2RhNTY5NGYtY2NmYi00NTNjLWE0N2YtYTgzMGE3MDc3ZjY3IiwiZXhwIjoxNjExMTE3NDA4LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.VyytBE0auaL43iRasJE_mTspsng_RSy4mpMcYaPP_pQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://gefiproj.cbn-alpin.fr/api/receipts/55",
+              "host": [
+                "https://gefiproj.cbn-alpin.fr"
+              ],
+              "path": [
+                "api",
+                "receipts",
+                "55"
               ]
             }
           },

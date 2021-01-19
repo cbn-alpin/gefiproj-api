@@ -642,6 +642,57 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "localhost:5000/api/fundings/1/receipts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/api/fundings/1/receipts",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"fundings",
+								"1",
+								"receipts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:5000/api/receipts/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTEwODg2MDgsIm5iZiI6MTYxMTA4ODYwOCwianRpIjoiM2RhNTY5NGYtY2NmYi00NTNjLWE0N2YtYTgzMGE3MDc3ZjY3IiwiZXhwIjoxNjExMTE3NDA4LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.VyytBE0auaL43iRasJE_mTspsng_RSy4mpMcYaPP_pQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/api/receipts/55",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"receipts",
+								"55"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
