@@ -20,11 +20,10 @@ class ReceiptDBService:
         rest_receipt_amount_object = session.execute("select r.id_r, (r.montant_r - sum(ma.montant_ma)) as difference "
                                                      "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
                                                      "where r.id_f=:funding_id group by r.id_r order by r.id_r",
-                                                     {'funding_id': 1})
+                                                     {'funding_id': funding_id})
         # https://stackoverflow.com/a/22084672
         rest_amounts = []
         for r in rest_receipt_amount_object:
-            print({'difference': r['difference'], 'id_r': r['id_r']})
             rest_amounts.append({'difference': r['difference'], 'id_r': r['id_r']})
 
         # Transforming into JSON-serializable objects
