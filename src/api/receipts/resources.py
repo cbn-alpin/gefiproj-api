@@ -117,7 +117,7 @@ def delete_receipt(id_receipt):
             'type': 'Receipt project not closed',
             'code': 'RECEIPT_PROJECT_CLOSED',
             'message': f'The receipt with id {id_receipt} cannot be deleted. The associated project is closed'
-        }), 404
+        }), 400
 
     # delete the receipt
     id_deleted = ReceiptDBService.delete(id_receipt)

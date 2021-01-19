@@ -358,7 +358,36 @@ paths:
           description: "Erreur de validation des entrées"
       security:
         - api_key: [ ]
-
+    delete:
+      tags:
+        - "Recettes"
+      summary: "Supprimer une recette"
+      description: ""
+      operationId: "deleteReceipt"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "receiptId"
+          in: "path"
+          description: "id de la recette à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "204":
+          description: "Opération réussie"
+        "400":
+          description: "Le projet au quel la recette est associée est soldé"
+        "401":
+          description: "Utilisateur non autorisé. Généralement un problème de token"
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Recette introuvable"
+      security:
+        - api_key: [ ]
 
         # Utilisateurs section
   /api/users:
