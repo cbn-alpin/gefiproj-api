@@ -105,7 +105,6 @@ paths:
         "200":
           description: "Nouvel utilisateur créé avec succès"
           schema:
-            type: string
             $ref: "#/definitions/Utilisateur"
 
 
@@ -136,7 +135,6 @@ paths:
         "200":
           description: "Nouvelle dépense créée avec succès"
           schema:
-            type: string
             $ref: "#/definitions/Depense"
 
 
@@ -518,8 +516,7 @@ definitions:
         type: string
         description: "Initiales de l'utilisateur"
       roles:
-        type: array
-        example: [ "administrateur" ]
+        example: [ "administrateur", "Consultant" ]
         description: "Tableau des rôles de l'utilisateur"
   Recette:
     type: object
