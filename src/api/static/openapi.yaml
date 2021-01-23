@@ -56,6 +56,27 @@ paths:
             $ref: "#/definitions/LoginResponse"
 
 
+  /api/auth/logout:
+    post:
+      tags:
+        - "Authentification"
+      summary: "Se deconnecter"
+      description: ""
+      operationId: "logout"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - api_key: [ ]
+      responses:
+        "400":
+          description: "Erreur inconnue lors de la déconnexion"
+        "401":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Déconnection réussie"
+
   /api/auth/refresh:
     post:
       tags:
