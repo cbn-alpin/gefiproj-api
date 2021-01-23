@@ -108,6 +108,19 @@ class RessourceTestCase(unittest.TestCase):
                                   json=receipt_data)
         self.assertEqual(resp404.status_code, 404)
 
+    def test_update_receipt_invalid_data(self):
+        receipt_data = {
+            "annee_r": "2021",
+            "montant_r": 307.21,
+        }
+
+        resp422 = self.tester.put(BASE_URL + '/10',
+                                  headers={'content_type': CONTENT_TYPE,
+                                           'Authorization': f'Bearer {TEST_TOKEN}'},
+                                  json=receipt_data)
+
+        self.assertEqual(resp422.status_code, 422)
+
     def test_update_receipt_ok(self):
         receipt_data = {
             "annee_r": "2021",
