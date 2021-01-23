@@ -1,6 +1,6 @@
 # Python libraries
 
-from flask import render_template
+from flask import render_template, jsonify
 from flask_cors import CORS
 # External libraries
 from flask_migrate import Migrate
@@ -41,6 +41,16 @@ CORS(api)
 @api.route('/')
 def get_swagger_docs():
     return render_template('swaggerui.html')
+
+
+@api.errorhandler(404)
+def page_not_found(e):
+    return jsonify({
+        'status': 'error',
+        'type': 'NOT_FOUND',
+        'code': 'RESOURCE_NOT_FOUND',
+        'message': 'The requested URL was not found on the server. You can check available endpoints at /'
+    }), 404
 
 
 # Register blueprints
