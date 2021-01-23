@@ -56,9 +56,29 @@ class RessourceTestCase(unittest.TestCase):
 
         self.assertEqual(resp422.status_code, 422)
 
+    def test_add_receipt_400(self):
+        receipt_data_1 = Receipt(1, 303, 2020)
+        self.db.session.add(receipt_data_1)
+        self.db.session.commit()
+
+        receipt_data = {
+            "annee_r": "2020",
+            "montant_r": 719.21,
+            "id_f": 1
+        }
+
+        resp400 = self.tester.post(BASE_URL,
+                                   headers={'content_type': CONTENT_TYPE,
+                                            'Authorization': f'Bearer {TEST_TOKEN}'},
+                                   json=receipt_data)
+
+        self.assertEqual(resp400.status_code, 400)
+        self.db.session.query(Receipt).filter_by(id_r=receipt_data_1.id_r).delete()
+        self.db.session.commit()
+
     def test_add_receipt_ok(self):
         receipt_data = {
-            "annee_r": "2019",
+            "annee_r": "2020",
             "montant_r": 719.21,
             "id_f": 1
         }
@@ -70,7 +90,7 @@ class RessourceTestCase(unittest.TestCase):
         response_json = resp200.get_json()
 
         self.assertEqual(resp200.status_code, 200)
-        self.assertEqual(response_json['annee_r'], 2019)
+        self.assertEqual(response_json['annee_r'], 2020)
         self.assertEqual(response_json['montant_r'], 719.21)
         self.assertEqual(response_json['id_f'], 1)
         self.assertFalse(response_json['id_r'] is None)
@@ -90,7 +110,7 @@ class RessourceTestCase(unittest.TestCase):
 
     def test_update_receipt_ok(self):
         receipt_data = {
-            "annee_r": "2020",
+            "annee_r": "2021",
             "montant_r": 307.21,
             "id_f": 1
         }
@@ -101,7 +121,7 @@ class RessourceTestCase(unittest.TestCase):
                                   json=receipt_data)
         response_json = resp200.get_json()
         self.assertEqual(resp200.status_code, 200)
-        self.assertEqual(response_json['annee_r'], 2020)
+        self.assertEqual(response_json['annee_r'], 2021)
         self.assertEqual(response_json['montant_r'], 307.21)
         self.assertEqual(response_json['id_f'], 1)
         self.assertEqual(response_json['id_r'], 10)

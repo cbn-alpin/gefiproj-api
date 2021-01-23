@@ -14,6 +14,20 @@ class ReceiptDBService:
             raise ValueError(f'Le financement {funding_id} n\'existe pas.', 404)
 
     @staticmethod
+    def get_receipts_of_year_by_funding_id(funding_id: int or str, year: int or str):
+        session = None
+        receipts = None
+
+        try:
+            session = Session()
+            receipts = session.query(Receipt).filter(Receipt.id_f == funding_id, Receipt.annee_r == year).all()
+            receipts = ReceiptSchema(many=True).dump(receipts)
+        finally:
+            session.close()
+
+        return receipts
+
+    @staticmethod
     def get_receipts_by_funding_id(funding_id: int):
         session = Session()
         receipt_object = session.query(Receipt).filter_by(id_f=funding_id).order_by(Receipt.id_r).all()

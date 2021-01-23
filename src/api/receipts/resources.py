@@ -26,7 +26,6 @@ def get_receipts_by_funding(funding_id):
 @jwt_required
 @admin_required
 def add_receipt():
-    # to be linked to a funding
     current_app.logger.debug('In POST /api/receipts')
     posted_receipt_data = request.get_json()
 
@@ -42,6 +41,16 @@ def add_receipt():
 
     # check funding
     FundingDBService.check_funding_exists(receipt.id_f)
+
+    # check there is no receipt for this funding this yeat
+    receipts_of_year = ReceiptDBService.get_receipts_of_year_by_funding_id(receipt.id_f, receipt.annee_r)
+    if len(receipts_of_year) > 0:
+        return jsonify({
+            'status': 'error',
+            'type': 'CONFLICT',
+            'code': 'FUNDING_HAS_RECEIPT',
+            'message': f"The funding {receipt.id_f} already has a receipt for the year {receipt.annee_r}."
+        }), 400
 
     created_receipt = ReceiptDBService.insert(receipt)
     return jsonify(created_receipt)

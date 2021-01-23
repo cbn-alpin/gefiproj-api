@@ -99,6 +99,22 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
 
     # TODO: test delete
 
+    def test_get_receipts_of_year_by_funding_id(self):
+        receipts = ReceiptDBService.get_receipts_of_year_by_funding_id(1, 2020)
+        self.assertEqual(receipts, [])
+
+        # add a receipt with year 2020 and id_f 1
+        mocked_receipt = Receipt(1, 3700, 2020)
+        self.db.session.add(mocked_receipt)
+        self.db.session.commit()
+
+        receipts = ReceiptDBService.get_receipts_of_year_by_funding_id(1, 2020)
+
+        self.assertEqual(receipts[0].get('id_r'), mocked_receipt.id_r)
+        self.assertEqual(receipts[0].get('annee_r'), mocked_receipt.annee_r)
+        self.db.session.query(Receipt).filter_by(id_r=mocked_receipt.id_r).delete()
+        self.db.session.commit()
+
     def tearDown(self):
         super(ReceiptDBServiceTestCase, self).tearDown()
         self.db.session.query(Funding).filter_by(id_f=1).delete()
