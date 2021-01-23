@@ -1,6 +1,6 @@
 from src.shared.entity import Session
 
-from .entities import User, UserSchema
+from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
 
@@ -8,9 +8,10 @@ from ..user_role.user_role import UserRole
 class UserDBService:
     @staticmethod
     def get_user_role_names_by_user_id_or_email(criteria):
-        session = Session()
+        session = None
 
         try:
+            session = Session()
             int(criteria)
             roles = session.query(User, UserRole, RoleAccess) \
                 .filter(User.id_u == UserRole.id_u) \
@@ -23,8 +24,8 @@ class UserDBService:
                 .filter(UserRole.id_ra == RoleAccess.id_ra) \
                 .filter(User.email_u == criteria) \
                 .with_entities(RoleAccess.nom_ra).all()
-
-        session.close()
+        finally:
+            session.close()
 
         roles = RoleAccessSchema(many=True).dump(roles)
         returned_roles = []
@@ -84,7 +85,7 @@ class UserDBService:
         return user
 
     @staticmethod
-    def insert_user(user):
+    def insert_user(user: User):
         session = Session()
         session.add(user)
         session.commit()
@@ -95,3 +96,34 @@ class UserDBService:
 
         session.close()
         return new_user
+
+    @staticmethod
+    def revoke_token(jti: str) -> RevokedToken or None:
+        session = None
+        revoked_token = None
+
+        try:
+            session = Session()
+            r = RevokedToken(jti)
+            session.add(r)
+            session.commit()
+
+            revoked_token = RevokedTokenSchema().dump(r)
+        finally:
+            session.close()
+
+        return revoked_token
+
+    @staticmethod
+    def get_revoked_token_by_jti(jti: str):
+        session = None
+        token = None
+
+        try:
+            session = Session()
+            token = session.query(RevokedToken).filter_by(jti=jti).first()
+            token = RevokedTokenSchema().dump(token)
+        finally:
+            session.close()
+
+        return token

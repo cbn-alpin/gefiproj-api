@@ -48,3 +48,19 @@ class UserSchema(Schema):
     initiales_u = fields.Str()
     active_u = fields.Bool()
     password_u = fields.Str()
+
+
+class RevokedToken(Base, db.Model):
+    __tablename__ = "revoked_tokens"
+    id = Column(db.Integer, primary_key=True)
+    jti = Column(db.String(120), nullable=False)
+
+    def __init__(self, jti: str, id=''):
+        if id != '':
+            self.id = id
+        self.jti = jti
+
+
+class RevokedTokenSchema(Schema):
+    id = fields.Integer()
+    jti = fields.Str()

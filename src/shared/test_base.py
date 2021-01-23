@@ -11,11 +11,11 @@ from src.api.projects.entities import Project
 from src.api.receipts.entities import Receipt
 from src.api.role_acces.entities import RoleAccess
 from src.api.user_role.user_role import UserRole
-from src.api.users.entities import User
+from src.api.users.entities import User, RevokedToken
 
 
 def clean_db(db):
-    ordered_tables = [UserRole, RoleAccess, Receipt, Funding, Project, User, Funder, Expense, Amount]
+    ordered_tables = [RevokedToken, UserRole, RoleAccess, Receipt, Funding, Project, User, Funder, Expense, Amount]
     for table in ordered_tables:
         db.session.query(table).delete()
 

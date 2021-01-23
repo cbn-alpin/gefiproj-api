@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_refresh_token_required, get_jwt_identity, \
-    verify_jwt_in_request, get_jwt_claims, decode_token, jwt_required
+    verify_jwt_in_request, get_jwt_claims, decode_token, jwt_required, get_raw_jwt
 
 from src.api.users.db_services import UserDBService
 from src.api.users.entities import User, UserSchema
@@ -66,6 +66,24 @@ def login():
     }), 403
 
 
+@resources.route('/api/auth/logout', methods=['POST'])
+@jwt_required
+def logout():
+    current_app.logger.debug('In POST /api/auth/logout')
+    jti = get_raw_jwt()['jti']
+
+    revoked_jti = UserDBService.revoke_token(jti)
+    if revoked_jti.get('jti') is None:
+        return jsonify({
+            'status': 'error',
+            'type': 'LOGOUT',
+            'code': 'LOGOUT_ERROR',
+            'message': 'An error occured when logging out'
+        }), 400
+
+    return jsonify({"message": "Successfully logged out"}), 200
+
+
 @resources.route('/api/auth/register', methods=['POST'])
 @jwt_required
 @admin_required
@@ -120,3 +138,10 @@ def refresh():
 def add_claims_to_access_token(identity):
     roles = UserDBService.get_user_role_names_by_user_id_or_email(identity)
     return {'roles': roles}
+
+
+@jwt.token_in_blacklist_loader
+def is_token_in_blacklist(decrypted_token) -> bool:
+    jti = decrypted_token['jti']
+    token = UserDBService.get_revoked_token_by_jti(jti)
+    return token.get('jti') is not None
