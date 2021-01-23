@@ -126,6 +126,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "localhost:5000/api/auth/logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTE0MDcxMDUsIm5iZiI6MTYxMTQwNzEwNSwianRpIjoiMjQ4YWQ0OTAtODI2ZS00YjE0LTgzZmUtM2FjMjBkYTAzMzI3IiwiZXhwIjoxNjExNDM1OTA1LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.ci54MgAfFWE5WWxi7lXdowGn-4V9Bvdy9U2ZzZkOhE4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/api/auth/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
