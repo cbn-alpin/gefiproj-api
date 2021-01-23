@@ -28,6 +28,15 @@ class FundingDBService:
         
         if existing_project is None:
             raise ValueError(f'Le projet {project_id} n\'existe pas.',404)
+    
+    @staticmethod
+    def check_have_receipt(funding_id):
+        session = Session()
+        existing_receipt = session.query(Receipt).filter_by(id_f=funding_id).first()
+        session.close()
+        
+        if existing_receipt is not None:
+            raise ValueError(f'Ce financement ne peut pas être supprimé car il possède des recettes.',405)
         
         
     @staticmethod
