@@ -30,4 +30,4 @@ class ReceiptSchema(Schema):
     financement = fields.Nested(FundingSchema)
     montant_r = fields.Float()
     annee_r = fields.Integer()
-    difference = fields.Float()
+    difference = fields.Float(allow_none=True)
