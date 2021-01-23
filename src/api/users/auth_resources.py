@@ -145,3 +145,24 @@ def is_token_in_blacklist(decrypted_token) -> bool:
     jti = decrypted_token['jti']
     token = UserDBService.get_revoked_token_by_jti(jti)
     return token.get('jti') is not None
+
+
+# https://flask-jwt-extended.readthedocs.io/en/latest/changing_default_behavior/
+@jwt.revoked_token_loader
+def revoked_token_handler():
+    return jsonify({
+        'status': 'error',
+        'type': 'TOKEN_ERROR',
+        'code': 'TOKEN_REVOKED_ERROR',
+        'message': 'The given token is no longer valid'
+    }), 401
+
+
+@jwt.expired_token_loader
+def expired_token_handler():
+    return jsonify({
+        'status': 'error',
+        'type': 'TOKEN_ERROR',
+        'code': 'TOKEN_EXPIRED',
+        'message': 'The given token has expired'
+    }), 401
