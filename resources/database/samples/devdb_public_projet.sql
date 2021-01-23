@@ -3,7 +3,7 @@ create table projet
     id_p     serial       not null
         constraint pk_p
             primary key,
-    code_p   varchar(4)   not null
+    code_p varchar(5) not null
         constraint projet_code_p_key
             unique,
     nom_p    varchar(250) not null

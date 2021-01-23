@@ -11,7 +11,7 @@ class Project(Base, db.Model):
     __tablename__ = "projet"
 
     id_p = Column(db.Integer, primary_key=True)
-    code_p = Column(db.String(4), unique=True, nullable=False)
+    code_p = Column(db.String(5), unique=True, nullable=False)
     nom_p = Column(db.String(250), unique=True, nullable=False)
     statut_p = Column(db.Boolean(250), unique=True, default=False)
     id_u = Column(db.Integer, ForeignKey('utilisateur.id_u'))  # foreign_key definition
