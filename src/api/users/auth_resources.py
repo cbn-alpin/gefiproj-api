@@ -19,9 +19,14 @@ def admin_required(fn):
         verify_jwt_in_request()
         claims = get_jwt_claims()
         if 'roles' not in claims or 'administrateur' not in claims['roles']:
-            return jsonify(msg='This operation is permitted to admins only!'), 403
-        else:
-            return fn(*args, **kwargs)
+            return jsonify({
+                'status': 'error',
+                'type': 'TOKEN_ERROR',
+                'code': 'TOKEN_HAS_NOT_ENOUGH_PRIVILEGES',
+                'message': 'This operation is permitted to admins only'
+            }), 403
+
+        return fn(*args, **kwargs)
 
     return wrapper
 
@@ -166,3 +171,13 @@ def expired_token_handler():
         'code': 'TOKEN_EXPIRED',
         'message': 'The given token has expired'
     }), 401
+
+
+@jwt.unauthorized_loader
+def unauthorized_access_handler(e):
+    return jsonify({
+        'status': 'error',
+        'type': 'TOKEN_ERROR',
+        'code': 'TOKEN_REQUIRED',
+        'message': 'Missing authorization header. A valid token is required'
+    }), 403
