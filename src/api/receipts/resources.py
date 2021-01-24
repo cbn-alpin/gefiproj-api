@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
+from marshmallow import EXCLUDE
 
 from .db_services import ReceiptDBService
 from .entities import ReceiptSchema, Receipt
@@ -36,7 +37,7 @@ def add_receipt():
             'errors': validation_errors
         }), 422
 
-    posted_receipt = ReceiptSchema(only=('id_f', 'montant_r', 'annee_r')).load(posted_receipt_data)
+    posted_receipt = ReceiptSchema(only=('id_f', 'montant_r', 'annee_r')).load(posted_receipt_data, unknown=EXCLUDE)
     receipt = Receipt(**posted_receipt)
 
     # check funding
