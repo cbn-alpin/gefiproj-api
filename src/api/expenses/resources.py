@@ -4,12 +4,14 @@ from flask_jwt_extended import jwt_required
 from src.api.expenses.db_services import ExpenseDBService
 from src.api.expenses.entities import ExpenseSchema, Expense
 from src.api.expenses.validation_service import ExpenseValidationService
+from src.api.users.auth_resources import admin_required
 
 resources = Blueprint('expenses', __name__)
 
 
 @resources.route('/api/expenses', methods=['POST'])
 @jwt_required
+@admin_required
 def add_expense():
     current_app.logger.debug('In POST /api/expenses')
     posted_expense_data = request.get_json()

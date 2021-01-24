@@ -10,7 +10,7 @@ db = SQLAlchemy()
 jwt = JWTManager()
 
 
-def create_api(env='dev'):
+def create_api(env='prod'):
     """
     Create API with Flask.
     """

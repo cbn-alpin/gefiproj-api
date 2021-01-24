@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm import subqueryload
 
 from src.shared.entity import Session
+from .auth_resources import admin_required
 from .db_services import UserDBService
 from .entities import UserSchema, User
 
@@ -11,6 +12,7 @@ resources = Blueprint('users', __name__)
 
 @resources.route('/api/users', methods=['GET'])
 @jwt_required
+@admin_required
 def get_all_users():
     current_app.logger.debug('In GET /api/users')
     session = Session()
@@ -27,6 +29,7 @@ def get_all_users():
 
 @resources.route('/api/users/<int:user_id>', methods=['GET'])
 @jwt_required
+@admin_required
 def get_user_by_id(user_id):
     current_app.logger.debug('In GET /api/users/<int:descId>')
 
@@ -48,6 +51,7 @@ def get_user_by_id(user_id):
 
 @resources.route('/api/users/<int:user_id>', methods=['PUT'])
 @jwt_required
+@admin_required
 def update_user(user_id):
     current_app.logger.debug('In PUT /api/users/<int:descId>')
 

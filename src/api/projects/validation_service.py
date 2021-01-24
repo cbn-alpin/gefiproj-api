@@ -52,7 +52,7 @@ class ProjectValidationService:
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
                 'field': 'code_p',
-                'message': '<code_p> must be at 5 char length',
+                'message': '<code_p> must be 5 char length',
             })
 
         # statut validation

@@ -1,15 +1,16 @@
-from datetime import datetime
+from flask import Blueprint, current_app, jsonify
+from flask_jwt_extended import jwt_required
 
-from flask import Blueprint, current_app, jsonify, request
 from src.shared.entity import Session
-from sqlalchemy import func, desc
-from sqlalchemy.orm import join
 from .entities import Funder, FunderSchema
+from ..users.auth_resources import admin_required
 
 resources = Blueprint('funders', __name__)
 
 
 @resources.route('/api/funders', methods=['GET'])
+@jwt_required
+@admin_required
 def get_funders():
     current_app.logger.debug('In GET /api/funders')
 

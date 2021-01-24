@@ -1,15 +1,16 @@
-from flask import Blueprint, current_app, jsonify, request, Response
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from .db_services import AmountDBService
-from .entities import AmountSchema, Amount
 from .validation_service import AmountValidationService
-from ..receipts.db_services import ReceiptDBService
 from ..users.auth_resources import admin_required
+
 resources = Blueprint('amounts', __name__)
 
 
 @resources.route('/api/receipts/<int:receipt_id>/amounts', methods=['GET'])
+@jwt_required
+@admin_required
 def get_amounts_by_receipt(receipt_id):
     try:
         current_app.logger.debug('In GET /api/receipts/<int:receipt_id>/amounts')
@@ -19,7 +20,8 @@ def get_amounts_by_receipt(receipt_id):
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
-    
+
+
 @resources.route('/api/amounts', methods=['POST'])
 @jwt_required
 @admin_required
@@ -71,6 +73,7 @@ def update_amount(amount_id):
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+
 
 @resources.route('/api/amounts/<int:amount_id>', methods=['DELETE'])
 @jwt_required

@@ -1,4 +1,5 @@
 from flask import Blueprint, current_app, jsonify
+from flask_jwt_extended import jwt_required
 
 from src.shared.entity import Session
 from .entities import RoleAccess, RoleAccessSchema
@@ -6,7 +7,8 @@ from .entities import RoleAccess, RoleAccessSchema
 resources = Blueprint('role_access', __name__)
 
 
-@resources.route('/role_access', methods=['GET'])
+@resources.route('/api/role_access', methods=['GET'])
+@jwt_required
 def get_all_role_acces():
     current_app.logger.info('In GET /role_access')
     # Fetching from the database

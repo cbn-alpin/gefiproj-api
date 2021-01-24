@@ -1,14 +1,16 @@
-from flask import Blueprint, current_app, jsonify, request, Response
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-from src.api.users.auth_resources import admin_required
 
+from src.api.users.auth_resources import admin_required
 from .db_services import FundingDBService
 from .validation_service import FundingValidationService
+
 resources = Blueprint('fundings', __name__)
 
 
 @resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
 @jwt_required
+@admin_required
 def get_fundings_by_project(project_id):
     try:
         current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
@@ -47,7 +49,6 @@ def add_funding():
 
 @resources.route('/api/fundings/<int:funding_id>', methods=['PUT'])
 @jwt_required
-@admin_required
 def update_funding(funding_id):
     try:
         current_app.logger.debug('In PUT /api/fundings/<int:funding_id>')

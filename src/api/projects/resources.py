@@ -1,10 +1,12 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
+from marshmallow import EXCLUDE
 
 from .db_service import ProjectDBService
 from .entities import Project, ProjectSchema
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
+from ..users.auth_resources import admin_required
 from ..users.db_services import UserDBService
 
 resources = Blueprint('projects', __name__)
@@ -12,6 +14,7 @@ resources = Blueprint('projects', __name__)
 
 @resources.route('/api/projects', methods=['POST'])
 @jwt_required
+@admin_required
 def add_project():
     current_app.logger.debug('In POST /api/projects')
     posted_data = request.get_json()
@@ -26,7 +29,7 @@ def add_project():
 
     # convert posted data into project
     posted_project = ProjectSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u')) \
-        .load(posted_data)
+        .load(posted_data, unknown=EXCLUDE)
     project = Project(**posted_project)
 
     # check if user with id_u exists
@@ -61,6 +64,7 @@ def add_project():
 
 @resources.route('/api/projects', methods=['GET'])
 @jwt_required
+@admin_required
 def get_all_projects():
     current_app.logger.info('In GET /api/projects')
 
@@ -76,6 +80,7 @@ def get_all_projects():
 
 @resources.route('/api/projects/<int:proj_id>', methods=['GET'])
 @jwt_required
+@admin_required
 def get_project_by_id(proj_id):
     current_app.logger.info('In GET /api/projects/<int>')
 
@@ -89,6 +94,7 @@ def get_project_by_id(proj_id):
 
 @resources.route('/api/projects/<int:proj_id>', methods=['PUT'])
 @jwt_required
+@admin_required
 def update_project(proj_id):
     current_app.logger.info('In PUT /api/projects/<int>')
 
@@ -105,7 +111,7 @@ def update_project(proj_id):
         }), 422
 
     posted_data = ProjectSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u', 'id_p')) \
-        .load(posted_data)
+        .load(posted_data, unknown=EXCLUDE)
     project_to_update = Project(**posted_data)
 
     # check if the project exists
@@ -138,6 +144,7 @@ def update_project(proj_id):
 
 @resources.route('/api/projects/<int:proj_id>', methods=['DELETE'])
 @jwt_required
+@admin_required
 def delete_project(proj_id):
     current_app.logger.info('In DELETE /api/projects/<int>')
 
@@ -153,7 +160,7 @@ def delete_project(proj_id):
             'message': f'Cannot delete project <{proj_id}> because it is linked to funding <{linked_fin.id_f}>'
         }), 403
 
-    # ??? droit de supprimer si projet non soldé
+    # TODO: ??? droit de supprimer si projet non soldé
 
     id_deleted = ProjectDBService.delete_project(proj_id)
     return jsonify({

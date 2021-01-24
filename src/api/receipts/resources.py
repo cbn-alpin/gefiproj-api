@@ -12,6 +12,8 @@ resources = Blueprint('receipts', __name__)
 
 
 @resources.route('/api/fundings/<int:funding_id>/receipts', methods=['GET'])
+@jwt_required
+@admin_required
 def get_receipts_by_funding(funding_id):
     try:
         current_app.logger.debug('In GET /api/fundings/<int:funding_id>/receipts')
@@ -73,7 +75,8 @@ def update_receipt(id_receipt):
             'errors': validation_errors
         }), 422
 
-    posted_receipt = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).load(posted_receipt_data)
+    posted_receipt = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).load(posted_receipt_data,
+                                                                                       unknown=EXCLUDE)
     receipt = Receipt(**posted_receipt)
 
     # check if receipt exists

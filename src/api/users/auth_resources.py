@@ -180,4 +180,4 @@ def unauthorized_access_handler(e):
         'type': 'TOKEN_ERROR',
         'code': 'TOKEN_REQUIRED',
         'message': 'Missing authorization header. A valid token is required'
-    }), 403
+    }), 401
