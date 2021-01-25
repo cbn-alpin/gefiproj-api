@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: "API pour le projet de gestion financière du CBN Alpin. \nCode source  [https://github.com/cbn-alpin/gefiproj-api/](https://github.com/cbn-alpin/gefiproj-api/)."
-  version: "0.0.3dev"
+  version: "0.0.4dev"
   title: "GEFIPROJ API"
   contact:
     email: "apiteam@swagger.io"
