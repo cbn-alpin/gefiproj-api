@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS depense
 CREATE TABLE IF NOT EXISTS projet
 (
     id_p     serial       NOT NULL,
-    code_p   varchar(5)   NOT NULL UNIQUE,
+    code_p   integer      NOT NULL UNIQUE,
     nom_p    varchar(250) NOT NULL UNIQUE,
     statut_p boolean DEFAULT FALSE,
     id_u     Int          NOT NULL,

@@ -15,7 +15,7 @@ class DBServiceTestCase(DBBaseTestCase):
         funding = FundingDBService.get_funding_by_project(10)
         self.assertEqual(funding, [])
 
-        new_project = Project(id_p=1, nom_p='auto test', code_p='OC77', statut_p=True, id_u=1)
+        new_project = Project(id_p=1, nom_p='auto test', code_p='210077', statut_p=True, id_u=1)
         self.db.session.add(new_project)
 
         new_funder = Funder(id_financeur=1, nom_financeur="Jean Dupont", ref_arret_attributif_financeur=None)

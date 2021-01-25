@@ -5,8 +5,8 @@ from src.api.projects.entities import Project, ProjectSchema
 
 class EntitiesTestCase(unittest.TestCase):
     def test_project_entity(self):
-        project = Project('test', 'Project étoile', 'true', 4)
-        self.assertEqual(project.code_p, 'test')
+        project = Project(210003, 'Project étoile', 'true', 4)
+        self.assertEqual(project.code_p, 210003)
         self.assertEqual(project.nom_p, 'Project étoile')
         self.assertEqual(project.statut_p, 'true')
         self.assertEqual(project.id_u, 4)
@@ -25,10 +25,10 @@ class EntitiesTestCase(unittest.TestCase):
 
     def test_project_schema(self):
         schema = ProjectSchema()
-        data = schema.load({'code_p': 'pCode', 'nom_p': 'Project TEST', 'statut_p': 'true', 'id_u': 4})
+        data = schema.load({'code_p': 210009, 'nom_p': 'Project TEST', 'statut_p': 'true', 'id_u': 4})
         project = Project(**data)
 
-        self.assertEqual(project.code_p, 'pCode')
+        self.assertEqual(project.code_p, 210009)
         self.assertEqual(project.nom_p, 'Project TEST')
         self.assertEqual(project.statut_p, True)
         self.assertEqual(project.id_u, 4)

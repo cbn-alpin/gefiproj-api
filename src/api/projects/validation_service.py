@@ -47,13 +47,7 @@ class ProjectValidationService:
                 'message': 'Paramter <code_p> is missing',
             })
 
-        if 'code_p' in project and len(project['code_p']) != 5:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': 'code_p',
-                'message': '<code_p> must be 5 char length',
-            })
+        # TODO: Regex test of code_p
 
         # statut validation
         if 'statut_p' not in project:

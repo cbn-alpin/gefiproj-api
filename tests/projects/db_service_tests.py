@@ -10,7 +10,7 @@ from src.shared.test_base import DBBaseTestCase
 
 class DBServiceTestCase(DBBaseTestCase):
     def test_insert_project(self):
-        new_project = Project(nom_p='Haut de chèvre', code_p='OC01', statut_p=True, id_u=1)
+        new_project = Project(nom_p='Haut de chèvre', code_p='210001', statut_p=True, id_u=1)
         inserted_project = ProjectDBService.insert_project(new_project)
 
         project_object = self.db.session.query(Project).filter_by(id_p=new_project.id_p).first()
@@ -24,27 +24,58 @@ class DBServiceTestCase(DBBaseTestCase):
         project = ProjectDBService.get_project_by_id(10)
         self.assertEqual(project, {})
 
-        new_project = Project(nom_p='Testing', code_p='OC77', statut_p=True, id_u=1)
+        new_project = Project(nom_p='Testing', code_p='210077', statut_p=True, id_u=1)
         self.db.session.add(new_project)
         self.db.session.commit()
         project = ProjectDBService.get_project_by_id(new_project.id_p)
         self.assertEqual(project['id_p'], new_project.id_p)
 
+    def test_get_project_by_code_ok(self):
+        new_project = Project(nom_p='X-files', code_p='210009', statut_p=False, id_u=1)
+        self.db.session.add(new_project)
+        self.db.session.commit()
+
+        project = ProjectDBService.get_project_by_code('210009')
+        self.assertEqual(project.get('code_p'), 210009)
+        self.assertEqual(project.get('nom_p'), 'X-files')
+
+    def test_get_project_by_nom_ok(self):
+        new_project = Project(nom_p='THE project', code_p='21007', statut_p=False, id_u=1)
+        self.db.session.add(new_project)
+        self.db.session.commit()
+
+        project = ProjectDBService.get_project_by_nom('THE project')
+        self.assertEqual(project.get('nom_p'), 'THE project')
+        self.assertEqual(project.get('code_p'), 21007)
+
     def test_get_all_projects(self):
         all_projects = ProjectDBService.get_all_projects()
         self.assertEqual(len(all_projects), 0)
 
-        new_project1 = Project(nom_p='ça teste', code_p='OC01', statut_p=True, id_u=1)
-        new_project2 = Project(nom_p='OC10 test', code_p='OC10', statut_p=True, id_u=1)
+        new_project1 = Project(nom_p='ça teste', code_p='210001', statut_p=True, id_u=1)
+        new_project2 = Project(nom_p='OC10 test', code_p='210010', statut_p=True, id_u=1)
         self.db.session.bulk_save_objects([new_project1, new_project2])
         self.db.session.commit()
 
         all_projects = ProjectDBService.get_all_projects()
         self.assertEqual(len(all_projects), 2)
 
-    def test_get_project_name(self):
-        project = ProjectDBService.get_project_by_id(100)
-        self.assertEqual(project, {})
+    def test_update_project(self):
+        new_project = Project(nom_p='X-files', code_p='210007', statut_p=False, id_u=1)
+        self.db.session.add(new_project)
+        self.db.session.commit()
+        id_p = new_project.id_p
+
+        new_project.statut_p = True
+        new_project.nom_p = 'Lazy dog'
+        project = ProjectDBService.update_project(new_project)
+
+        self.assertEqual(project.get('id_p'), id_p)
+        self.assertEqual(project.get('nom_p'), 'Lazy dog')
+        self.assertTrue(project.get('statut_p'))
+
+        self.db.session.query(Project).filter_by(id_p=new_project.id_p).delete()
+        self.db.session.commit()
 
     # TODO: test the other methods
 

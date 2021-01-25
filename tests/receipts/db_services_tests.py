@@ -14,7 +14,7 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.db.session.execute("INSERT INTO public.financeur (id_financeur, nom_financeur, "
                                 "ref_arret_attributif_financeur) VALUES (1, 'Jean Receipt Dupont', null)")
         self.db.session.execute("INSERT INTO public.projet (id_p, code_p, nom_p, statut_p, id_u) "
-                                "VALUES (1, 'OC19', 'Receipt tests', true, 1)")
+                                "VALUES (1, 210009, 'Receipt tests', true, 1)")
         self.db.session.execute("INSERT INTO public.financement (id_f, id_p, id_financeur, montant_arrete_f, "
                                 "date_arrete_f, date_limite_solde_f,statut_f, date_solde_f, commentaire_admin_f, "
                                 "commentaire_resp_f, numero_titre_f,annee_titre_f, imputation_f) "
