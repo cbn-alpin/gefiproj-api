@@ -18,12 +18,12 @@ class ProjectDBService:
         return new_project
 
     @staticmethod
-    def get_all_projects(limit=10, offset=0):
+    def get_all_projects():
         session = Session()
         projects_objects = session.query(Project) \
             .options(
             subqueryload(Project.responsable)
-        ).limit(limit).offset(offset).all()
+        ).all()
 
         # Transforming into JSON-serializable objects
         schema = ProjectSchema(many=True)

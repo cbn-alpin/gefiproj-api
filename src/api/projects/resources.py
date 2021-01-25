@@ -73,9 +73,7 @@ def get_all_projects():
     if len(query_error) > 0:
         return jsonify(query_error), 422
 
-    limit = query_params.get('limit', default=10)
-    offset = query_params.get('offset', default=0)
-    return jsonify(ProjectDBService.get_all_projects(limit, offset))
+    return jsonify(ProjectDBService.get_all_projects())
 
 
 @resources.route('/api/projects/<int:proj_id>', methods=['GET'])
