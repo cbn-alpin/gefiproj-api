@@ -10,7 +10,6 @@ resources = Blueprint('amounts', __name__)
 
 @resources.route('/api/receipts/<int:receipt_id>/amounts', methods=['GET'])
 @jwt_required
-@admin_required
 def get_amounts_by_receipt(receipt_id):
     try:
         current_app.logger.debug('In GET /api/receipts/<int:receipt_id>/amounts')
@@ -24,7 +23,6 @@ def get_amounts_by_receipt(receipt_id):
 
 @resources.route('/api/amounts', methods=['POST'])
 @jwt_required
-@admin_required
 def add_amount():
     try:
         current_app.logger.debug('In POST /api/amounts')

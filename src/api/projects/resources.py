@@ -14,7 +14,6 @@ resources = Blueprint('projects', __name__)
 
 @resources.route('/api/projects', methods=['POST'])
 @jwt_required
-@admin_required
 def add_project():
     current_app.logger.debug('In POST /api/projects')
     posted_data = request.get_json()
@@ -64,7 +63,6 @@ def add_project():
 
 @resources.route('/api/projects', methods=['GET'])
 @jwt_required
-@admin_required
 def get_all_projects():
     current_app.logger.info('In GET /api/projects')
 
@@ -78,7 +76,6 @@ def get_all_projects():
 
 @resources.route('/api/projects/<int:proj_id>', methods=['GET'])
 @jwt_required
-@admin_required
 def get_project_by_id(proj_id):
     current_app.logger.info('In GET /api/projects/<int>')
 

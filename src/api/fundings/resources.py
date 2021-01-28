@@ -10,7 +10,6 @@ resources = Blueprint('fundings', __name__)
 
 @resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
 @jwt_required
-@admin_required
 def get_fundings_by_project(project_id):
     try:
         current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
@@ -24,7 +23,6 @@ def get_fundings_by_project(project_id):
 
 @resources.route('/api/fundings', methods=['POST'])
 @jwt_required
-@admin_required
 def add_funding():
     try:
         current_app.logger.debug('In POST /api/fundings')

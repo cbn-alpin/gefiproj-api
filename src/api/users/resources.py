@@ -29,7 +29,6 @@ def get_all_users():
 
 @resources.route('/api/users/<int:user_id>', methods=['GET'])
 @jwt_required
-@admin_required
 def get_user_by_id(user_id):
     current_app.logger.debug('In GET /api/users/<int:descId>')
 

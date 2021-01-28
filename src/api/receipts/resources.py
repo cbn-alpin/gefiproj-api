@@ -13,7 +13,6 @@ resources = Blueprint('receipts', __name__)
 
 @resources.route('/api/fundings/<int:funding_id>/receipts', methods=['GET'])
 @jwt_required
-@admin_required
 def get_receipts_by_funding(funding_id):
     try:
         current_app.logger.debug('In GET /api/fundings/<int:funding_id>/receipts')
@@ -27,7 +26,6 @@ def get_receipts_by_funding(funding_id):
 
 @resources.route('/api/receipts', methods=['POST'])
 @jwt_required
-@admin_required
 def add_receipt():
     current_app.logger.debug('In POST /api/receipts')
     posted_receipt_data = request.get_json()
