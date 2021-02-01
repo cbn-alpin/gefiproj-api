@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-
+from src.api.users.auth_resources import admin_required
 from .db_services import FunderDBService
 from .validation_service import FunderValidationService
 

@@ -53,10 +53,9 @@ class FunderValidationService:
 
     @staticmethod
     def validate_post(funder_data):
-        financeur_keys = ['id_financeur', 'nom_financeur', 'ref_arret_attributif_financeur']
+        financeur_keys = ['nom_financeur', 'ref_arret_attributif_financeur']
         errors = FunderValidationService.check_keys(financeur_keys, funder_data)
 
-        errors = FunderValidationService.check_int_value('id_financeur', funder_data, errors)
         errors = FunderValidationService.check_string_value('nom_financeur', funder_data, errors)
         errors = FunderValidationService.check_string_value('ref_arret_attributif_financeur', funder_data, errors)
         return errors

@@ -8,14 +8,13 @@ class FunderDBService:
     def get_all_funders():
         session = Session()  
         funder_object = session.query(Funder).order_by(Funder.nom_financeur).all()
-
         # Transforming into JSON-serializable objects
         schema = FunderSchema(many=True)
         funders = schema.dump(funder_object)
-
         # Serializing as JSON
         session.close()
-        
+        return funders
+            
     @staticmethod
     def insert(funder):
         posted_funder = FunderSchema(only=('nom_financeur', 'ref_arret_attributif_financeur')).load(funder)
@@ -59,7 +58,7 @@ class FunderDBService:
     def check_funder_use_in_funding(funder_id: int):
         session = Session()  
         funder = session.query(Funder).filter_by(id_financeur=funder_id).all()
-        funding = session.query(Funding).filter(Funding.id_financeur==funder.id_financeur).all()
+        funding = session.query(Funding).filter(Funding.id_financeur==funder_id).all()
         session.close()
         
         if funding is not None and len(funding) > 0:
