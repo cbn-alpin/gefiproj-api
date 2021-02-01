@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import write_to_google_docs, export_funding_item_from_row_proxy, DEFAULT_HEADER
+from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
 resources = Blueprint('exports', __name__)
@@ -19,16 +20,15 @@ def export_fundings_v1():
 
     post_data = request.get_json()
 
-    # TODO: Validate posted data
-
-    if not post_data or 'annee' not in post_data:
+    validation_errors = ExportValidationService.validate_v1(post_data)
+    if len(validation_errors) > 0:
         return jsonify(), 422
 
     annee_ref = post_data['annee_ref']
-    shares = post_data['shares']
+    shares = post_data['partages']
     header_column_names = DEFAULT_HEADER
-    if 'headers' in post_data:
-        header_column_names = post_data['headers']
+    if 'entete' in post_data:
+        header_column_names = post_data['entete']
 
     result = ExportDBService.get_suivi_financement(1, annee_ref)
 

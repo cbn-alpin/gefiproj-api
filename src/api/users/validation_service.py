@@ -1,63 +1,17 @@
 import re
 
-ERROR_CODE = 'VALIDATION_ERROR'
+from src.shared.data_validation_utils import DataValidationUtils, ERROR_CODE
+
 EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 
 class UserValidationService:
     @staticmethod
-    def check_keys(keys: [], user):
-        errors = []
-
-        for key in keys:
-            if key not in user:
-                errors.append({
-                    'code': ERROR_CODE,
-                    'type': 'MISSING_PARAMETER',
-                    'field': key,
-                    'message': 'Paramter <{}> is missing'.format(key),
-                })
-        return errors
-
-    @staticmethod
-    def check_int_value(key: str, data, errors: []):
-        err = errors
-        try:
-            if key in data:
-                data[key] = int(data[key])
-        except ValueError:
-            err.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': key,
-                'message': f'<{key}> must be a number. Ex: 3',
-            })
-        return err
-
-    @staticmethod
-    def check_float_montant(key: str, data, errors: []):
-        err = errors
-        try:
-            if key in data:
-                data[key] = float(data[key])
-                if data[key] < 0:
-                    raise ValueError
-        except ValueError:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': key,
-                'message': f'<{key}> must be a positive double precision number. Ex: 173.59',
-            })
-
-        return err
-
-    @staticmethod
     def validate_post(user):
         errors = []
 
         user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'password_u', 'active_u']
-        errors = UserValidationService.check_keys(user_keys, user)
+        errors = DataValidationUtils.check_keys(user_keys, user)
 
         if 'email_u' in user \
                 and not re.search(EMAIL_REGEX, user['email_u']):
