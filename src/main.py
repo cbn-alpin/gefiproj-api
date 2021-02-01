@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from src.api import create_api, db
 from src.api.amounts.resources import resources as amounts_ressources
 from src.api.expenses.resources import resources as expenses_ressources
-from src.api.exports.fundings import resources as fundings_export_ressources
+from src.api.exports.v1.export_v1_resources import resources as fundings_export_ressources
 from src.api.funders.resources import resources as funders_ressources
 from src.api.fundings.resources import resources as fundings_ressources
 from src.api.projects.resources import resources as projects_ressources
