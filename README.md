@@ -101,4 +101,10 @@ caprover serversetup
 
 Now we can connect to : [https://captain.cbna.khadir.net](https://captain.cbna.khadir.net/)
 
+
+```
+docker build -t cbna_backend:v1 .
+docker run -d -p 5000:5000 0341414428f1
+```
+
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)
