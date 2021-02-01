@@ -22,6 +22,10 @@ tags:
     description: "Gestion des Recettes"
   - name: "Utilisateurs"
     description: "Gestion des utilisateurs"
+  - name: "Montants Affectés"
+    description: "Gestion des montants affectés"
+  - name: "Financeur"
+    description: "Gestion des financeurs"
 schemes:
   - "http"
   - "https"
@@ -306,6 +310,130 @@ paths:
         - api_key: [ ]
 
 
+  # Financement
+  /api/fundings:
+    post:
+      tags:
+        - "Financements"
+      summary: "Ajouter un nouveau financement"
+      description: ""
+      operationId: "addFunding"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Financement qui doit être ajouté"
+          required: true
+          schema:
+            $ref: "#/definitions/Financement"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le projet indiqué est introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+        "201":
+          description: "Financement créé"
+          schema:
+            $ref: "#/definitions/Project"
+      security:
+        - api_key: [ ]
+  /api/projects/{projectId}/fundings:
+    get:
+      tags:
+        - "Financements"
+      summary: "Récupérer les financements par projet"
+      description: "Retourne la liste de financement par projet"
+      operationId: "getFundingByProjectId"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "projectId"
+          in: "path"
+          description: "id du projet relié au financement"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le projet indiqué est introuvable"
+        "200":
+          description: "Retourne une liste de financements"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Financement"
+      security:
+        - api_key: [ ]
+  /api/fundings/{fundingId}:
+    put:
+      tags:
+        - "Financements"
+      summary: "Mettre à jour un financement"
+      description: ""
+      operationId: "updateFunding"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "fundingId"
+          in: "path"
+          description: "id du financement à mettre à jour"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter au financement"
+          required: true
+          schema:
+            $ref: "#/definitions/Financement"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Financement"
+        "404":
+          description: "Projet introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - "Financements"
+      summary: "Supprimer un financement"
+      description: ""
+      operationId: "deleteFunding"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "fundingId"
+          in: "path"
+          description: "id du financement à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Projet introuvable"
+        "204":
+          description: "Opération réussie"
+      security:
+        - api_key: [ ]
+
+
   # Recettes
   /api/receipts:
     post:
@@ -409,6 +537,131 @@ paths:
         - api_key: [ ]
 
         # Utilisateurs section
+  
+  # Montant affecté
+  /api/receipts/{receiptId}/amounts:
+    get:
+      tags:
+        - "Montants Affectés"
+      summary: "Récupérer les montants affectés par recette"
+      description: "Retourne la liste des montants affectés par recette"
+      operationId: "getAmountsByReceiptId"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "receiptId"
+          in: "path"
+          description: "id de la recette"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le recette indiqué est introuvable"
+        "200":
+          description: "Retourne une liste des montants affectés par recette"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Montant_Affecte"
+      security:
+        - api_key: [ ]
+  /api/amounts:
+    post:
+      tags:
+        - "Montants Affectés"
+      summary: "Ajouter un montant affecté"
+      description: ""
+      operationId: "addAmount"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Montant affecté qui doit être ajouté"
+          required: true
+          schema:
+            $ref: "#/definitions/Montant_Affecte"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le recette indiqué est introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+        "201":
+          description: "Montant affecté créé"
+          schema:
+            $ref: "#/definitions/Montant_Affecte"
+      security:
+        - api_key: [ ]
+  /api/amounts/{amountId}:
+    put:
+      tags:
+        - "Montants Affectés"
+      summary: "Mettre à jour un montant affecté"
+      description: ""
+      operationId: "updateAmount"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "amountId"
+          in: "path"
+          description: "id du montant affecté à mettre à jour"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter au montant affecté"
+          required: true
+          schema:
+            $ref: "#/definitions/Montant_Affecte"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Montant_Affecte"
+        "404":
+          description: "Recette introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - "Montants Affectés"
+      summary: "Supprimer un montant affecté"
+      description: ""
+      operationId: "deleteAmount"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "amountId"
+          in: "path"
+          description: "id du montant affecté à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Projet introuvable"
+        "204":
+          description: "Opération réussie"
+      security:
+        - api_key: [ ]
+
+  
   /api/users:
     get:
       tags:
@@ -460,6 +713,117 @@ paths:
         "404":
           description: "Projet introuvable"
 
+
+  # Financeur
+  /api/funders:
+    get:
+      tags:
+        - "Financeur"
+      summary: "Récupérer les financeurs"
+      description: "Retourne la liste des financeurs"
+      operationId: "getAllFunders"
+      produces:
+        - "application/json"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Retourne une liste des montants affectés par recette"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Financeur"
+      security:
+        - api_key: [ ]
+    post:
+      tags:
+        - "Financeur"
+      summary: "Ajouter un financeur"
+      description: ""
+      operationId: "addFunder"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Financeur qui doit être ajouté"
+          required: true
+          schema:
+            $ref: "#/definitions/Financeur"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "422":
+          description: "Erreur de validation des entrées"
+        "201":
+          description: "Financeur créé"
+          schema:
+            $ref: "#/definitions/Financeur"
+      security:
+        - api_key: [ ]
+  /api/funders/{funderId}:
+    put:
+      tags:
+        - "Financeur"
+      summary: "Mettre à jour un financeur"
+      description: ""
+      operationId: "updateFunder"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "funderId"
+          in: "path"
+          description: "id du financeur à mettre à jour"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter au financeur"
+          required: true
+          schema:
+            $ref: "#/definitions/Financeur"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Financeur"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - "Financeur"
+      summary: "Supprimer un financeur"
+      description: ""
+      operationId: "deleteFunder"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "funderId"
+          in: "path"
+          description: "id du financeur à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Financeur introuvable"
+        "204":
+          description: "Opération réussie"
+      security:
+        - api_key: [ ]
+
+
 securityDefinitions:
   api_key:
     type: apiKey
@@ -492,6 +856,70 @@ definitions:
         example: "Un nom de projet"
       statut_p:
         type: "boolean"
+  Financement:
+    type: "object"
+    required:
+      - "id_p"
+      - "id_financeur"
+      - "montant_arrete_f"
+      - "statut_f"
+      - "date_solde_f"
+    properties: 
+      id_f:
+        type: "integer"
+        format: "int64"
+        description: "id du financement"
+        example: 1
+      id_p:
+        type: "integer"
+        format: "int64"
+        description: "reference du projet"
+        example: 1
+      id_financeur:
+        type: "integer"
+        format: "int64"
+        example: 1
+        description: "reference du financeur du projet"
+      montant_arrete_f:
+        type: "number"
+        example: 200.40
+        description: "montant arrêté du financement"
+      statut_f:
+        type: "string"            
+        enum: ["SOLDE", "ANTR", "ATR"]
+        description: "statut du financement"
+      date_solde_f:
+        type: string
+        format: date
+        example: "2012-02-13"
+        description: "date de solde du financement"
+      date_arrete_f:
+        type: string
+        format: date
+        example: "2012-02-13"
+        description: "date d'arrêté du financement"
+      date_limite_solde_f:
+        type: string
+        format: date
+        example: "2012-02-13"
+        description: "date limite de solde du financement"
+      commentaire_admin_f:
+        type: "string"
+        description: "Un commentaire dédié au administrateur"
+      commentaire_resp_f:
+        type: "string"
+        description: "Un commentaire dédié au responsable de projet"
+      numero_titre_f:
+        type: "string"
+        description: "le numéro du titre du financement"
+      annee_titre_f:
+        type: "string"
+        format: date
+        example: "2012"
+        description: "le numéro du titre du financement"
+      imputation_f:
+        type: "string"
+        description: "l'imputation du financement"
   Login:
     type: object
     required:
@@ -562,6 +990,29 @@ definitions:
       - "annee_r"
       - "montant_r"
       - "id_f"
+  Montant_Affecte:
+    type: object
+    properties:
+      id_ma:
+        type: integer
+        description: Identifiant du montant affecté
+        example: 5
+      id_r:
+        type: integer
+        description: Identifiant du recette associé
+        example: 8
+      annee_ma:
+        type: integer
+        description: Année du montant affecté
+        example: 2021
+      montant_ma:
+        type: number
+        description: Montant du montant affecté
+        example: 2357.79
+    required:
+      - "annee_ma"
+      - "montant_ma"
+      - "id_r"
   Utilisateur:
     type: object
     required:
@@ -613,3 +1064,18 @@ definitions:
         type: number
         description: "Montant de la dépense"
         example: 3793.67
+  Financeur:
+    type: object
+    properties:
+      id_financeur:
+        type: integer
+        description: Identifiant du financeur
+        example: 5
+      nom_financeur:
+        type: string
+        description: nom du financeur
+      ref_arret_attributif_financeur:
+        type: string
+        description: référence arrêté attributif du financeur
+    required:
+      - "nom_financeur"
