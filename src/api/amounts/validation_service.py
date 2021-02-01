@@ -22,12 +22,14 @@ class AmountValidationService:
         try:
             if key in data:
                 data[key] = int(data[key])
+            else:
+                raise ValueError
         except ValueError:
             err.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
                 'field': key,
-                'message': f'<{key}> doit être un nombre entier.',
+                'message': f'<{key}> doit être défini et doit être un nombre entier.',
             })
         return err
 
@@ -38,12 +40,14 @@ class AmountValidationService:
             if key in data:
                 if float(data[key]) <= 0:
                     raise ValueError
+            else:
+                raise ValueError
         except ValueError:
             errors.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
                 'field': key,
-                'message': f'<{key}> doit être un nombre supérieur à 0.',
+                'message': f'<{key}> doit être défini avec un nombre supérieur à 0.',
             })
 
         return err
@@ -51,10 +55,10 @@ class AmountValidationService:
     @staticmethod
     def validate_post(amount_data):
         amount_keys = ['id_r', 'montant_ma', 'annee_ma']
-        errors = check_keys(amount_keys, amount_data)
+        errors = AmountValidationService.check_keys(amount_keys, amount_data)
 
-        errors = check_int_value('id_r', amount_data, errors)
-        errors = check_float_montant('montant_ma', amount_data, errors)
-        errors = check_int_value('annee_ma', amount_data, errors)
+        errors = AmountValidationService.check_int_value('id_r', amount_data, errors)
+        errors = AmountValidationService.check_float_montant('montant_ma', amount_data, errors)
+        errors = AmountValidationService.check_int_value('annee_ma', amount_data, errors)
         return errors
     

@@ -38,6 +38,7 @@ def add_amount():
 
         # check receipt
         AmountDBService.check_receipt_exists_by_id(posted_amount_data['id_r'])
+        AmountDBService.check_error_sum_value(posted_amount_data)
         
         response = AmountDBService.insert(posted_amount_data)
         return jsonify(response), 201
@@ -66,6 +67,7 @@ def update_amount(amount_id):
             
         # Checks
         AmountDBService.check_receipt_exists_by_id(data['id_r'])
+        AmountDBService.check_error_sum_value(data)
         
         response = AmountDBService.update(data)
         return jsonify(response), 200
