@@ -66,7 +66,24 @@ class FundingValidationService:
                 'field': 'montant_arrete_f',
                 'message': 'Le champs <montant_arrete_f> est manquant',
             })
+            
+        # montant_arrete_f validation
+        if 'montant_arrete_f' in funding and float(funding['montant_arrete_f']) <= 0:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': 'montant_arrete_f',
+                'message': 'Le champs <montant_arrete_f> doit être supérieur à 0',
+            })
 
+        if 'date_solde_f' not in funding:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'MISSING_PARAMETER',
+                'field': 'date_solde_f',
+                'message': 'Le champs <date_solde_f> est manquant',
+            })
+            
         # statut validation
         if 'statut_f' not in funding:
             errors.append({
@@ -95,6 +112,22 @@ class FundingValidationService:
                 'type': 'VALUE_ERROR',
                 'field': 'statut_f',
                 'message': 'Le statut du financement ne peut pas être soldé.',
+            })
+
+        if ('date_arrete_f' in funding and 'date_limite_solde_f' in funding and funding['date_arrete_f'] > funding['date_limite_solde_f']):
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': 'date_arrete_f',
+                'message': 'format date non respecté : la date arrêté ou commande est postérieure à la date limite de solde.',
+            })
+            
+        if ('date_arrete_f' in funding and 'date_solde_f' in funding and funding['date_arrete_f'] > funding['date_solde_f']):
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': 'date_arrete_f',
+                'message': 'format date non respecté : la date arrêté ou commande est postérieure à la date de solde.',
             })
 
         return errors
