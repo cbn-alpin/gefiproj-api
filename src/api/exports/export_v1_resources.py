@@ -1,6 +1,3 @@
-# https://www.postgresqltutorial.com/postgresql-python/call-stored-procedures/
-# https://gspread.readthedocs.io/en/latest/index.html
-# https://medium.com/better-programming/integrating-google-sheets-api-with-python-flask-987d48b7674e
 from flask import current_app, Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -22,7 +19,10 @@ def export_fundings_v1():
 
     validation_errors = ExportValidationService.validate_v1(post_data)
     if len(validation_errors) > 0:
-        return jsonify(), 422
+        return jsonify({
+            'message': 'A validation error occured',
+            'errors': validation_errors
+        }), 422
 
     annee_ref = post_data['annee_ref']
     shares = post_data['partages']
@@ -32,9 +32,13 @@ def export_fundings_v1():
 
     result = ExportDBService.get_suivi_financement(1, annee_ref)
 
+    # TODO: what if suivi_financement returns None ?
     if not result:
         return jsonify({
-            'status': 'Error while getting fundings'
+            'message': 'Error while getting fundings to export',
+            'type': 'EXPORT',
+            'code': 'GET_FUNDING_EXPORT_ERROR',
+            'status': 'error'
         }), 500
 
     export_data = []

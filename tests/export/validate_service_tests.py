@@ -7,7 +7,7 @@ class MyTestCase(unittest.TestCase):
     def test_validate_export_ok(self):
         export_params_data = {
             'annee_ref': 2020,
-            'shares': [
+            'partages': [
                 {
                     'email': 'email@mail.ml',
                     'type': 'user',
@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
                     'permission': 'write'
                 }
             ],
-            'headers': ['Col1', 'Col2', 'Col3']
+            'entete': ['Col1', 'Col2', 'Col3']
         }
 
         validation_errors = ExportValidationService.validate_v1(export_params_data)
@@ -28,13 +28,13 @@ class MyTestCase(unittest.TestCase):
     def test_validate_export_invalid_shares(self):
         export_params_data = {
             'annee_ref': 2020,
-            'shares': [
+            'partages': [
                 {
                     'email': 'email@mail.ml',
                     'type': 'user',
                 },
             ],
-            'headers': ['Col1', 'Col2', 'Col3']
+            'entete': ['Col1', 'Col2', 'Col3']
         }
 
         validation_errors = ExportValidationService.validate_v1(export_params_data)
