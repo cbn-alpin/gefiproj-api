@@ -12,13 +12,6 @@ DEFAULT_HEADER = ['id_p', 'code_p', 'nom_p', 'id_u', 'initiales_u', 'id_f', 'dat
                   'recette_a4', 'recette_a5', 'recette_apres']
 
 
-class GoogleUserShare:
-    def __init__(self, email, user_type, permission):
-        self.email = email
-        self.type = user_type
-        self.permission = permission
-
-
 def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
@@ -41,13 +34,13 @@ def write_to_google_docs(document_tile, header_column_names, data, shares):
         google_sheet = gc.create(document_tile)
 
         for it in shares:
-            google_sheet.share(it.email, perm_type=it.type, role=it.permission)
+            google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
 
         work_sheet = google_sheet.sheet1
-        last_column_letter = SHEET_COLUMN_LETTERS[header_column_names.length - 1]
+        last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
         work_sheet.insert_row(header_column_names, 1)
-        work_sheet.format(f'A1:{last_column_letter}:1', {
+        work_sheet.format(f'A1:{last_column_letter}1', {
             'textFormat': {
                 'bold': True
             },

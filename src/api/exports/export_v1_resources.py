@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import current_app, Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -48,7 +50,8 @@ def export_fundings_v1():
     if not len(export_data):
         return jsonify({'message': 'No data to export'}), 200
 
-    document_created = write_to_google_docs('', header_column_names, export_data, shares)
+    document_created = write_to_google_docs(f'Export financement année {annee_ref} - \
+                {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}', header_column_names, export_data, shares)
 
     if not document_created:
         return jsonify({
@@ -61,5 +64,6 @@ def export_fundings_v1():
     return jsonify({
         'message': 'successfully created google sheet',
         'title': document_created.title,
-        'lines': document_created.lines
-    }), 200  # TODO: Return the url of created doc
+        'lines': document_created.lines,
+        'url': document_created.url
+    }), 200

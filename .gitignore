@@ -1,5 +1,6 @@
 config/config.yml
 config/config.local.yml
+config/google-credentials.json
 .flaskenv
 
 # Byte-compiled / optimized / DLL files
