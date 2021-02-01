@@ -80,4 +80,4 @@ EXPOSE 5000
 VOLUME $APP_HOME
 
 # CMD ["python", "-m", "unittest", "discover", "-v", "-s", "tests/", "-p", "'*_tests.py'"]
-CMD flask run
+CMD flask run -h 0.0.0.0
