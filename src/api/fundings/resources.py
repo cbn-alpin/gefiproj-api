@@ -80,7 +80,7 @@ def delete_funding(funding_id):
         current_app.logger.debug('In DELETE /api/fundings/<int:funding_id>')
         # check
         FundingDBService.check_funding_exists(funding_id)
-        FundingDBService.check_have_receipt(funding_id)
+        FundingDBService.delete_children(funding_id)
 
         response = FundingDBService.delete_funding(funding_id)
         return jsonify(response), 204

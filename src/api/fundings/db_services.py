@@ -4,6 +4,7 @@ from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy import func, desc
 from sqlalchemy.orm import join
 from .entities import Funding, FundingSchema
+from ..amounts.entities import Amount
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..projects.entities import Project, ProjectSchema
 from src.shared.entity import Session
@@ -28,17 +29,8 @@ class FundingDBService:
         
         if existing_project is None:
             raise ValueError(f'Le projet {project_id} n\'existe pas.',404)
-    
-    @staticmethod
-    def check_have_receipt(funding_id):
-        session = Session()
-        existing_receipt = session.query(Receipt).filter_by(id_f=funding_id).first()
-        session.close()
         
-        if existing_receipt is not None:
-            raise ValueError(f'Ce financement ne peut pas être supprimé car il possède des recettes.',405)
-        
-        
+
     @staticmethod
     def check_funding_exists(funding_id):
         session = Session()
@@ -165,3 +157,18 @@ class FundingDBService:
             date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d')
             date = date_time_obj.date().isoformat()
         return date
+
+    @staticmethod
+    def delete_children(funding_id):
+        session = Session()
+        receipts_object = session.query(Receipt).filter(Receipt.id_f==funding_id).all()
+        schema = ReceiptSchema(many=True)
+        receipts = schema.dump(receipts_object)
+        for r in receipts:
+            delete_amounts = Amount.__table__.delete().where(Amount.id_r==r['id_r'])
+            session.execute(delete_amounts)
+            delete_receipt = Receipt.__table__.delete().where(Receipt.id_r==r['id_r'])
+            session.execute(delete_receipt)
+            
+        session.commit()
+        session.close()
