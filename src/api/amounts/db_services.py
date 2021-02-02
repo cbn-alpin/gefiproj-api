@@ -3,6 +3,7 @@ from src.shared.entity import Session
 from ..receipts.entities import Receipt, ReceiptSchema
 from .entities import Amount, AmountSchema
 from sqlalchemy import func
+from sqlalchemy.orm import join
 
 class AmountDBService:
     @staticmethod
@@ -79,28 +80,33 @@ class AmountDBService:
     
     @staticmethod
     def check_sum_value(amount):
-        session = Session()
-        receipt = session.query(Receipt.montant_r).filter_by(id_r=amount['id_r']).first()
-        amount_receipt = receipt[0]
-        
+        session = Session()     
+        diff = -1
+        res = []
+        # insert
         if 'id_ma' not in amount:
-            total_amount = session.query(func.sum(Amount.montant_ma).label('total_montant')).filter(Amount.id_r==amount['id_r']).first()
-            total_amount = total_amount[0]
+            res = session.execute("select (r.montant_r - COALESCE(sum(ma.montant_ma), 0)) as difference "
+                                                        "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
+                                                        "where r.id_r=:receipt_id group by r.id_r",
+                                                        {'receipt_id': amount['id_r']})
+            
+        # update
+        elif 'id_ma' in amount :
+            res = session.execute("select (r.montant_r - COALESCE(sum(ma.montant_ma), 0)) as difference "
+                                                        "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
+                                                        "where r.id_r=:receipt_id and ma.id_ma=:amount_id group by r.id_r",
+                                                        {'receipt_id': amount['id_r'], 'amount_id': amount['id_ma']})        
+                    
+        if res is not None: 
+            rest_amounts = 0
+            for r in res:
+                rest_amounts = float(r['difference'])
+            diff = rest_amounts + float(amount['montant_ma'])
         
-            if total_amount is None:
-                # first insert for one receipt
-                return float(amount_receipt) >= float(amount['montant_ma'])
-            else:
-                # insert for one receipt
-                return float(amount_receipt) >= float(total_amount)
-        elif 'id_ma' in amount and amount['id_ma'] is not None and total_amount is not None and total_amount > 0:
-            total_amount = session.query(func.sum(Amount.montant_ma).label('total_montant')) \
-                .filter(Amount.id_r==amount['id_r']) \
-                .filter(Amount.id_ma!=amount['id_ma']).first()
-            total_amount = total_amount[0] + amount['montant_ma']
-            # update for one receipt
-            return float(amount_receipt) >= float(total_amount)
-        
+        session.close()
+        return diff >= 0
+    
+    
     @staticmethod
     def check_error_sum_value(amount):
         if AmountDBService.check_sum_value(amount) == False:
