@@ -32,15 +32,15 @@ python -m venv cbna_env
 pip install -r requirements.txt
 ```
 
-- Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
-Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le fichier `config/` du projet.
+- Configurer l'accès à la base de données : vous devez récupérer le fichier de configurations dans le drive (voir avec votre **administrateur**)
+Vous devez enregistrer le fichier `config.yml` dans le fichier `config/` du projet.
 
 - Lancer les tests avec 
 ```shell
 python -m unittest discover -v -s tests/ -p '*_tests.py'
 ```
 
-<b>Note importante</b> ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
+**Note importante** ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
 avec les informations d'une base de donnée autre que celle de la production et un token valide.
  
 ## Lancement du framwork *Flask* 🚀
@@ -69,7 +69,7 @@ Vérifier que le projet est lancé en allant sur  `/status` et voir que la repon
 #  Test Server with Dockerfile
 ```
 cmd=docker build -t cbna_backend:v1 .
-docker run -d -p -p 80:80 cbna_backend:v1
+docker run -d -p 80:80 cbna_backend:v1
 ```
 
 ```bash
