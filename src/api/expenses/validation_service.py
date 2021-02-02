@@ -1,13 +1,13 @@
 from src.api.projects.validation_service import ERROR_CODE
-from src.api.users.validation_service import UserValidationService
+from src.shared.data_validation_utils import DataValidationUtils
 
 
 class ExpenseValidationService:
     @staticmethod
     def validate_post(expense_data):
         expense_keys = ['annee_d', 'montant_d']
-        # TODO: make check_keys() independent of UserValidationService
-        errors = UserValidationService.check_keys(expense_keys, expense_data)
+
+        errors = DataValidationUtils.check_keys(expense_keys, expense_data)
 
         try:
             # TODO check minimum and maximum year values of validity

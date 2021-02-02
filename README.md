@@ -33,7 +33,9 @@ pip install -r requirements.txt
 ```
 
 - Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
-Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le fichier `config/` du projet.
+Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le dossier `config/` du projet.  
+- Pour pouvoir exporter des bilans vers Google Sheet il faut récuperer le fichier `google-credentials.json` depuis le 
+dossier Google Drive Configuration/config.yml. Vous devez ensuite le placer dans le dossier `config/` du projet
 
 - Lancer les tests avec 
 ```shell
