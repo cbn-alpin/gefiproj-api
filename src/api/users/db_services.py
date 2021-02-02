@@ -1,9 +1,14 @@
 from src.shared.entity import Session
-
+from flask_jwt_extended import get_jwt_identity
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
+from ..projects.db_service import ProjectDBService
+from enum import Enum
 
+class Role(Enum):
+    ADMIN = 'administrateur'
+    CONSULTANT = 'consultant'
 
 class UserDBService:
     @staticmethod
@@ -96,6 +101,27 @@ class UserDBService:
 
         session.close()
         return new_user
+
+    @staticmethod
+    def isResponsableOfProjet(project_id: int):
+        isResponsable = False
+        project = ProjectDBService.get_project_by_id(project_id)
+        user = UserDBService.get_user_by_email(get_jwt_identity())
+        if project is not None and 'responsable' in project and \
+            user is not None and 'id_u' in user \
+            and user['id_u'] == project['responsable']['id_u']:
+            role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
+            isResponsable = role[0] == Role.CONSULTANT.value
+        return isResponsable
+
+    @staticmethod
+    def isAdmin():
+        isAdmin = False
+        user = UserDBService.get_user_by_email(get_jwt_identity())
+        if user is not None and 'id_u' in user:
+            role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
+            isAdmin = role[0] == Role.ADMIN.value
+        return isAdmin
 
     @staticmethod
     def revoke_token(jti: str) -> RevokedToken or None:

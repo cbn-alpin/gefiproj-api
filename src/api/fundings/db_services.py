@@ -1,5 +1,4 @@
 from datetime import datetime
-import json
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy import func, desc
 from sqlalchemy.orm import join
@@ -8,9 +7,12 @@ from ..amounts.entities import Amount
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..projects.entities import Project, ProjectSchema
 from src.shared.entity import Session
+from ..users.db_services import UserDBService
+from enum import Enum
 
-STATUS_DEFAULT = 'ANTR'
-STATUS_SOLDE = 'SOLDE'
+class Status(Enum):
+    STATUS_DEFAULT = 'ANTR'
+    STATUS_SOLDE = 'SOLDE'
 
 class FundingDBService:
     @staticmethod
@@ -55,10 +57,11 @@ class FundingDBService:
         schema = FundingSchema(many=True)
         funding = schema.dump(funding_object)
         rest_amount_funding = schema.dump(rest_amount_funding_object)
-            
+        
+        isResponsable = UserDBService.isResponsableOfProjet(project_id)
         for i,f in enumerate(funding):
             if rest_amount_funding[i]['id_f'] == f['id_f']:
-                if f['statut_f'] == STATUS_SOLDE:
+                if f['statut_f'] == Status.STATUS_SOLDE.value:
                     f['solde'] = True
                 else:
                     f['solde'] = False
@@ -67,6 +70,8 @@ class FundingDBService:
                     f['difference'] = 0
                 else:
                     f['difference'] = rest_amount_funding[i]['difference']
+                    
+                f['isResponsable'] = isResponsable
 
         # Serializing as JSON
         session.close()
@@ -75,9 +80,6 @@ class FundingDBService:
 
     @staticmethod
     def insert_funding(posted_funding):
-        # Convert date format
-        # posted_funding = convert_funding_dates(posted_funding)
-
         posted_funding['montant_arrete_f'] = float(posted_funding['montant_arrete_f'])
         # Mount funding object
         posted_funding = FundingSchema(only=(
@@ -99,9 +101,6 @@ class FundingDBService:
 
     @staticmethod
     def update_funding(funding):
-        # Convert date format
-        #data = convert_funding_dates(data)
-
         # Mount funding object
         funding = FundingSchema(only=(
             'id_f', 'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f',
@@ -172,3 +171,9 @@ class FundingDBService:
             
         session.commit()
         session.close()
+
+    @staticmethod
+    def can_update(project_id: int):
+        if UserDBService.isResponsableOfProjet(project_id) == False and UserDBService.isAdmin() == False :
+            raise Exception(f'Ce financement ne peut pas être modifier car vous n\'êtes pas responsable du projet.',403)
+        

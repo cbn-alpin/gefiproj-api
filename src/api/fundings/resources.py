@@ -1,6 +1,5 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-
 from src.api.users.auth_resources import admin_required
 from .db_services import FundingDBService
 from .validation_service import FundingValidationService
@@ -54,7 +53,9 @@ def update_funding(funding_id):
         data = request.get_json()
         if 'id_f' not in data:
             data['id_f'] = funding_id
-            
+        
+        # check can modify
+        FundingDBService.can_update(data['id_p'])
         # validate fields to update
         validation_errors = FundingValidationService.validate_post(data)
         if len(validation_errors) > 0:
@@ -69,6 +70,8 @@ def update_funding(funding_id):
         response = FundingDBService.update_funding(data)
         return jsonify(response), 200
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]
 
 
