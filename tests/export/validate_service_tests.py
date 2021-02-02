@@ -64,7 +64,7 @@ class MyTestCase(unittest.TestCase):
         export_params_data['version'] = 2
         validation_errors = ExportValidationService.validate(export_params_data)
         self.assertEqual(1, len(validation_errors))
-        self.assertEqual('anne_max', validation_errors[0]['field'])
+        self.assertEqual('annee_max', validation_errors[0]['field'])
 
 
 if __name__ == '__main__':

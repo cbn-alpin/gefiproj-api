@@ -38,7 +38,7 @@ def export_fundings():
         header_column_names = post_data['entete']
     if 'nom_fichier' in post_data:
         file_name = post_data['nom_fichier']
-    if 'annee_max' in post_data['annee_max']:
+    if 'annee_max' in post_data and version == 2:
         annee_max = post_data['annee_max']
 
     result = ExportDBService.get_suivi_financement(version, annee_ref, annee_max)
@@ -73,5 +73,8 @@ def export_fundings():
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
-        'shares': shares
+        'shares': shares,
+        'annee_ref': annee_ref,
+        'annee_max': annee_max,
+        'version': version,
     }), 200

@@ -23,7 +23,7 @@ class ExportValidationService:
 
             # annee_max is mandatory when version is 2
             if export_params_data['version'] == 2:
-                errors = errors + DataValidationUtils.check_keys(['anne_max'], export_params_data)
+                errors = errors + DataValidationUtils.check_keys(['annee_max'], export_params_data)
                 errors = DataValidationUtils.check_int_value('annee_max', export_params_data, errors)
 
         if 'entete' in export_params_data:
