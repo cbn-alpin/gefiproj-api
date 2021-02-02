@@ -73,7 +73,7 @@ There are many easy CI/CD platforms that offer generous free minutes for your bu
 ### Configure Firewall
 
 ```bash
-sudo ufw allow 80,443,3000,996,7946,4789,2377,5000/tcp; sudo ufw allow 7946,4789,2377/udp;
+sudo ufw allow 80,443,3000,996,7946,4789,2377/tcp; sudo ufw allow 7946,4789,2377/udp;
 ```
 
 ### Step 1: CapRover Installation
@@ -107,7 +107,7 @@ Now we can connect to : [https://captain.gefiproj.cbn-alpin.fr/](https://captain
 
 ```
 docker build -t cbna_backend:v1 .
-docker run -d -p 5000:5000 cbna_backend:v1
+docker run -d cbna_backend:v1
 ```
 
 ### Step 4: Install Apps

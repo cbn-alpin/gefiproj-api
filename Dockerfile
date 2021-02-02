@@ -76,7 +76,7 @@ RUN set FLASK_APP=src/main.py
 # Mode Debug
 RUN export FLASK_DEBUG=false
 
-EXPOSE 5000
+EXPOSE 80
 VOLUME $APP_HOME
 
 # CMD ["python", "-m", "unittest", "discover", "-v", "-s", "tests/", "-p", "'*_tests.py'"]
