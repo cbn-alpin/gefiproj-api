@@ -68,8 +68,32 @@ Vérifier que le projet est lancé en allant sur  `/status` et voir que la repon
 
 #  Test Server with Dockerfile
 ```
-docker build -t cbna_backend:v1 .
+cmd=docker build -t cbna_backend:v1 .
 docker run -d -p -p 80:80 cbna_backend:v1
+```
+
+```bash
+#!/bin/bash
+awk '{ sub ("\\\\$", " "); printf " --build-arg %s", $0  } END { print ""  }' $@
+
+docker build $(./buildargs.sh .env) -t cbna_backend:v1 .
+````
+
+
+```bash
+#!/bin/bash
+
+#docker build "${opts[@]}" -t cbna_backend:v1 .
+function create_build_arg {
+        awk '{ sub ("\\\\$", " "); printf " --build-arg %s", $0  } END { print ""  }' $@ < .env
+}
+
+OUTPUT=$(create_build_arg)
+cmd+='docker build'
+cmd+=$OUTPUT
+cmd+=' -t cbna_backend:v1 .'
+
+eval $cmd
 ```
 
 # Own Paas serveur with CapRover  🚀
