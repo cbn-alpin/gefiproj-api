@@ -155,6 +155,35 @@ RUN export DATABASE_TEST_PASSWORD=${DATABASE_TEST_PASSWORD}
 RUN export JWT_SECRET=${JWT_SECRET}
 RUN export JWT_TEST_TOKEN=${JWT_TEST_TOKEN}
 
+RUN echo "pathes:
+        root: '{tc_root_dir}'
+        config: '{tc_root_dir}/config'
+        database: '{tc_root_dir}/resources/database'
+    database:
+        # path: '{tc_root_dir}/resources/database/taxon_concept.sqlite3'
+        host: ${DATABASE_PROD_IP}
+        port: ${SQL_PORT}
+        name: ${DATABASE_PROD_NAME}
+        user: ${DATABASE_PROD_USER}
+        password: ${DATABASE_PROD_PASSWORD}
+        # Database engine : sqlite, postgresql
+        engine: postgresql
+    test_database:
+        host: ${DATABASE_DEV_IP}
+        port: ${SQL_PORT}
+        name: ${DATABASE_DEV_NAME}
+        user: ${DATABASE_DEV_USER}
+        password: ${DATABASE_DEV_PASSWORD}
+        engine: postgresql
+    jwt:
+        secret: ${JWT_SECRET}
+        expires_in: 28800 # 60*60*8
+    test_token:
+        token: ${JWT_TEST_TOKEN}
+    logging:
+        pathes:
+            config: '{tc_root_dir}/config/logging.yml'
+            storage: '{tc_root_dir}/var/log/api.log'" >> config/config.yml
 # Mode Debug
 RUN export FLASK_DEBUG=false
 
