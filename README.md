@@ -66,6 +66,12 @@ avec les informations d'une base de donnée autre que celle de la production et 
 
 Vérifier que le projet est lancé en allant sur  `/status` et voir que la reponse est `ok`
 
+#  Test Server with Dockerfile
+```
+docker build -t cbna_backend:v1 .
+docker run -d -p -p 80:80 cbna_backend:v1
+```
+
 # Own Paas serveur with CapRover  🚀
 There are many easy CI/CD platforms that offer generous free minutes for your builds, for example GitHub and GitLab both offer free minutes for private repositories and unlimited free minutes for public repositories.
 ## Prerequisites
@@ -73,7 +79,7 @@ There are many easy CI/CD platforms that offer generous free minutes for your bu
 ### Configure Firewall
 
 ```bash
-sudo ufw allow 80,443,3000,996,7946,4789,2377/tcp; sudo ufw allow 7946,4789,2377/udp;
+sudo ufw allow 80,443,3000,996,7946,4789,2377,5000/tcp; sudo ufw allow 7946,4789,2377/udp;
 ```
 
 ### Step 1: CapRover Installation
@@ -105,10 +111,6 @@ caprover serversetup
 
 Now we can connect to : [https://captain.gefiproj.cbn-alpin.fr/](https://captain.gefiproj.cbn-alpin.fr/)
 
-```
-docker build -t cbna_backend:v1 .
-docker run -d cbna_backend:v1
-```
 
 ### Step 4: Install Apps
 
