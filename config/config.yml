@@ -1,0 +1,27 @@
+database:
+  engine: postgresql
+  host: 159.89.26.149
+  name: devdb
+  password: password
+  port: '5432'
+  user: hello_flask
+jwt:
+  expires_in: 28800
+  secret: jwt_secret_6E964AEA2CA45BD4B5BD7777A8C65
+logging:
+  pathes:
+    config: '{tc_root_dir}/config/logging.yml'
+    storage: '{tc_root_dir}/var/log/api.log'
+pathes:
+  config: '{tc_root_dir}/config'
+  database: '{tc_root_dir}/resources/database'
+  root: '{tc_root_dir}'
+test_database:
+  engine: postgresql
+  host: localhost
+  name: devdb
+  password: root
+  port: '5432'
+  user: postgres
+test_token:
+  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws

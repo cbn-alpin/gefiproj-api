@@ -34,7 +34,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"auth",
@@ -80,7 +80,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"auth",
@@ -117,7 +117,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"auth",
@@ -147,7 +147,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"auth",
@@ -199,7 +199,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"expenses"
@@ -250,7 +250,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"expenses"
@@ -279,7 +279,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"users",
@@ -315,7 +315,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"projects",
@@ -357,7 +357,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"projects"
@@ -396,7 +396,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"projects",
@@ -432,7 +432,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"projects",
@@ -472,7 +472,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"projects"
@@ -497,7 +497,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"funding",
 								"1"
@@ -532,7 +532,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"funding",
 								"1"
@@ -551,7 +551,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"funding"
 							]
@@ -585,7 +585,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"funding"
 							]
@@ -619,7 +619,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"funding",
 								"1"
@@ -664,7 +664,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"receipts"
@@ -683,7 +683,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"fundings",
@@ -714,7 +714,7 @@
 							"host": [
 								"localhost"
 							],
-							"port": "80",
+							"port": "5000",
 							"path": [
 								"api",
 								"receipts",
@@ -737,7 +737,7 @@
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "5000",
 					"path": [
 						"status"
 					]

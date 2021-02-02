@@ -69,7 +69,7 @@ Vérifier que le projet est lancé en allant sur  `/status` et voir que la repon
 #  Test Server with Dockerfile
 ```
 cmd=docker build -t cbna_backend:v1 .
-docker run -d -p 80:80 cbna_backend:v1
+docker run -d -p 5000:5000 cbna_backend:v1
 ```
 
 ```bash
