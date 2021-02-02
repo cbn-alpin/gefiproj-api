@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import current_app, Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import write_to_google_docs, export_funding_item_from_row_proxy, DEFAULT_HEADER
@@ -28,12 +28,14 @@ def export_fundings():
 
     version = post_data['version']
     annee_ref = post_data['annee_ref']
-    shares = post_data['partages']
+    shares = get_jwt_identity()
 
     annee_max = 0
     header_column_names = DEFAULT_HEADER
     file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
+    if 'partages' in post_data:
+        shares = post_data['partages']
     if 'entete' in post_data:
         header_column_names = post_data['entete']
     if 'nom_fichier' in post_data:

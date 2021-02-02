@@ -4,13 +4,12 @@ from src.shared.data_validation_utils import DataValidationUtils, ERROR_CODE
 class ExportValidationService:
     @staticmethod
     def validate(export_params_data):
-        export_params_keys = ['version', 'annee_ref', 'partages']
+        export_params_keys = ['version', 'annee_ref']
 
         errors = DataValidationUtils.check_keys(export_params_keys, export_params_data)
 
         errors = DataValidationUtils.check_int_value('version', export_params_data, errors)
         errors = DataValidationUtils.check_int_value('annee_ref', export_params_data, errors)
-        errors = DataValidationUtils.check_list('partages', export_params_data, errors)
 
         if 'version' in export_params_data:
             if export_params_data['version'] != 1 and export_params_data['version'] != 2:
@@ -30,6 +29,7 @@ class ExportValidationService:
             errors = DataValidationUtils.check_list('entete', export_params_data, errors)
 
         if 'partages' in export_params_data:
+            errors = DataValidationUtils.check_list('partages', export_params_data, errors)
             shares = export_params_data['partages']
             for it in shares:
                 # TODO: Check email validity
