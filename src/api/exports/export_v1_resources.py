@@ -29,12 +29,14 @@ def export_fundings_v1():
     annee_ref = post_data['annee_ref']
     shares = post_data['partages']
     header_column_names = DEFAULT_HEADER
+    file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
     if 'entete' in post_data:
         header_column_names = post_data['entete']
+    if 'nom_fichier' in post_data:
+        file_name = post_data['nom_fichier']
 
     result = ExportDBService.get_suivi_financement(1, annee_ref)
 
-    # TODO: what if suivi_financement returns None ?
     if not result:
         return jsonify({
             'message': 'Error while getting fundings to export',
@@ -50,8 +52,7 @@ def export_fundings_v1():
     if not len(export_data):
         return jsonify({'message': 'No data to export'}), 200
 
-    document_created = write_to_google_docs(f'Export financement année {annee_ref} - \
-                {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}', header_column_names, export_data, shares)
+    document_created = write_to_google_docs(file_name, header_column_names, export_data, shares)
 
     if not document_created:
         return jsonify({
@@ -63,7 +64,7 @@ def export_fundings_v1():
 
     return jsonify({
         'message': 'successfully created google sheet',
-        'title': document_created.title,
-        'lines': document_created.lines,
-        'url': document_created.url
+        'title': document_created['title'],
+        'lines': document_created['lines'],
+        'url': document_created['url']
     }), 200

@@ -30,7 +30,6 @@ def write_to_google_docs(document_tile, header_column_names, data, shares):
 
     try:
         gc = get_google_service_account()
-
         google_sheet = gc.create(document_tile)
 
         for it in shares:
@@ -39,31 +38,27 @@ def write_to_google_docs(document_tile, header_column_names, data, shares):
         work_sheet = google_sheet.sheet1
         last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
-        work_sheet.insert_row(header_column_names, 1)
+        data.insert(0, header_column_names)
+        work_sheet.batch_update([{
+            'range': f'A1:{last_column_letter}{len(data)}',
+            'values': data
+        }])
+
         work_sheet.format(f'A1:{last_column_letter}1', {
             'textFormat': {
                 'bold': True
             },
-            "horizontalAlignment": "CENTER",
+        })
+
+        work_sheet.format(f'A1:{last_column_letter}{len(data)}', {
             'borders': {
                 'top': {"style": "SOLID"},
                 'right': {"style": "SOLID"},
                 'bottom': {"style": "SOLID"},
                 'left': {"style": "SOLID"},
             },
+            "horizontalAlignment": "CENTER",
         })
-
-        for line, row_data in enumerate(data, start=2):
-            work_sheet.insert_row(row_data, line)
-            work_sheet.format(f'A{line}:{last_column_letter}{line}', {
-                'borders': {
-                    'top': {"style": "SOLID"},
-                    'right': {"style": "SOLID"},
-                    'bottom': {"style": "SOLID"},
-                    'left': {"style": "SOLID"},
-                },
-                "horizontalAlignment": "CENTER",
-            })
 
         return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
     except Exception as e:
