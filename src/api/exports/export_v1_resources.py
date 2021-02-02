@@ -11,31 +11,37 @@ from src.api.users.auth_resources import admin_required
 resources = Blueprint('exports', __name__)
 
 
-@resources.route('/api/export/fundings/v1', methods=['POST'])
+@resources.route('/api/export/fundings', methods=['POST'])
 @jwt_required
 @admin_required
-def export_fundings_v1():
-    current_app.logger.debug('In POST /api/export/fundings/v1')
+def export_fundings():
+    current_app.logger.debug('In POST /api/export/fundings')
 
     post_data = request.get_json()
 
-    validation_errors = ExportValidationService.validate_v1(post_data)
+    validation_errors = ExportValidationService.validate(post_data)
     if len(validation_errors) > 0:
         return jsonify({
             'message': 'A validation error occured',
             'errors': validation_errors
         }), 422
 
+    version = post_data['version']
     annee_ref = post_data['annee_ref']
     shares = post_data['partages']
+
+    annee_max = 0
     header_column_names = DEFAULT_HEADER
     file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
+
     if 'entete' in post_data:
         header_column_names = post_data['entete']
     if 'nom_fichier' in post_data:
         file_name = post_data['nom_fichier']
+    if 'annee_max' in post_data['annee_max']:
+        annee_max = post_data['annee_max']
 
-    result = ExportDBService.get_suivi_financement(1, annee_ref)
+    result = ExportDBService.get_suivi_financement(version, annee_ref, annee_max)
 
     if not result:
         return jsonify({
@@ -66,5 +72,6 @@ def export_fundings_v1():
         'message': 'successfully created google sheet',
         'title': document_created['title'],
         'lines': document_created['lines'],
-        'url': document_created['url']
+        'url': document_created['url'],
+        'shares': shares
     }), 200
