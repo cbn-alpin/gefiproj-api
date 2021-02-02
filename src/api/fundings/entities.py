@@ -60,4 +60,3 @@ class FundingSchema(Schema):
     annee_titre_f = fields.Str(allow_none=True)
     imputation_f = fields.Str(allow_none=True)
     difference = fields.Float(allow_none=True)
-    isResponsable = fields.Bool(allow_none=True)

@@ -58,7 +58,6 @@ class FundingDBService:
         funding = schema.dump(funding_object)
         rest_amount_funding = schema.dump(rest_amount_funding_object)
         
-        isResponsable = UserDBService.isResponsableOfProjet(project_id)
         for i,f in enumerate(funding):
             if rest_amount_funding[i]['id_f'] == f['id_f']:
                 if f['statut_f'] == Status.STATUS_SOLDE.value:
@@ -70,8 +69,6 @@ class FundingDBService:
                     f['difference'] = 0
                 else:
                     f['difference'] = rest_amount_funding[i]['difference']
-                    
-                f['isResponsable'] = isResponsable
 
         # Serializing as JSON
         session.close()
