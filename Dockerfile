@@ -49,6 +49,35 @@ RUN addgroup --system app && adduser --system --group app
 # create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
+
+# env app
+RUN export  FLASK_APP
+RUN export  FLASK_ENV
+RUN export  DATABASE_URL
+RUN export  SQL_HOST
+RUN export  SQL_PORT
+RUN export  DATABASE
+RUN export  APP_FOLDER
+
+RUN export  DATABASE_PROD_IP
+RUN export  DATABASE_PROD_NAME
+RUN export  export  DATABASE_PROD_USER
+RUN export  DATABASE_PROD_PASSWORD
+
+RUN export DATABASE_DEV_IP
+RUN export DATABASE_DEV_NAME
+RUN export DATABASE_DEV_USER
+RUN export DATABASE_DEV_PASSWORD
+
+RUN export DATABASE_TEST_IP
+RUN export DATABASE_TEST_NAME
+RUN export DATABASE_TEST_USER
+RUN export DATABASE_TEST_PASSWORD
+
+RUN export JWT_SECRET
+RUN export JWT_TEST_TOKEN
+
+
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
