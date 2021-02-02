@@ -70,20 +70,24 @@ Vérifier que le projet est lancé en allant sur  `/status` et voir que la repon
 There are many easy CI/CD platforms that offer generous free minutes for your builds, for example GitHub and GitLab both offer free minutes for private repositories and unlimited free minutes for public repositories.
 ## Prerequisites
     
-#### Configure Firewall
+### Configure Firewall
 
 ```bash
 sudo ufw allow 80,443,3000,996,7946,4789,2377/tcp; sudo ufw allow 7946,4789,2377/udp;
 ```
 
-#### Step 1: CapRover Installation
+### Step 1: CapRover Installation
 ```
 docker run -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
 ```
 
-#### Step 2: Connect Root Domain
+### Step 2: Connect Root Domain
 
 Let's say you own mydomain.com. You can set *.something.mydomain.com as an A-record in your DNS settings to point to the IP address of the server where you installed CapRover. Note that it can take several hours for this change to take into effect. It will show up like this in your DNS configs:
+
+```
+*.gefiproj.cbn-alpin.fr
+```
 
 - TYPE: A record
 - HOST: *.something
@@ -91,7 +95,7 @@ Let's say you own mydomain.com. You can set *.something.mydomain.com as an A-rec
 - TTL: (doesn't really matter)
 
 
-#### Step 3: 
+### Step 3: Install CapRover CLI
 
 ```
 docker exec -it [DOCKER CONTAINER ID] bash
@@ -99,12 +103,21 @@ npm install -g caprover
 caprover serversetup
 ```
 
-Now we can connect to : [https://captain.cbna.khadir.net](https://captain.cbna.khadir.net/)
+![Linux terminal](resources/img/1.png)
 
+Now we can connect to : [https://captain.gefiproj.cbn-alpin.fr/](https://captain.gefiproj.cbn-alpin.fr/)
 
 ```
 docker build -t cbna_backend:v1 .
 docker run -d -p 5000:5000 cbna_backend:v1
 ```
+
+### Step 4: Install Apps
+
+####  Create and Deploy API Serveur
+
+![Linux terminal](resources/img/3.png)
+- When you set the name of app, it's Automatically set as sub-domaine name (`i.e. flask-api.cbna.*`). You change the sub-domaine name in text form and click `Connect New Domain`.
+- Don't forgot to click to `Enable HTTPS`
 
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)
