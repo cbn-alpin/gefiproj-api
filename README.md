@@ -119,7 +119,7 @@ docker run -d -p 5000:5000 cbna_backend:v1
 - When you set the name of app, it's Automatically set as sub-domaine name (`i.e. flask-api.cbna.*`). You change the sub-domaine name in text form and click `Connect New Domain`.
 - Don't forgot to click to `Enable HTTPS`
 
-Before start deployment, we have to set the environment variables :
+Before start deployment, we have to set the environment variables. Ask your **administrator** for more details.
 
 ![Linux terminal](resources/img/5.png)
 
@@ -127,11 +127,13 @@ In `Deployment` tabs we set all GitHub parameters
 
 ![Linux terminal](resources/img/4.png)
 
-Copy the URL we will for deployed file to server when we update something in our git branch
-https://captain.cbna.khadir.net/api/v2/user/apps/webhooks/triggerbuild?namespace=captain&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRva2VuVmVyc2lvbiI6ImQ1MDgxNTFhLWNiZmEtNGM3Yi05YmY3LTcxNTU1MjkwNzk4ZiIsImFwcE5hbWUiOiJmbGFzay1hcGkiLCJuYW1lc3BhY2UiOiJjYXB0YWluIn0sImlhdCI6MTYxMjI1Mzg4N30.uFYsyJ_4gYWzs39z9Sq5UufpWnkGE8MW_LIa0UdPMwc
+For this first deployment, we will force build by clicking in `Force Build`. After we will configure the URL generate by CapRover in GitHub /settings/hooks :
+
+`https://captain.cbna.*/api/v2/user/apps/webhooks/triggerbuild?namespace=captain&token=eyJhbGci...`
 
 
-### Backup CapRover
+### Backup
+
 We can backup CapRover configs in order to be able to spin up a clone of this server. Note that your application data (volumes, and images) are not part of this backup.
 
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)

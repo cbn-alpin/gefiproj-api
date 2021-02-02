@@ -4,7 +4,7 @@ pathes:
     database: '{tc_root_dir}/resources/database'
 database:
     # path: '{tc_root_dir}/resources/database/taxon_concept.sqlite3'
-    host: ${DATABASE_IP}
+    host: ${DATABASE_PROD_IP}
     port: ${SQL_PORT}
     name: ${DATABASE_PROD_NAME}
     user: ${DATABASE_PROD_USER}
@@ -12,7 +12,7 @@ database:
     # Database engine : sqlite, postgresql
     engine: postgresql
 test_database:
-    host: localhost
+    host: ${DATABASE_DEV_IP}
     port: ${SQL_PORT}
     name: ${DATABASE_DEV_NAME}
     user: ${DATABASE_DEV_USER}
