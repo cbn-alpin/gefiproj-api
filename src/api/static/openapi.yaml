@@ -26,6 +26,8 @@ tags:
     description: "Gestion des montants affectés"
   - name: "Financeur"
     description: "Gestion des financeurs"
+  - name: "Export"
+    description: "Gestion des exports vers Google Sheet"
 schemes:
   - "http"
   - "https"
@@ -537,7 +539,7 @@ paths:
         - api_key: [ ]
 
         # Utilisateurs section
-  
+
   # Montant affecté
   /api/receipts/{receiptId}/amounts:
     get:
@@ -661,7 +663,7 @@ paths:
       security:
         - api_key: [ ]
 
-  
+
   /api/users:
     get:
       tags:
@@ -823,6 +825,52 @@ paths:
       security:
         - api_key: [ ]
 
+  # Export section
+  /api/export/fundings:
+    post:
+      tags:
+        - "Export"
+      summary: "Exporter les financements dans un tableur Google"
+      description: "Retourne le lien du document créé et les personnes avec qui il est partagé"
+      operationId: "exportFundings"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema:
+            $ref: "#/definitions/ExportParams"
+      responses:
+        "200":
+          description: "Export réussi"
+          schema:
+            properties:
+              message:
+                type: string
+              version:
+                type: string
+                description: version utilisée pour la génération du bilan
+              title:
+                type: string
+                description: titre du document créé
+              url:
+                type: string
+                description: url du document créé
+              shares:
+                type: object
+                description: personnes avec qui le document a été partagé
+              lines:
+                type: integer
+                description: nombre de lignes exportées
+
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le login indiqué est introuvable"
 
 securityDefinitions:
   api_key:
@@ -864,7 +912,7 @@ definitions:
       - "montant_arrete_f"
       - "statut_f"
       - "date_solde_f"
-    properties: 
+    properties:
       id_f:
         type: "integer"
         format: "int64"
@@ -885,7 +933,7 @@ definitions:
         example: 200.40
         description: "montant arrêté du financement"
       statut_f:
-        type: "string"            
+        type: "string"
         enum: ["SOLDE", "ANTR", "ATR"]
         description: "statut du financement"
       date_solde_f:
@@ -1079,3 +1127,47 @@ definitions:
         description: référence arrêté attributif du financeur
     required:
       - "nom_financeur"
+  ExportParams:
+    type: object
+    properties:
+      version:
+        type: integer
+        description: Version de l'export - 1 ou 2
+        example: 1
+      annee_ref:
+        type: integer
+        description: Année de reference
+        example: 2020
+      annee_max:
+        type: integer
+        description: Année maximale à considerer. Disponible avec la version 2
+        example: 2023
+      nom_fichier:
+        type: string
+        description: ""
+        example: ""
+      partages:
+        type: array
+        items:
+          properties:
+            email:
+              type: string
+              description: email de l'utilisateur
+            type:
+              type: string
+              description: type de partage
+              example: user
+            permission:
+              type: string
+              description: permission de l'utisateur sur le document
+              example: writer
+      entete:
+        type: array
+        items:
+          type: string
+        example: [ "Projet", "Nom projet", etc ]
+
+    required:
+      - "version"
+      - "annee_ref"
+      - "partages"
