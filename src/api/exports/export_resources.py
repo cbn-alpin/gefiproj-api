@@ -28,12 +28,14 @@ def export_fundings():
 
     version = post_data['version']
     annee_ref = post_data['annee_ref']
-    shares = get_jwt_identity()
 
+    # default values
     annee_max = 0
     header_column_names = DEFAULT_HEADER
+    shares = get_jwt_identity()
     file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
+    # overrides if available
     if 'partages' in post_data:
         shares = post_data['partages']
     if 'entete' in post_data:
@@ -58,7 +60,16 @@ def export_fundings():
         export_data.append(export_funding_item_from_row_proxy(res))
 
     if not len(export_data):
-        return jsonify({'message': 'No data to export'}), 200
+        return jsonify({
+            'message': 'No data to export',
+            'title': None,
+            'lines': 0,
+            'url': None,
+            'shares': None,
+            'annee_ref': annee_ref,
+            'annee_max': annee_max,
+            'version': version,
+        }), 200
 
     document_created = write_to_google_docs(file_name, header_column_names, export_data, shares)
 

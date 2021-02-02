@@ -1166,8 +1166,6 @@ definitions:
         items:
           type: string
         example: [ "Projet", "Nom projet", etc ]
-
     required:
       - "version"
       - "annee_ref"
-      - "partages"
