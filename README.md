@@ -73,7 +73,7 @@ There are many easy CI/CD platforms that offer generous free minutes for your bu
 ### Configure Firewall
 
 ```bash
-sudo ufw allow 80,443,3000,996,7946,4789,2377/tcp; sudo ufw allow 7946,4789,2377/udp;
+sudo ufw allow 80,443,3000,996,7946,4789,2377,5000/tcp; sudo ufw allow 7946,4789,2377/udp;
 ```
 
 ### Step 1: CapRover Installation
@@ -90,10 +90,8 @@ Let's say you own mydomain.com. You can set *.something.mydomain.com as an A-rec
 ```
 
 - TYPE: A record
-- HOST: *.something
-- POINTS TO: (IP Address of your server)
-- TTL: (doesn't really matter)
-
+- HOST: *.gefiproj.cbn-alpin.fr
+- POINTS TO: 149.202.162.89
 
 ### Step 3: Install CapRover CLI
 
@@ -117,7 +115,23 @@ docker run -d -p 5000:5000 cbna_backend:v1
 ####  Create and Deploy API Serveur
 
 ![Linux terminal](resources/img/3.png)
+
 - When you set the name of app, it's Automatically set as sub-domaine name (`i.e. flask-api.cbna.*`). You change the sub-domaine name in text form and click `Connect New Domain`.
 - Don't forgot to click to `Enable HTTPS`
+
+Before start deployment, we have to set the environment variables :
+
+![Linux terminal](resources/img/5.png)
+
+In `Deployment` tabs we set all GitHub parameters
+
+![Linux terminal](resources/img/4.png)
+
+Copy the URL we will for deployed file to server when we update something in our git branch
+https://captain.cbna.khadir.net/api/v2/user/apps/webhooks/triggerbuild?namespace=captain&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRva2VuVmVyc2lvbiI6ImQ1MDgxNTFhLWNiZmEtNGM3Yi05YmY3LTcxNTU1MjkwNzk4ZiIsImFwcE5hbWUiOiJmbGFzay1hcGkiLCJuYW1lc3BhY2UiOiJjYXB0YWluIn0sImlhdCI6MTYxMjI1Mzg4N30.uFYsyJ_4gYWzs39z9Sq5UufpWnkGE8MW_LIa0UdPMwc
+
+
+### Backup CapRover
+We can backup CapRover configs in order to be able to spin up a clone of this server. Note that your application data (volumes, and images) are not part of this backup.
 
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)

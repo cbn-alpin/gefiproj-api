@@ -1,5 +1,5 @@
-config/config.yml
-config/config.local.yml
+# config/config.yml
+# config/config.local.yml
 .flaskenv
 
 # Byte-compiled / optimized / DLL files
