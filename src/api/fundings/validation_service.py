@@ -1,3 +1,5 @@
+from datetime import datetime
+import datetime
 ERROR_CODE = 'VALIDATION_ERROR'
 
 
@@ -113,8 +115,10 @@ class FundingValidationService:
                 'field': 'statut_f',
                 'message': 'Le statut du financement ne peut pas être soldé.',
             })
-
-        if ('date_arrete_f' in funding and 'date_limite_solde_f' in funding and funding['date_arrete_f'] > funding['date_limite_solde_f']):
+        
+        if 'date_arrete_f' in funding and 'date_limite_solde_f' in funding and \
+            funding['date_arrete_f'] != None and funding['date_limite_solde_f'] != None and \
+            datetime.datetime.strptime(funding['date_arrete_f'], '%Y-%m-%d').date() > datetime.datetime.strptime(funding['date_limite_solde_f'], '%Y-%m-%d').date():
             errors.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
@@ -122,7 +126,9 @@ class FundingValidationService:
                 'message': 'format date non respecté : la date arrêté ou commande est postérieure à la date limite de solde.',
             })
             
-        if ('date_arrete_f' in funding and 'date_solde_f' in funding and funding['date_arrete_f'] > funding['date_solde_f']):
+        if 'date_arrete_f' in funding and 'date_solde_f' in funding and \
+            funding['date_arrete_f'] != None and funding['date_solde_f'] != None and \
+            datetime.datetime.strptime(funding['date_arrete_f'], '%Y-%m-%d').date() > datetime.datetime.strptime(funding['date_solde_f'], '%Y-%m-%d').date():
             errors.append({
                 'code': ERROR_CODE,
                 'type': 'VALUE_ERROR',
