@@ -5,6 +5,7 @@ import yaml
 
 environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../../'))
 
+
 def write_to_yml():
     data = dict(
         pathes=dict(
@@ -29,11 +30,11 @@ def write_to_yml():
             engine='postgresql'
         ),
         jwt=dict(
-            secret=(""+environ.get('JWT_SECRET')+""),
+            secret=("" + environ.get('JWT_SECRET') + ""),
             expires_in=28800
         ),
         test_token=dict(
-            token=(""+environ.get('JWT_TEST_TOKEN')+"")
+            token=("" + environ.get('JWT_TEST_TOKEN') + "")
         ),
         logging=dict(
             pathes=dict(
