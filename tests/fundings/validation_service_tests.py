@@ -5,7 +5,8 @@ from src.api.fundings.validation_service import FundingValidationService
 
 class ProjectValidationServiceTestCase(unittest.TestCase):
     def test_validate_post(self):
-        funding = {'id_f': 1, 'id_p': 1, 'id_financeur': 1, 'montant_arrete_f': 4, 'statut_f': 'ANTR'}
+        funding = {'id_f': 1, 'id_p': 1, 'id_financeur': 1, 'montant_arrete_f': 4,
+                   'statut_f': 'ANTR', 'date_solde_f': None}
         validation_errors = FundingValidationService.validate_post(funding)
         self.assertEqual(len(validation_errors), 0)
 

@@ -23,6 +23,9 @@ def get_all_users():
     schema = UserSchema(many=True)
     users = schema.dump(users_objects)
 
+    for user in users:
+        user['roles'] = UserDBService.get_user_role_names_by_user_id_or_email(user['email_u'])
+
     session.close()
     return jsonify(users)
 
