@@ -6,8 +6,56 @@ import yaml
 environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../../'))
 
 
+def write_to_yml():
+    data = dict(
+        pathes=dict(
+            root="{tc_root_dir}",
+            config="{tc_root_dir}/config",
+            database="{tc_root_dir}/resources/database"
+        ),
+        database=dict(
+            host=environ.get('DATABASE_PROD_IP'),
+            port=environ.get('SQL_PORT'),
+            name=environ.get('DATABASE_PROD_NAME'),
+            user=environ.get('DATABASE_PROD_USER'),
+            password=environ.get('DATABASE_PROD_PASSWORD'),
+            engine='postgresql'
+        ),
+        test_database=dict(
+            host=environ.get('DATABASE_DEV_IP'),
+            port=environ.get('SQL_PORT'),
+            name=environ.get('DATABASE_DEV_NAME'),
+            user=environ.get('DATABASE_DEV_USER'),
+            password=environ.get('DATABASE_DEV_PASSWORD'),
+            engine='postgresql'
+        ),
+        jwt=dict(
+            secret=("" + environ.get('JWT_SECRET') + ""),
+            expires_in=28800
+        ),
+        test_token=dict(
+            token=("" + environ.get('JWT_TEST_TOKEN') + "")
+        ),
+        logging=dict(
+            pathes=dict(
+                config="{tc_root_dir}/config/logging.yml",
+                storage="{tc_root_dir}/var/log/api.log"
+            )
+        )
+    )
+
+    print(data)
+
+    with open('config/config.yml', 'w') as outfile:
+        yaml.dump(data, outfile, default_flow_style=False)
+
+
 # TODO: use config like this : https://github.com/kdart/devtest/blob/master/devtest/config.py
+# TODO : Mehdi : The link not work anymore
 def get():
+    # Create config.yml file before export params
+    write_to_yml()
+
     config_file_path = path.join(environ['TC_ROOT_DIR'], 'config/config.yml')
     with open(config_file_path, 'r') as yml_handle:
         yml_content = yml_handle.read()

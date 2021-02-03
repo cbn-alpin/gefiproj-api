@@ -9,7 +9,7 @@
 			"name": "auth",
 			"item": [
 				{
-					"name": "localhost:5000/api/auth/login",
+					"name": "localhost/api/auth/login",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -30,7 +30,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/api/auth/login",
+							"raw": "localhost/api/auth/login",
 							"host": [
 								"localhost"
 							],
@@ -45,7 +45,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/auth/register",
+					"name": "localhost/api/auth/register",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -76,7 +76,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/api/auth/register",
+							"raw": "localhost/api/auth/register",
 							"host": [
 								"localhost"
 							],
@@ -91,7 +91,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/auth/refresh",
+					"name": "localhost/api/auth/refresh",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -113,7 +113,7 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:5000/api/auth/refresh",
+							"raw": "localhost/api/auth/refresh",
 							"host": [
 								"localhost"
 							],
@@ -128,7 +128,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/auth/logout",
+					"name": "localhost/api/auth/logout",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -143,7 +143,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/auth/logout",
+							"raw": "localhost/api/auth/logout",
 							"host": [
 								"localhost"
 							],
@@ -164,7 +164,7 @@
 			"name": "expenses",
 			"item": [
 				{
-					"name": "localhost:5000/api/expenses",
+					"name": "localhost/api/expenses",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -195,7 +195,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/api/expenses",
+							"raw": "localhost/api/expenses",
 							"host": [
 								"localhost"
 							],
@@ -215,7 +215,7 @@
 			"name": "users",
 			"item": [
 				{
-					"name": "localhost:5000/api/users",
+					"name": "localhost/api/users",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -246,7 +246,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/api/expenses",
+							"raw": "localhost/api/expenses",
 							"host": [
 								"localhost"
 							],
@@ -260,7 +260,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/users/1",
+					"name": "localhost/api/users/1",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -275,7 +275,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/users/1",
+							"raw": "localhost/api/users/1",
 							"host": [
 								"localhost"
 							],
@@ -296,7 +296,7 @@
 			"name": "Projects",
 			"item": [
 				{
-					"name": "localhost:5000/api/projects/1",
+					"name": "localhost/api/projects/1",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -311,7 +311,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/projects/1?",
+							"raw": "localhost/api/projects/1?",
 							"host": [
 								"localhost"
 							],
@@ -338,7 +338,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/projects",
+					"name": "localhost/api/projects",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -353,7 +353,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/projects",
+							"raw": "localhost/api/projects",
 							"host": [
 								"localhost"
 							],
@@ -367,7 +367,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/projects/5",
+					"name": "localhost/api/projects/5",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -392,7 +392,7 @@
 							"raw": "{\n\t\"code_p\": \"CO35\",\n\t\"id_p\": 5,\n\t\"id_u\": 1,\n\t\"nom_p\": \"CBNA 2\",\n    \"statut_p\": \"false\"\n}"
 						},
 						"url": {
-							"raw": "localhost:5000/api/projects/5",
+							"raw": "localhost/api/projects/5",
 							"host": [
 								"localhost"
 							],
@@ -407,7 +407,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/projects/13",
+					"name": "localhost/api/projects/13",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -428,7 +428,7 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:5000/api/projects/7",
+							"raw": "localhost/api/projects/7",
 							"host": [
 								"localhost"
 							],
@@ -443,7 +443,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/projects",
+					"name": "localhost/api/projects",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -468,7 +468,7 @@
 							"raw": "{\n\t\"code_p\": \"e1\",\n\t\"nom_p\": \"test project 0\",\n\t\"statut_p\": \"false\",\n\t\"id_u\": \"1\"\n}"
 						},
 						"url": {
-							"raw": "localhost:5000/api/projects",
+							"raw": "localhost/api/projects",
 							"host": [
 								"localhost"
 							],
@@ -493,7 +493,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/funding/1",
+							"raw": "localhost/funding/1",
 							"host": [
 								"localhost"
 							],
@@ -528,7 +528,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/funding/1",
+							"raw": "localhost/funding/1",
 							"host": [
 								"localhost"
 							],
@@ -542,12 +542,12 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/funding",
+					"name": "localhost/funding",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/funding",
+							"raw": "localhost/funding",
 							"host": [
 								"localhost"
 							],
@@ -581,7 +581,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/funding",
+							"raw": "localhost/funding",
 							"host": [
 								"localhost"
 							],
@@ -615,7 +615,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:5000/funding/1",
+							"raw": "localhost/funding/1",
 							"host": [
 								"localhost"
 							],
@@ -635,7 +635,7 @@
 			"name": "receipts",
 			"item": [
 				{
-					"name": "localhost:5000/api/receipts",
+					"name": "localhost/api/receipts",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -660,7 +660,7 @@
 							"raw": "{\n\t\"annee_r\": \"2021\",\n\t\"montant_r\": 309.38,\n\t\"id_f\": \"1\"\n}\n"
 						},
 						"url": {
-							"raw": "localhost:5000/api/receipts",
+							"raw": "localhost/api/receipts",
 							"host": [
 								"localhost"
 							],
@@ -674,12 +674,12 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/fundings/1/receipts",
+					"name": "localhost/api/fundings/1/receipts",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/fundings/1/receipts",
+							"raw": "localhost/api/fundings/1/receipts",
 							"host": [
 								"localhost"
 							],
@@ -695,7 +695,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost:5000/api/receipts/1",
+					"name": "localhost/api/receipts/1",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -710,7 +710,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/receipts/55",
+							"raw": "localhost/api/receipts/55",
 							"host": [
 								"localhost"
 							],
@@ -728,12 +728,12 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "localhost:5000/status",
+			"name": "localhost/status",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:5000/status",
+					"raw": "localhost/status",
 					"host": [
 						"localhost"
 					],
