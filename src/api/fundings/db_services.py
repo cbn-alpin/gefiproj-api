@@ -1,14 +1,15 @@
 from datetime import datetime
-from flask import Blueprint, current_app, jsonify, request
-from sqlalchemy import func, desc
-from sqlalchemy.orm import join
+from enum import Enum
+
+from sqlalchemy import func
+
+from src.shared.entity import Session
 from .entities import Funding, FundingSchema
 from ..amounts.entities import Amount
+from ..projects.entities import Project
 from ..receipts.entities import Receipt, ReceiptSchema
-from ..projects.entities import Project, ProjectSchema
-from src.shared.entity import Session
 from ..users.db_services import UserDBService
-from enum import Enum
+
 
 class Status(Enum):
     STATUS_DEFAULT = 'ANTR'
@@ -180,6 +181,6 @@ class FundingDBService:
 
     @staticmethod
     def can_update(project_id: int):
-        if UserDBService.isResponsableOfProjet(project_id) == False and UserDBService.isAdmin() == False :
-            raise Exception(f'Ce financement ne peut pas être modifier car vous n\'êtes pas responsable du projet.',403)
-        
+        if UserDBService.is_responsable_of_projet(project_id) == False and UserDBService.is_admin() == False:
+            raise Exception(f'Ce financement ne peut pas être modifier car vous n\'êtes pas responsable du projet.',
+                            403)

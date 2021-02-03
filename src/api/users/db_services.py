@@ -1,14 +1,18 @@
-from src.shared.entity import Session
+from enum import Enum
+
 from flask_jwt_extended import get_jwt_identity
+
+from src.shared.entity import Session
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
+from ..projects.db_service import ProjectDBService
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
-from ..projects.db_service import ProjectDBService
-from enum import Enum
+
 
 class Role(Enum):
     ADMIN = 'administrateur'
     CONSULTANT = 'consultant'
+
 
 class UserDBService:
     @staticmethod
@@ -116,25 +120,25 @@ class UserDBService:
         return new_user
 
     @staticmethod
-    def isResponsableOfProjet(project_id: int):
-        isResponsable = False
+    def is_responsable_of_projet(project_id: int):
+        is_responsable = False
         project = ProjectDBService.get_project_by_id(project_id)
         user = UserDBService.get_user_by_email(get_jwt_identity())
         if project is not None and 'responsable' in project and \
-            user is not None and 'id_u' in user \
-            and user['id_u'] == project['responsable']['id_u']:
+                user is not None and 'id_u' in user \
+                and user['id_u'] == project['responsable']['id_u']:
             role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            isResponsable = role[0] == Role.CONSULTANT.value
-        return isResponsable
+            is_responsable = role[0] == Role.CONSULTANT.value
+        return is_responsable
 
     @staticmethod
-    def isAdmin():
-        isAdmin = False
+    def is_admin():
+        is_admin = False
         user = UserDBService.get_user_by_email(get_jwt_identity())
         if user is not None and 'id_u' in user:
             role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            isAdmin = role[0] == Role.ADMIN.value
-        return isAdmin
+            is_admin = role[0] == Role.ADMIN.value
+        return is_admin
 
     @staticmethod
     def revoke_token(jti: str) -> RevokedToken or None:
