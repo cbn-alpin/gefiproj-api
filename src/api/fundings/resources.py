@@ -19,6 +19,16 @@ def get_fundings_by_project(project_id):
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
 
+@resources.route('/api/funders/<int:funder_id>/fundings', methods=['GET'])
+@jwt_required
+def get_fundings_by_funder(funder_id):
+    try:
+        current_app.logger.debug('In GET /api/funders/<int:funder_id>/fundings')
+
+        response = FundingDBService.get_funding_by_funder(funder_id)
+        return jsonify(response), 200
+    except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
 
 @resources.route('/api/fundings', methods=['POST'])
 @jwt_required

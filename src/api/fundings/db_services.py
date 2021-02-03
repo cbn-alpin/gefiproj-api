@@ -22,7 +22,6 @@ class FundingDBService:
         session.close()
         return found_funding
 
-
     @staticmethod
     def check_project_exists(project_id):
         session = Session()
@@ -32,7 +31,6 @@ class FundingDBService:
         if existing_project is None:
             raise ValueError(f'Le projet {project_id} n\'existe pas.',404)
         
-
     @staticmethod
     def check_funding_exists(funding_id):
         session = Session()
@@ -40,7 +38,6 @@ class FundingDBService:
         session.close()
         if existing_funding is None:
             raise ValueError(f'Le financement {funding_id} n\'existe pas.',404)
-
 
     @staticmethod
     def get_funding_by_project(project_id: int):
@@ -74,6 +71,18 @@ class FundingDBService:
         session.close()
         return funding
 
+    @staticmethod
+    def get_funding_by_funder(funder_id: int):
+        session = Session()  
+        funding_object = session.query(Funding).filter(Funding.id_financeur == funder_id).order_by(Funding.id_f.desc()).all()
+
+        # Transforming into JSON-serializable objects
+        schema = FundingSchema(many=True)
+        funding = schema.dump(funding_object)
+        
+        # Serializing as JSON
+        session.close()
+        return funding
 
     @staticmethod
     def insert_funding(posted_funding):
