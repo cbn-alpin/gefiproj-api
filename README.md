@@ -71,6 +71,7 @@ Vérifier que le projet est lancé en allant sur  `/status` et voir que la repon
 cmd=docker build -t cbna_backend:v1 .
 docker run -d -p 5000:5000 cbna_backend:v1
 ```
+If you need to parse .env in build you can use this script helping :
 
 ```bash
 #!/bin/bash
@@ -103,7 +104,7 @@ There are many easy CI/CD platforms that offer generous free minutes for your bu
 ### Configure Firewall
 
 ```bash
-sudo ufw allow 80,443,3000,996,7946,4789,2377,5000/tcp; sudo ufw allow 7946,4789,2377/udp;
+sudo ufw allow 80,443,3000,996,7946,4789,2377,5000,5432/tcp; sudo ufw allow 7946,4789,2377/udp;
 ```
 
 ### Step 1: CapRover Installation

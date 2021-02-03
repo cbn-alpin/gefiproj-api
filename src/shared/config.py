@@ -44,6 +44,8 @@ def write_to_yml():
         )
     )
 
+    print(data)
+
     with open('config/config.yml', 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
