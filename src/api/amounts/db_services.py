@@ -121,9 +121,12 @@ class AmountDBService:
         session.close()
         
     @staticmethod
-    def check_unique_amount_by_year_and_receipt(year: int, receipt_id: int):
+    def check_unique_amount_by_year_and_receipt(year: int, receipt_id: int, amount_id = None):
         session = Session()  
-        expense_existing = session.query(Amount).filter_by(id_r=receipt_id, annee_ma=year).first()
+        if amount_id is not None:
+            expense_existing = session.query(Amount).filter(Amount.id_ma != amount_id, Amount.id_r == receipt_id, Amount.annee_ma == year).first()
+        else:
+            expense_existing = session.query(Amount).filter_by(id_r=receipt_id, annee_ma=year).first()
         session.close()
         
         if expense_existing is not None:
