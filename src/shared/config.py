@@ -44,14 +44,10 @@ def write_to_yml():
         )
     )
 
-    print(data)
-
     with open('config/config.yml', 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
 
-# TODO: use config like this : https://github.com/kdart/devtest/blob/master/devtest/config.py
-# TODO : Mehdi : The link not work anymore
 def get():
     # Create config.yml file before export params
     write_to_yml()
