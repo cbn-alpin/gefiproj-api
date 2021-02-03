@@ -911,7 +911,6 @@ definitions:
       - "id_financeur"
       - "montant_arrete_f"
       - "statut_f"
-      - "date_solde_f"
     properties:
       id_f:
         type: "integer"

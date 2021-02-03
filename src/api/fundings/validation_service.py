@@ -78,14 +78,6 @@ class FundingValidationService:
                 'message': 'Le champs <montant_arrete_f> doit être supérieur à 0',
             })
 
-        if 'date_solde_f' not in funding:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'MISSING_PARAMETER',
-                'field': 'date_solde_f',
-                'message': 'Le champs <date_solde_f> est manquant',
-            })
-            
         # statut validation
         if 'statut_f' not in funding:
             errors.append({
