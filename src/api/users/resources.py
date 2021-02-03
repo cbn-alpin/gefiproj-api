@@ -16,11 +16,9 @@ resources = Blueprint('users', __name__)
 def get_all_users():
     current_app.logger.debug('In GET /api/users')
     session = Session()
-    users_objects = session.query(User) \
-        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
-        .all()
+    users_objects = session.query(User).all()
 
-    schema = UserSchema(many=True)
+    schema = UserSchema(many=True, exclude=['password_u'])
     users = schema.dump(users_objects)
 
     for user in users:
@@ -38,12 +36,10 @@ def get_user_by_id(user_id):
     check_user_exists_by_id(user_id)
 
     session = Session()
-    user_object = session.query(User) \
-        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
-        .filter_by(id_u=user_id).first()
+    user_object = session.query(User).filter_by(id_u=user_id).first()
 
     # Transforming into JSON-serializable objects
-    schema = UserSchema(many=False)
+    schema = UserSchema(exclude=['password_u'])
     user = schema.dump(user_object)
 
     user['roles'] = UserDBService.get_user_role_names_by_user_id_or_email(user['email_u'])
@@ -97,7 +93,6 @@ def update_user(user_id):
         session = Session()
         user = session.query(User).get(user_id)
         user = UserDBService.merge_user(user, data)
-        print(user.active_u)
 
         session.execute("delete from role_utilisateur where id_u = :user_id",
                         {'user_id': user.id_u})
@@ -112,7 +107,7 @@ def update_user(user_id):
 
         session.commit()
 
-        updated_user = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u']) \
+        updated_user = UserSchema(exclude=['password_u']) \
             .dump(user)
         updated_user['roles'] = new_roles
     finally:

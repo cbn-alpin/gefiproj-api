@@ -21,17 +21,11 @@ class ProjectDBService:
     def get_all_projects():
         session = Session()
         projects_objects = session.query(Project) \
-            .options(
-            subqueryload(Project.responsable)
-        ).all()
+            .options(subqueryload(Project.responsable))
 
         # Transforming into JSON-serializable objects
-        schema = ProjectSchema(many=True)
+        schema = ProjectSchema(many=True, exclude=['id_u'])
         projects = schema.dump(projects_objects)
-
-        for p in projects:
-            p.pop('id_u', None)
-            p['responsable'].pop('password_u', None)
 
         # Serializing as JSON
         session.close()
@@ -45,12 +39,8 @@ class ProjectDBService:
             .filter_by(id_p=proj_id).first()
 
         # Transforming into JSON-serializable objects
-        schema = ProjectSchema()
+        schema = ProjectSchema(exclude=['id_u'])
         project = schema.dump(project_object)
-
-        if project:
-            project.pop('id_u', None)
-            project['responsable'].pop('password_u', None)
 
         # Serializing as JSON
         session.close()

@@ -34,4 +34,4 @@ class ProjectSchema(Schema):
     nom_p = fields.Str()
     statut_p = fields.Bool()
     id_u = fields.Integer()
-    responsable = fields.Nested(UserSchema)
+    responsable = fields.Nested(UserSchema(exclude=['password_u']))

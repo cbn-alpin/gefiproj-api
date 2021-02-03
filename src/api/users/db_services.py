@@ -106,7 +106,7 @@ class UserDBService:
                                 {'user_id': user.id_u, 'role_id': role_id})
             session.commit()
 
-            new_user = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u']) \
+            new_user = UserSchema(exclude=['password_u']) \
                 .dump(user)
         finally:
             if session:
