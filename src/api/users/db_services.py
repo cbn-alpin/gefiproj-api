@@ -51,6 +51,7 @@ class UserDBService:
 
             if existing_user is None:
                 raise ValueError('This user does not exist')
+            return existing_user
         except ValueError:
             resp = {
                 'code': 'USER_NOT_FOUND',
@@ -64,11 +65,8 @@ class UserDBService:
         session = Session()
         user_object = session.query(User).filter_by(email_u=user_email).first()
 
-        schema = UserSchema()
+        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
         user = schema.dump(user_object)
-
-        if user:
-            user.pop('password_u', None)
 
         session.close()
         return user
@@ -85,11 +83,8 @@ class UserDBService:
 
     @staticmethod
     def process_get_user(user_object):
-        schema = UserSchema()
+        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
         user = schema.dump(user_object)
-
-        if user:
-            user.pop('password_u', None)
 
         return user
 
@@ -170,3 +165,13 @@ class UserDBService:
             session.close()
 
         return token
+
+    @staticmethod
+    def merge_user(user, data):
+        user.nom_u = data['nom_u']
+        user.prenom_u = data['prenom_u']
+        user.email_u = data['email_u']
+        user.initiales_u = data['initiales_u']
+        user.active_u = data['active_u']
+
+        return user

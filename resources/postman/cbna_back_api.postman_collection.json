@@ -68,7 +68,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"nom_u\":\"monnom\",\n\t\"prenom_u\":\"super\",\n\t\"initiales_u\":\"ms\",\n\t\"password_u\":\"admin\",\n\t\"email_u\":\"supermail@mail.ml\",\n\t\"active_u\": \"true\"\n}",
+							"raw": "{\n\t\"nom_u\": \"Samaké\",\n\t\"prenom_u\": \"Zantiè\",\n\t\"initiales_u\": \"zas\",\n\t\"email_u\": \"zantie@mail.ml\",\n\t\"password_u\": \"zan@password\", \n\t\"active_u\": true,\n\t\"roles\": [\"administrateur\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -212,17 +212,17 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "users",
+			"name": "export",
 			"item": [
 				{
-					"name": "localhost/api/users",
+					"name": "localhost/api/fundings/export",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
 									"type": "string"
 								}
 							]
@@ -232,28 +232,141 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/javascript",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"annee_d\": 2021,\n\t\"montant\": 309.38\n}",
+							"raw": "{\n\t\"version\": 1,\n\t\"annee_ref\": 2020,\n\t\"annee_max\": 2020,\n\t\"partages\": [{\"email\": \"cash.develop223@gmail.com\", \"type\": \"user\", \"permission\": \"writer\"}],\n\t\"entete\": [\"Projet\", \"Code Projet\", \"Nom Projet\", \"Utilisateur\", \"Initiales\", \"id_f\", \"date_arrete_f\", \"date_limite_solde_f\",\n                  \"montant_arrete_f\", \"commentaire_admin_f\", \"imputation_f\", \"numero_titre_f\", \"statut_f\",\n                  \"id_financeur\", \"nom_financeur\", \"recette_avant\", \"recette_a\", \"recette_a2\", \"recette_a3\",\n                  \"recette_a4\", \"recette_a5\", \"recette_apres\"]\n}",
 							"options": {
 								"raw": {
-									"language": "javascript"
+									"language": "json"
 								}
 							}
 						},
 						"url": {
-							"raw": "localhost/api/expenses",
+							"raw": "localhost/api/export/fundings",
 							"host": [
 								"localhost"
 							],
 							"port": "5000",
 							"path": [
 								"api",
-								"expenses"
+								"export",
+								"fundings"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "fundings",
+			"item": [
+				{
+					"name": "get funding by project",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/funding/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"funding",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update funding",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"annee_titre_f\": null,\n        \"commentaire_admin_f\": null,\n        \"commentaire_resp_f\": null,\n        \"date_arrete_f\": null,\n        \"date_limite_solde_f\": null,\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 2,\n        \"imputation_f\": null,\n        \"montant_arrete_f\": 44344.0,\n        \"numero_titre_f\": null,\n        \"statut_f\": \"ANTR\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/funding/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"funding",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:5000/funding",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/funding",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"funding"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create funding",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 4,\n        \"montant_arrete_f\": 44344.0\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/funding",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"funding"
 							]
 						}
 					},
@@ -267,22 +380,29 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDczNjQ3MTUsIm5iZiI6MTYwNzM2NDcxNSwianRpIjoiMDUzYzBhMjMtZTVjYS00YjUxLThmNDctYTgyNDhhYjc5ZDllIiwiZXhwIjoxNjA3MzkzNTE1LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.N2JBY096MPKRCkffHNiqCeinEc9CjIChUxSt2z2HKRs",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
 									"type": "string"
 								}
 							]
 						},
-						"method": "GET",
-						"header": [],
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "localhost/api/users/1",
+							"raw": "localhost/api/fundings/1",
 							"host": [
 								"localhost"
 							],
 							"port": "5000",
 							"path": [
 								"api",
-								"users",
+								"fundings",
 								"1"
 							]
 						}
@@ -345,7 +465,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
 									"type": "string"
 								}
 							]
@@ -485,10 +605,10 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "fundings",
+			"name": "receipts",
 			"item": [
 				{
-					"name": "get funding by project",
+					"name": "localhost:5000/api/receipts",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -502,47 +622,35 @@
 								"funding",
 								"1"
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "update funding",
-					"request": {
-						"method": "PUT",
+						},
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"name": "Content-Type",
 								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"annee_titre_f\": null,\n        \"commentaire_admin_f\": null,\n        \"commentaire_resp_f\": null,\n        \"date_arrete_f\": null,\n        \"date_limite_solde_f\": null,\n        \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n        \"id_f\": 3,\n        \"id_financeur\": 1,\n        \"id_p\": 2,\n        \"imputation_f\": null,\n        \"montant_arrete_f\": 44344.0,\n        \"numero_titre_f\": null,\n        \"statut_f\": \"ANTR\"\n    }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n\t\"annee_r\": \"2021\",\n\t\"montant_r\": 309.38,\n\t\"id_f\": \"1\"\n}\n"
 						},
 						"url": {
-							"raw": "localhost/funding/1",
+							"raw": "localhost/api/receipts",
 							"host": [
 								"localhost"
 							],
 							"port": "5000",
 							"path": [
-								"funding",
-								"1"
+								"api",
+								"receipts"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "localhost/funding",
+					"name": "localhost/api/fundings/1/receipts",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -587,104 +695,6 @@
 							],
 							"port": "5000",
 							"path": [
-								"funding"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete funding",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"date_solde_f\": \"2018-06-29 08:15:27.243860\",\n    \"id_financeur\": 1,\n    \"id_p\": 4,\n    \"montant_arrete_f\": 44344.0\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost/funding/1",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"funding",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "receipts",
-			"item": [
-				{
-					"name": "localhost/api/receipts",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDc0NDU4MTYsIm5iZiI6MTYwNzQ0NTgxNiwianRpIjoiNGI0ZDRiYTItNzA1OC00NjhmLTk4YTUtNDIzNGNiMGY0MzBhIiwiZXhwIjoxNjE1MjIxODE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.-Q8FaSb1wLbr1P7hf-PFOYf7VPSwLQGY2ckAq8w9Yws",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"annee_r\": \"2021\",\n\t\"montant_r\": 309.38,\n\t\"id_f\": \"1\"\n}\n"
-						},
-						"url": {
-							"raw": "localhost/api/receipts",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"receipts"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost/api/fundings/1/receipts",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost/api/fundings/1/receipts",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
 								"api",
 								"fundings",
 								"1",
@@ -695,7 +705,7 @@
 					"response": []
 				},
 				{
-					"name": "localhost/api/receipts/1",
+					"name": "localhost:5000/api/receipts/1",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -719,6 +729,117 @@
 								"api",
 								"receipts",
 								"55"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "localhost/api/users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"nom_u\": \"Samakin\",\n\t\"prenom_u\": \"Zantiè\",\n\t\"initiales_u\": \"zas\",\n\t\"email_u\": \"zantie@mail.ml\",\n\t\"active_u\": true,\n\t\"roles\": [\"consultant\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost/api/users/76",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"76"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost/api/users/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost/api/users/34",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"34"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost/api/users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk0OTQ4NTEsIm5iZiI6MTYwOTQ5NDg1MSwianRpIjoiY2NlZjMyMWQtNDlhNS00Yzc0LTg2NmYtNDQyOGFjYTVmNmI5IiwiZXhwIjoxNjE3MjcwODUxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.GmmXKA5uxszG0RzBTSEEatrHg7JowR7IW1ICQyM39Po",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost/api/users",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users"
 							]
 						}
 					},

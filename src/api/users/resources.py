@@ -5,6 +5,7 @@ from src.shared.entity import Session
 from .auth_resources import admin_required
 from .db_services import UserDBService
 from .entities import UserSchema, User
+from .validation_service import UserValidationService
 
 resources = Blueprint('users', __name__)
 
@@ -62,21 +63,61 @@ def update_user(user_id):
     if id not in data:
         data['id'] = user_id
 
+    validation_errors = UserValidationService.validate_update(data)
+    if len(validation_errors) > 0:
+        return jsonify({
+            'status': 'error',
+            'message': 'A validation error occured',
+            'errors': validation_errors
+        }), 422
+
     # Check if user exists
-    exist_error = UserDBService.check_user_exists_by_id(user_id)
-    if exist_error is not None:
-        return jsonify(exist_error), 404
+    existing_user = UserDBService.check_user_exists_by_id(user_id)
+    if type(existing_user) != User:
+        return jsonify(existing_user), 404
 
-    data = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'password_u')) \
-        .load(data)
-    user = User(**data)
+    # check if new email or initials are already in use
+    user_by_email = UserDBService.get_user_by_email(data.get('email_u'))
+    user_by_initiales = UserDBService.get_user_by_initiales(data.get('initiales_u'))
+    if (user_by_email and (user_by_email['id_u'] != user_id)) \
+            or (user_by_initiales and (user_by_initiales['id_u'] != user_id)):
+        message = {'status': 'error', 'type': 'conflict'}
+        if user_by_email:
+            message['code'] = 'EMAIL_ALREADY_IN_USE'
+            message['message'] = 'A user with email <{}> is already in use'.format(data.get('email_u'))
+            return jsonify(message), 409
 
-    session = Session()
-    session.merge(user)
-    session.commit()
+        message['code'] = 'INITIALS_ALREADY_IN_USE'
+        message['message'] = 'A user with initials <{}> is already in use'.format(data.get('initiales_u'))
+        return jsonify(message), 409
 
-    updated_user = UserSchema().dump(user)
-    session.close()
+    new_roles = data['roles']
+    session = None
+    try:
+        session = Session()
+        user = session.query(User).get(user_id)
+        user = UserDBService.merge_user(user, data)
+        print(user.active_u)
+
+        session.execute("delete from role_utilisateur where id_u = :user_id",
+                        {'user_id': user.id_u})
+        session.flush()
+
+        for role in new_roles:
+            role_id = 2
+            if role == 'administrateur':
+                role_id = 1
+            session.execute("insert into role_utilisateur values (:role_id, :user_id)",
+                            {'user_id': user.id_u, 'role_id': role_id})
+
+        session.commit()
+
+        updated_user = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u']) \
+            .dump(user)
+        updated_user['roles'] = new_roles
+    finally:
+        if session:
+            session.close()
     return jsonify(updated_user), 200
 
 

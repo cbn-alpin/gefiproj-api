@@ -8,9 +8,18 @@ EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 class UserValidationService:
     @staticmethod
     def validate_post(user):
+        errors = UserValidationService.validate_update(user)
+
+        user_keys = ['password_u']
+        errors = errors + DataValidationUtils.check_keys(user_keys, user)
+
+        return errors
+
+    @staticmethod
+    def validate_update(user):
         errors = []
 
-        user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'password_u', 'active_u', 'roles']
+        user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'active_u', 'roles']
         errors = DataValidationUtils.check_keys(user_keys, user)
 
         if 'email_u' in user \
