@@ -69,4 +69,4 @@ class ExpenseDBService:
         session.close()
         
         if expense_existing is not None:
-            raise ValueError(f'La dépense de l\'année {year} existe déjà.',404)
+            raise ValueError(f'La dépense de l\'année {year} existe déjà.',403)

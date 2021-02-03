@@ -81,4 +81,4 @@ class FunderDBService:
         session.close()
         
         if funder_existing is not None:
-            raise ValueError(f'Le financeur {name} existe déjà.',404)
+            raise ValueError(f'Le financeur {name} existe déjà.',403)

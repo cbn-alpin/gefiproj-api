@@ -61,7 +61,6 @@ paths:
           schema:
             $ref: "#/definitions/LoginResponse"
 
-
   /api/auth/logout:
     post:
       tags:
@@ -105,7 +104,6 @@ paths:
             type: string
             example: { access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk2NzQ3MTQsIm5iZiI6MTYwOTY3NDcxNCwianRpI" }
 
-
   /api/auth/register:
     post:
       tags:
@@ -134,12 +132,11 @@ paths:
           schema:
             $ref: "#/definitions/Utilisateur"
 
-
   # Dépenses
   /api/expenses:
     post:
       tags:
-        - Dépenses
+        - "Dépenses"
       summary: "Enregistre une nouvelle dépense"
       description: "Retourne la nouvelle dépense créee"
       operationId: "createExpense"
@@ -157,15 +154,100 @@ paths:
       security:
         - api_key: [ ]
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
+        "403":
+          description: "L'année de la dépense doit être unique"
         "200":
           description: "Nouvelle dépense créée avec succès"
           schema:
             $ref: "#/definitions/Depense"
+    get:
+      tags:
+        - "Dépenses"
+      summary: "Récupérer les dépenses"
+      description: "Retourne la liste des dépenses"
+      operationId: "getAllExpenses"
+      produces:
+        - "application/json"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Retourne une liste des dépenses"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Depense"
+      security:
+        - api_key: [ ]
+  /api/expenses/{expenseId}:
+    put:
+      tags:
+        - "Dépenses"
+      summary: "Mettre à jour une dépense"
+      description: ""
+      operationId: "updateExpense"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "expenseId"
+          in: "path"
+          description: "id de la dépense à mettre à jour"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter au dépense"
+          required: true
+          schema:
+            $ref: "#/definitions/Depense"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "La dépense est introuvable."
+        "403":
+          description: "L'année de la dépense doit être unique."
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Depense"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - "Dépenses"
+      summary: "Supprimer une dépense"
+      description: ""
+      operationId: "deleteExpense"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "expenseId"
+          in: "path"
+          description: "id de la dépense à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "La dépense est introuvable."
+        "403":
+          description: "L'année de la dépense doit être unique."
+        "204":
+          description: "Opération réussie"
+      security:
+        - api_key: [ ]
 
-
-        # Projet section
+  # Projet section
   /api/projects:
     post:
       tags:
@@ -219,8 +301,6 @@ paths:
               $ref: "#/definitions/Project"
       security:
         - api_key: [ ]
-
-
   /api/projects/{projectId}:
     get:
       tags:
@@ -250,7 +330,6 @@ paths:
           description: "Projet introuvable"
       security:
         - api_key: [ ]
-
     put:
       tags:
         - "Projets"
@@ -285,7 +364,6 @@ paths:
           description: "Projet introuvable"
       security:
         - api_key: [ ]
-
     delete:
       tags:
         - "Projets"
@@ -311,8 +389,7 @@ paths:
       security:
         - api_key: [ ]
 
-
-  # Financement
+  # Financements
   /api/fundings:
     post:
       tags:
@@ -332,7 +409,7 @@ paths:
           schema:
             $ref: "#/definitions/Financement"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Le projet indiqué est introuvable"
@@ -361,7 +438,7 @@ paths:
           type: "integer"
           format: "int64"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Le projet indiqué est introuvable"
@@ -398,7 +475,7 @@ paths:
           schema:
             $ref: "#/definitions/Financement"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "200":
           description: "Opération réussie"
@@ -426,7 +503,7 @@ paths:
           type: "integer"
           format: "int64"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Projet introuvable"
@@ -434,7 +511,6 @@ paths:
           description: "Opération réussie"
       security:
         - api_key: [ ]
-
 
   # Recettes
   /api/receipts:
@@ -465,7 +541,6 @@ paths:
           schema:
             items:
               $ref: "#/definitions/Recette"
-
   /api/receipts/{receiptId}:
     put:
       tags:
@@ -540,7 +615,7 @@ paths:
 
         # Utilisateurs section
 
-  # Montant affecté
+  # Montants affectés
   /api/receipts/{receiptId}/amounts:
     get:
       tags:
@@ -558,7 +633,7 @@ paths:
           type: "integer"
           format: "int64"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Le recette indiqué est introuvable"
@@ -589,7 +664,7 @@ paths:
           schema:
             $ref: "#/definitions/Montant_Affecte"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Le recette indiqué est introuvable"
@@ -626,7 +701,7 @@ paths:
           schema:
             $ref: "#/definitions/Montant_Affecte"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "200":
           description: "Opération réussie"
@@ -654,7 +729,7 @@ paths:
           type: "integer"
           format: "int64"
       responses:
-        "403":
+        "401":
           description: "Erreur d'authentification"
         "404":
           description: "Projet introuvable"
@@ -662,8 +737,8 @@ paths:
           description: "Opération réussie"
       security:
         - api_key: [ ]
-
-
+  
+  # Utilisateurs
   /api/users:
     get:
       tags:
@@ -686,7 +761,6 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Utilisateur"
-
   /api/users/{userId}:
     get:
       tags:
@@ -715,7 +789,6 @@ paths:
         "404":
           description: "Projet introuvable"
 
-
   # Financeur
   /api/funders:
     get:
@@ -730,7 +803,7 @@ paths:
         "403":
           description: "Erreur d'authentification"
         "200":
-          description: "Retourne une liste des montants affectés par recette"
+          description: "Retourne une liste des financeurs"
           schema:
             type: "array"
             items:
@@ -1105,7 +1178,7 @@ definitions:
         example: 2
       annee_d:
         type: integer
-        description: "Année de la dépense"
+        description: "Année de la dépense: Elle doit être unique."
         example: 2019
       montant_d:
         type: number
@@ -1120,7 +1193,7 @@ definitions:
         example: 5
       nom_financeur:
         type: string
-        description: nom du financeur
+        description: "Nom du financeur: Elle doit être unique."
       ref_arret_attributif_financeur:
         type: string
         description: référence arrêté attributif du financeur
