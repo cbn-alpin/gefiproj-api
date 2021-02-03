@@ -15,17 +15,25 @@ def write_to_yml():
         ),
         database=dict(
             host=environ.get('DATABASE_PROD_IP'),
-            port=environ.get('SQL_PORT'),
+            port=environ.get('DATABASE_PROD_PORT'),
             name=environ.get('DATABASE_PROD_NAME'),
             user=environ.get('DATABASE_PROD_USER'),
             password=environ.get('DATABASE_PROD_PASSWORD'),
             engine='postgresql'
         ),
-        test_database=dict(
+        dev_database=dict(
             host=environ.get('DATABASE_DEV_IP'),
-            port=environ.get('SQL_PORT'),
+            port=environ.get('DATABASE_DEV_PORT'),
             name=environ.get('DATABASE_DEV_NAME'),
             user=environ.get('DATABASE_DEV_USER'),
+            password=environ.get('DATABASE_DEV_PASSWORD'),
+            engine='postgresql'
+        ),
+        test_database=dict(
+            host=environ.get('DATABASE_TEST_IP'),
+            port=environ.get('DATABASE_TEST_PORT'),
+            name=environ.get('DATABASE_TEST_NAME'),
+            user=environ.get('DATABASE_TEST_USER'),
             password=environ.get('DATABASE_DEV_PASSWORD'),
             engine='postgresql'
         ),
