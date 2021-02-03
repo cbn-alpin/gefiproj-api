@@ -6,7 +6,6 @@ from .validation_service import FunderValidationService
 
 resources = Blueprint('funders', __name__)
 
-
 @resources.route('/api/funders', methods=['GET'])
 @jwt_required
 def get_funders():

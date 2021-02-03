@@ -450,6 +450,35 @@ paths:
               $ref: "#/definitions/Financement"
       security:
         - api_key: [ ]
+  /api/funders/{funderId}/fundings:
+    get:
+      tags:
+        - "Financements"
+      summary: "Récupérer les financements par financeur"
+      description: "Retourne la liste de financement par financeur"
+      operationId: "getFundingByFunderId"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "funderId"
+          in: "path"
+          description: "id du financeur relié au financement"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Le financeur indiqué est introuvable"
+        "200":
+          description: "Retourne une liste de financements"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Financement"
+      security:
+        - api_key: [ ]
   /api/fundings/{fundingId}:
     put:
       tags:

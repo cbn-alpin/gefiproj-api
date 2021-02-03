@@ -3,6 +3,7 @@ from functools import wraps
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_refresh_token_required, get_jwt_identity, \
     verify_jwt_in_request, get_jwt_claims, decode_token, jwt_required, get_raw_jwt
+from marshmallow import EXCLUDE
 
 from src.api.users.db_services import UserDBService
 from src.api.users.entities import User, UserSchema
@@ -94,11 +95,10 @@ def logout():
 @admin_required
 def add_user():
     current_app.logger.debug('In POST /api/auth/register')
-    posted_user = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'active_u', 'password_u')) \
-        .load(request.get_json())
+    posted_user_data = request.get_json()
 
     # validate user posted data
-    validation_errors = UserValidationService.validate_post(posted_user)
+    validation_errors = UserValidationService.validate_post(posted_user_data)
     if len(validation_errors) > 0:
         return jsonify({
             'status': 'error',
@@ -108,6 +108,8 @@ def add_user():
             'errors': validation_errors
         }), 422
 
+    posted_user = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'active_u', 'password_u')) \
+        .load(posted_user_data, unknown=EXCLUDE)
     user = User(**posted_user)
 
     # check if user exists by initiales and email
@@ -124,7 +126,18 @@ def add_user():
         message['message'] = 'A user with initials <{}> is already in use'.format(user.initiales_u)
         return jsonify(message), 409
 
-    new_user = UserDBService.insert_user(user)
+    roles = posted_user_data['roles']
+
+    new_user = UserDBService.insert_user(user, roles)
+    if user is None:
+        return jsonify({
+            'status': 'error',
+            'type': 'REGISTER',
+            'code': 'REGISTER_ERROR',
+            'message': 'An error occured when add the user'
+        })
+
+    new_user['roles'] = roles
     return jsonify(new_user), 201
 
 

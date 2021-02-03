@@ -1,7 +1,8 @@
-config/config.yml
-config/config.local.yml
+# config/config.yml
+# config/config.local.yml
 config/google-credentials.json
 .flaskenv
+*.ztr-directory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -135,3 +136,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.ztr-directory

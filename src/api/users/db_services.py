@@ -1,14 +1,18 @@
-from src.shared.entity import Session
+from enum import Enum
+
 from flask_jwt_extended import get_jwt_identity
+
+from src.shared.entity import Session
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
+from ..projects.db_service import ProjectDBService
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
-from ..projects.db_service import ProjectDBService
-from enum import Enum
+
 
 class Role(Enum):
     ADMIN = 'administrateur'
     CONSULTANT = 'consultant'
+
 
 class UserDBService:
     @staticmethod
@@ -47,6 +51,7 @@ class UserDBService:
 
             if existing_user is None:
                 raise ValueError('This user does not exist')
+            return existing_user
         except ValueError:
             resp = {
                 'code': 'USER_NOT_FOUND',
@@ -60,11 +65,8 @@ class UserDBService:
         session = Session()
         user_object = session.query(User).filter_by(email_u=user_email).first()
 
-        schema = UserSchema()
+        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
         user = schema.dump(user_object)
-
-        if user:
-            user.pop('password_u', None)
 
         session.close()
         return user
@@ -81,47 +83,57 @@ class UserDBService:
 
     @staticmethod
     def process_get_user(user_object):
-        schema = UserSchema()
+        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
         user = schema.dump(user_object)
-
-        if user:
-            user.pop('password_u', None)
 
         return user
 
     @staticmethod
-    def insert_user(user: User):
-        session = Session()
-        session.add(user)
-        session.commit()
+    def insert_user(user: User, roles):
+        session = None
+        new_user = None
 
-        new_user = UserSchema().dump(user)
-        if new_user:
-            new_user.pop('password_u', None)
+        try:
+            session = Session()
+            session.add(user)
+            session.flush()
 
-        session.close()
+            for role in roles:
+                role_id = 1
+                if role == 'consultant':
+                    role_id = 2
+                session.execute("insert into role_utilisateur values (:role_id, :user_id)",
+                                {'user_id': user.id_u, 'role_id': role_id})
+            session.commit()
+
+            new_user = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u']) \
+                .dump(user)
+        finally:
+            if session:
+                session.close()
+
         return new_user
 
     @staticmethod
-    def isResponsableOfProjet(project_id: int):
-        isResponsable = False
+    def is_responsable_of_projet(project_id: int):
+        is_responsable = False
         project = ProjectDBService.get_project_by_id(project_id)
         user = UserDBService.get_user_by_email(get_jwt_identity())
         if project is not None and 'responsable' in project and \
-            user is not None and 'id_u' in user \
-            and user['id_u'] == project['responsable']['id_u']:
+                user is not None and 'id_u' in user \
+                and user['id_u'] == project['responsable']['id_u']:
             role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            isResponsable = role[0] == Role.CONSULTANT.value
-        return isResponsable
+            is_responsable = role[0] == Role.CONSULTANT.value
+        return is_responsable
 
     @staticmethod
-    def isAdmin():
-        isAdmin = False
+    def is_admin():
+        is_admin = False
         user = UserDBService.get_user_by_email(get_jwt_identity())
         if user is not None and 'id_u' in user:
             role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            isAdmin = role[0] == Role.ADMIN.value
-        return isAdmin
+            is_admin = role[0] == Role.ADMIN.value
+        return is_admin
 
     @staticmethod
     def revoke_token(jti: str) -> RevokedToken or None:
@@ -153,3 +165,13 @@ class UserDBService:
             session.close()
 
         return token
+
+    @staticmethod
+    def merge_user(user, data):
+        user.nom_u = data['nom_u']
+        user.prenom_u = data['prenom_u']
+        user.email_u = data['email_u']
+        user.initiales_u = data['initiales_u']
+        user.active_u = data['active_u']
+
+        return user

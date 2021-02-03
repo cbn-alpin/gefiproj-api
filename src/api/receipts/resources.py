@@ -5,6 +5,7 @@ from marshmallow import EXCLUDE
 from .db_services import ReceiptDBService
 from .entities import ReceiptSchema, Receipt
 from .validation_service import ReceiptValidationService
+from ..amounts.db_services import AmountDBService
 from ..fundings.db_services import FundingDBService
 from ..users.auth_resources import admin_required
 
@@ -129,7 +130,9 @@ def delete_receipt(id_receipt):
             'code': 'RECEIPT_PROJECT_CLOSED',
             'message': f'The receipt with id {id_receipt} cannot be deleted. The associated project is closed'
         }), 400
-
+        
+    # delete children
+    AmountDBService.delete_amounts_by_receipt_id(id_receipt)
     # delete the receipt
     id_deleted = ReceiptDBService.delete(id_receipt)
     return jsonify({

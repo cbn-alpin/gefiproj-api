@@ -106,8 +106,25 @@ class AmountDBService:
         session.close()
         return diff >= 0
     
-    
     @staticmethod
     def check_error_sum_value(amount):
         if AmountDBService.check_sum_value(amount) == False:
             raise ValueError(f'Erreur de valeur: la somme des montants affectés est supérieur au montant de sa recette.',422)
+
+    @staticmethod
+    def delete_amounts_by_receipt_id(receipt_id: int):
+        session = Session()
+        delete_amounts = Amount.__table__.delete().where(Amount.id_r==receipt_id)
+        session.execute(delete_amounts)
+        
+        session.commit()
+        session.close()
+        
+    @staticmethod
+    def check_unique_amount_by_year_and_receipt(year: int, receipt_id: int):
+        session = Session()  
+        expense_existing = session.query(Amount).filter_by(id_r=receipt_id, annee_ma=year).first()
+        session.close()
+        
+        if expense_existing is not None:
+            raise ValueError(f'L\'année {year} du montant affecté existe déjà.',403)

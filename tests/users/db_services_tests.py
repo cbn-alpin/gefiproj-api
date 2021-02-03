@@ -24,6 +24,10 @@ class UserDBServicesTestCase(DBBaseTestCase):
         roles = UserDBService.get_user_role_names_by_user_id_or_email('')
         self.assertEqual(roles, [])
 
+    def test_check_user_exists_by_id(self):
+        user = UserDBService.check_user_exists_by_id(100)
+        print(type(user))
+
     def test_revoked_token(self):
         revoked_token = UserDBService.revoke_token("token to revoke s id")
 

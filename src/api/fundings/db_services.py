@@ -1,14 +1,15 @@
 from datetime import datetime
-from flask import Blueprint, current_app, jsonify, request
-from sqlalchemy import func, desc
-from sqlalchemy.orm import join
+from enum import Enum
+
+from sqlalchemy import func
+
+from src.shared.entity import Session
 from .entities import Funding, FundingSchema
 from ..amounts.entities import Amount
+from ..projects.entities import Project
 from ..receipts.entities import Receipt, ReceiptSchema
-from ..projects.entities import Project, ProjectSchema
-from src.shared.entity import Session
 from ..users.db_services import UserDBService
-from enum import Enum
+
 
 class Status(Enum):
     STATUS_DEFAULT = 'ANTR'
@@ -22,7 +23,6 @@ class FundingDBService:
         session.close()
         return found_funding
 
-
     @staticmethod
     def check_project_exists(project_id):
         session = Session()
@@ -32,7 +32,6 @@ class FundingDBService:
         if existing_project is None:
             raise ValueError(f'Le projet {project_id} n\'existe pas.',404)
         
-
     @staticmethod
     def check_funding_exists(funding_id):
         session = Session()
@@ -40,7 +39,6 @@ class FundingDBService:
         session.close()
         if existing_funding is None:
             raise ValueError(f'Le financement {funding_id} n\'existe pas.',404)
-
 
     @staticmethod
     def get_funding_by_project(project_id: int):
@@ -74,6 +72,18 @@ class FundingDBService:
         session.close()
         return funding
 
+    @staticmethod
+    def get_funding_by_funder(funder_id: int):
+        session = Session()  
+        funding_object = session.query(Funding).filter(Funding.id_financeur == funder_id).order_by(Funding.id_f.desc()).all()
+
+        # Transforming into JSON-serializable objects
+        schema = FundingSchema(many=True)
+        funding = schema.dump(funding_object)
+        
+        # Serializing as JSON
+        session.close()
+        return funding
 
     @staticmethod
     def insert_funding(posted_funding):
@@ -171,6 +181,6 @@ class FundingDBService:
 
     @staticmethod
     def can_update(project_id: int):
-        if UserDBService.isResponsableOfProjet(project_id) == False and UserDBService.isAdmin() == False :
-            raise Exception(f'Ce financement ne peut pas être modifier car vous n\'êtes pas responsable du projet.',403)
-        
+        if UserDBService.is_responsable_of_projet(project_id) == False and UserDBService.is_admin() == False:
+            raise Exception(f'Ce financement ne peut pas être modifier car vous n\'êtes pas responsable du projet.',
+                            403)
