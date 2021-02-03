@@ -63,9 +63,12 @@ class ExpenseDBService:
             raise ValueError(f'La dépense {expense_id} n\'existe pas.',404)
    
     @staticmethod
-    def check_unique_year(year: int):
+    def check_unique_year(year: int, expense_id = None):
         session = Session()  
-        expense_existing = session.query(Expense).filter_by(annee_d=year).first()
+        if expense_id is not None:
+            expense_existing = session.query(Expense).filter(Expense.id_d != expense_id, Expense.annee_d == year).first()
+        else:
+            expense_existing = session.query(Expense).filter_by(annee_d=year).first()
         session.close()
         
         if expense_existing is not None:

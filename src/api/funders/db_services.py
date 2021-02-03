@@ -75,9 +75,12 @@ class FunderDBService:
             raise ValueError(f'Le financeur {funder_id} n\'existe pas.',404)
    
     @staticmethod
-    def check_unique_funder_name(name: str):
+    def check_unique_funder_name(name: str, funder_id = None):
         session = Session()  
-        funder_existing = session.query(Funder).filter_by(nom_financeur=name).first()
+        if funder_id is not None:
+            funder_existing = session.query(Funder).filter(Funder.id_financeur != funder_id, Funder.nom_financeur == name).first()
+        else:
+            funder_existing = session.query(Funder).filter_by(nom_financeur=name).first()
         session.close()
         
         if funder_existing is not None:

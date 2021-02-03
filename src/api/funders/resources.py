@@ -60,7 +60,7 @@ def update_funder(funder_id):
             }), 422
         # check
         FunderDBService.check_exist_funder(funder_id)
-        FunderDBService.check_unique_funder_name(data['nom_financeur'])
+        FunderDBService.check_unique_funder_name(data['nom_financeur'], funder_id)
         
         response = FunderDBService.update(data)
         return jsonify(response), 200

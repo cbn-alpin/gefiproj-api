@@ -68,7 +68,7 @@ def update_amount(amount_id):
             
         # Checks
         AmountDBService.check_receipt_exists_by_id(data['id_r'])
-        AmountDBService.check_unique_amount_by_year_and_receipt(data['annee_ma'], data['id_r'])
+        AmountDBService.check_unique_amount_by_year_and_receipt(data['annee_ma'], data['id_r'], amount_id)
         AmountDBService.check_error_sum_value(data)
         
         response = AmountDBService.update(data)
