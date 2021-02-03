@@ -90,16 +90,29 @@ class UserDBService:
         return user
 
     @staticmethod
-    def insert_user(user: User):
-        session = Session()
-        session.add(user)
-        session.commit()
+    def insert_user(user: User, roles):
+        session = None
+        new_user = None
 
-        new_user = UserSchema().dump(user)
-        if new_user:
-            new_user.pop('password_u', None)
+        try:
+            session = Session()
+            session.add(user)
+            session.flush()
 
-        session.close()
+            for role in roles:
+                role_id = 1
+                if role == 'consultant':
+                    role_id = 2
+                session.execute("insert into role_utilisateur values (:role_id, :user_id)",
+                                {'user_id': user.id_u, 'role_id': role_id})
+            session.commit()
+
+            new_user = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u']) \
+                .dump(user)
+        finally:
+            if session:
+                session.close()
+
         return new_user
 
     @staticmethod

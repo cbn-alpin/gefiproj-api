@@ -1,6 +1,5 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-from sqlalchemy.orm import subqueryload
 
 from src.shared.entity import Session
 from .auth_resources import admin_required
@@ -40,11 +39,13 @@ def get_user_by_id(user_id):
     session = Session()
     user_object = session.query(User) \
         .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
-        .options(subqueryload(User.roles)).filter_by(id_u=user_id).first()
+        .filter_by(id_u=user_id).first()
 
     # Transforming into JSON-serializable objects
     schema = UserSchema(many=False)
     user = schema.dump(user_object)
+
+    user['roles'] = UserDBService.get_user_role_names_by_user_id_or_email(user['email_u'])
 
     # Serializing as JSON
     session.close()
