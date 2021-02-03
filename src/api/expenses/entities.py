@@ -9,7 +9,7 @@ class Expense(Base, db.Model):
     __tablename__ = "depense"
 
     id_d = Column(db.Integer, primary_key=True)
-    annee_d = Column(db.Integer, nullable=False)
+    annee_d = Column(db.Integer, nullable=False, unique=True)
     montant_d = Column(db.Float, nullable=False)
 
     def __init__(self, annee_d: int, montant_d: float, id_d=''):
