@@ -162,7 +162,8 @@ class UserDBService:
             token = session.query(RevokedToken).filter_by(jti=jti).first()
             token = RevokedTokenSchema().dump(token)
         finally:
-            session.close()
+            if session:
+                session.close()
 
         return token
 
