@@ -10,7 +10,7 @@ class UserValidationService:
     def validate_post(user):
         errors = []
 
-        user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'password_u', 'active_u']
+        user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'password_u', 'active_u', 'roles']
         errors = DataValidationUtils.check_keys(user_keys, user)
 
         if 'email_u' in user \
@@ -21,4 +21,24 @@ class UserValidationService:
                 'field': 'email_u',
                 'message': 'Parameter <email_u> must be a valid email address',
             })
+
+        if 'roles' in user:
+            errors = DataValidationUtils.check_list('roles', user, errors)
+
+            if len(user['roles']) > 2:
+                errors.append({
+                    'code': ERROR_CODE,
+                    'type': 'VALUE_ERROR',
+                    'field': 'roles',
+                    'message': 'Parameter <roles> must be an array of at most 2 items',
+                })
+            else:
+                for role in user['roles']:
+                    if role != 'consultant' and role != 'administrateur':
+                        errors.append({
+                            'code': ERROR_CODE,
+                            'type': 'VALUE_ERROR',
+                            'field': 'roles',
+                            'message': 'Parameter <roles> must be either <consultant> or <administrateur>',
+                        })
         return errors
