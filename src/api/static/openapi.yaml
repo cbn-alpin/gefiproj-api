@@ -946,6 +946,8 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/ExportParams"
+      security:
+        - api_key: [ ]
       responses:
         "200":
           description: "Export réussi"
@@ -968,11 +970,82 @@ paths:
               lines:
                 type: integer
                 description: nombre de lignes exportées
-
         "401":
           description: "Erreur d'authentification"
-        "404":
-          description: "Le login indiqué est introuvable"
+        "422":
+          description: "Erreur de validation des entrées"
+        "500":
+          description: "Erreur survenue lors de la création du document google sheet"
+
+  /api/export/receipts:
+    post:
+      tags:
+        - "Export"
+      summary: "Exporter le bilan financier dans un tableur Google"
+      description: "Retourne le lien du document créé et les personnes avec qui il est partagé"
+      operationId: "exportReceipts"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema:
+            properties:
+              annee_ref:
+                type: integer
+                description: Année de reference
+                example: 2020
+              nom_fichier:
+                type: string
+                description: "Nom du fichier exporté. Optionnel"
+                example: ""
+              partages:
+                type: array
+                description: "Tableau de personnes avec qui partager le document créé. Paramètre optionnel"
+                items:
+                  properties:
+                    email:
+                      type: string
+                      description: email de l'utilisateur
+                    type:
+                      type: string
+                      description: type de partage
+                      example: user
+                    permission:
+                      type: string
+                      description: permission de l'utisateur sur le document
+                      example: writer
+      security:
+        - api_key: [ ]
+      responses:
+        "200":
+          description: "Export réussi"
+          schema:
+            properties:
+              message:
+                type: string
+              title:
+                type: string
+                description: titre du document créé
+              url:
+                type: string
+                description: url du document créé
+              shares:
+                type: object
+                description: personnes avec qui le document a été partagé
+              lines:
+                type: integer
+                description: nombre de lignes exportées
+        "401":
+          description: "Erreur d'authentification"
+        "422":
+          description: "Erreur de validation des entrées"
+        "500":
+          description: "Erreur survenue lors de la création du document google sheet"
 
 securityDefinitions:
   api_key:
@@ -1245,10 +1318,11 @@ definitions:
         example: 2023
       nom_fichier:
         type: string
-        description: ""
+        description: "Nom du fichier exporté. Optionnel"
         example: ""
       partages:
         type: array
+        description: "Tableau de personnes avec qui partager le document créé. Paramètre optionnel"
         items:
           properties:
             email:

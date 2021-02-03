@@ -3,6 +3,23 @@ from src.shared.data_validation_utils import DataValidationUtils, ERROR_CODE
 
 class ExportValidationService:
     @staticmethod
+    def validate_receipts(receipt_export_params):
+        errors = DataValidationUtils.check_keys(['annee_ref'], receipt_export_params)
+        errors = DataValidationUtils.check_int_value('annee_ref', receipt_export_params, errors)
+
+        if 'entete' in receipt_export_params:
+            errors = DataValidationUtils.check_list('entete', receipt_export_params, errors)
+
+        if 'partages' in receipt_export_params:
+            errors = DataValidationUtils.check_list('partages', receipt_export_params, errors)
+            shares = receipt_export_params['partages']
+            for it in shares:
+                # TODO: Check email validity
+                errors = errors + DataValidationUtils.check_keys(['email', 'type', 'permission'], it)
+
+        return errors
+
+    @staticmethod
     def validate(export_params_data):
         export_params_keys = ['version', 'annee_ref']
 
