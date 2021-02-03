@@ -57,9 +57,28 @@ class FunderDBService:
     @staticmethod
     def check_funder_use_in_funding(funder_id: int):
         session = Session()  
-        funder = session.query(Funder).filter_by(id_financeur=funder_id).all()
-        funding = session.query(Funding).filter(Funding.id_financeur==funder_id).all()
+        funding = session.query(Funding.id_f, Funder.nom_financeur) \
+            .join(Funder, Funder.id_financeur == Funding.id_financeur) \
+            .filter(Funder.id_financeur==funder_id).all()
         session.close()
         
         if funding is not None and len(funding) > 0:
-            raise ValueError(f'Le financeur {funder.nom_financeur} est affecté à len(funding) financement(s)',404)
+            raise ValueError(f'Ce financeur {funding[0][1]} est affecté à {len(funding)} financement(s)',404)
+
+    @staticmethod
+    def check_exist_funder(funder_id: int):
+        session = Session()  
+        funder_existing = session.query(Funder).filter_by(id_financeur=funder_id).first()
+        session.close()
+        
+        if funder_existing is None:
+            raise ValueError(f'Le financeur {funder_id} n\'existe pas.',404)
+   
+    @staticmethod
+    def check_unique_funder_name(name: str):
+        session = Session()  
+        funder_existing = session.query(Funder).filter_by(nom_financeur=name).first()
+        session.close()
+        
+        if funder_existing is not None:
+            raise ValueError(f'Le financeur {name} existe déjà.',404)

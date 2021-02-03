@@ -32,6 +32,8 @@ def add_funder():
                 'message': 'A validation error occured',
                 'errors': validation_errors
             }), 422
+        # check
+        FunderDBService.check_unique_funder_name(posted_funder_data['nom_financeur'])
 
         response = FunderDBService.insert(posted_funder_data)
         return jsonify(response), 201
@@ -57,6 +59,9 @@ def update_funder(funder_id):
                 'message': 'A validation error occured',
                 'errors': validation_errors
             }), 422
+        # check
+        FunderDBService.check_exist_funder(funder_id)
+        FunderDBService.check_unique_funder_name(data['nom_financeur'])
         
         response = FunderDBService.update(data)
         return jsonify(response), 200
@@ -71,6 +76,7 @@ def delete_funder(funder_id):
     try:
         current_app.logger.debug('In DELETE /api/funders/<int:funder_id>')
         # check
+        FunderDBService.check_exist_funder(funder_id)
         FunderDBService.check_funder_use_in_funding(funder_id)
 
         response = FunderDBService.delete(funder_id)

@@ -63,3 +63,19 @@ class DataValidationUtils:
                 'message': f'<{key}> must be a list.',
             })
         return err
+
+    @staticmethod
+    def check_string_value(key: str, data, errors: []):
+        err = errors
+        try:
+            if key in data:
+                data[key] = str(data[key])
+        except ValueError:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': key,
+                'message': f'<{key}> must be a positive double precision number. Ex: 173.59',
+            })
+
+        return err
