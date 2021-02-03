@@ -64,7 +64,7 @@ def update_expense(expense_id):
             }), 422
         # check
         ExpenseDBService.check_exist_expense(expense_id)
-        ExpenseDBService.check_unique_year(data['annee_d'])
+        ExpenseDBService.check_unique_year(data['annee_d'], expense_id)
         
         response = ExpenseDBService.update(data)
         return jsonify(response), 200
