@@ -32,7 +32,7 @@ def export_fundings():
     # default values
     annee_max = 0
     header_column_names = DEFAULT_HEADER
-    shares = get_jwt_identity()
+    shares = [{'email': get_jwt_identity(), 'type': 'user', 'permission': 'writer'}]
     file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
     # overrides if available
