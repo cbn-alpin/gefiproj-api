@@ -145,7 +145,7 @@ Now we can connect to : [https://captain.gefiproj.cbn-alpin.fr/](https://captain
 
 ![Linux terminal](resources/img/3.png)
 
-- When you set the name of app, it's Automatically set as sub-domaine name (`i.e. flask-api.cbna.*`). You change the sub-domaine name in text form and click `Connect New Domain`.
+- When you set the name of app, it's Automatically set as sub-domaine name (`i.e. api.cbna.*`). You change the sub-domaine name in text form and click `Connect New Domain`.
 - Don't forgot to click to `Enable HTTPS`
 
 Before start deployment, we have to set the environment variables. Ask your **administrator** for more details.
@@ -160,6 +160,9 @@ For this first deployment, we will force build by clicking in `Force Build`. Aft
 
 `https://captain.cbna.*/api/v2/user/apps/webhooks/triggerbuild?namespace=captain&token=eyJhbGci...`
 
+####  Create and Deploy Frontend - Angular SPA
+
+More easy then the API Server, juste have to deploy with GitHub like before and configure the webhook for the next push in the branch you define.
 
 ### Backup
 
