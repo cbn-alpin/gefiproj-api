@@ -19,12 +19,12 @@ from src.api.users.auth_resources import resources as auth_resources
 from src.api.users.resources import resources as users_ressources
 # This project files
 from src.shared import logging
+from src.shared.config import write_to_yml
 
 # Import all models for Migrate
 
-
-# TODO: use flask config.
-# config = config.get()
+# Create config.yml file before export params
+write_to_yml()
 
 # Initialize logging
 logging.setup()

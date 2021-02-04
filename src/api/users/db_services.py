@@ -86,7 +86,7 @@ class UserDBService:
         session = Session()
         user_object = session.query(User).filter_by(email_u=user_email).first()
 
-        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
+        schema = UserSchema(exclude=['password_u'])
         user = schema.dump(user_object)
 
         session.close()
@@ -104,7 +104,7 @@ class UserDBService:
 
     @staticmethod
     def process_get_user(user_object):
-        schema = UserSchema(only=['nom_u', 'prenom_u', 'initiales_u', 'active_u', 'id_u', 'email_u'])
+        schema = UserSchema(exclude=['password_u'])
         user = schema.dump(user_object)
 
         return user

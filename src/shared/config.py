@@ -57,9 +57,6 @@ def write_to_yml():
 
 
 def get():
-    # Create config.yml file before export params
-    write_to_yml()
-
     config_file_path = path.join(environ['TC_ROOT_DIR'], 'config/config.yml')
     with open(config_file_path, 'r') as yml_handle:
         yml_content = yml_handle.read()
