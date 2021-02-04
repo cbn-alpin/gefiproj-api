@@ -16,6 +16,23 @@ class Role(Enum):
 
 class UserDBService:
     @staticmethod
+    def get_all_users():
+        session = Session()
+        users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'], (RoleAccess.nom_ra).label("role")) \
+        .join(UserRole, User.id_u == UserRole.id_u) \
+        .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
+        .order_by(User.id_u.asc()) \
+        .distinct(User.id_u) \
+        .all()
+        
+        users = []
+        for user in users_objects:
+            users.append(user._asdict())
+        
+        session.close()
+        return users
+    
+    @staticmethod
     def get_user_role_names_by_user_id_or_email(criteria):
         session = None
 
