@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_claims, get_jwt_identity
 
 from src.shared.entity import Session
 from .auth_resources import admin_required
@@ -25,7 +25,7 @@ def get_all_users():
 @resources.route('/api/users/<int:user_id>', methods=['GET'])
 @jwt_required
 def get_user_by_id(user_id):
-    current_app.logger.debug('In GET /api/users/<int:descId>')
+    current_app.logger.debug('In GET /api/users/<int:user_id>')
 
     check_user_exists_by_id(user_id)
 
@@ -47,7 +47,7 @@ def get_user_by_id(user_id):
 @jwt_required
 @admin_required
 def update_user(user_id):
-    current_app.logger.debug('In PUT /api/users/<int:descId>')
+    current_app.logger.debug('In PUT /api/users/<int:user_id>')
 
     data = dict(request.get_json())
     if id not in data:
@@ -108,6 +108,51 @@ def update_user(user_id):
         if session:
             session.close()
     return jsonify(updated_user), 200
+
+
+@resources.route('/api/users/<int:user_id>/change-password', methods=['POST'])
+@jwt_required
+def change_password(user_id):
+    current_app.logger.debug('In PUT /api/users/<int:user_id>')
+
+    claims = get_jwt_claims()
+    is_admin = False
+    if 'roles' in claims and 'administrateur' in claims['roles']:
+        is_admin = True
+
+    data = dict(request.get_json())
+    validation_errors = UserValidationService.validate_change_pwd(data, is_admin)
+    if len(validation_errors) > 0:
+        return jsonify(validation_errors), 422
+
+    old_password = data.get('password')
+    new_password = data.get('new_password')
+
+    session = None
+    try:
+        session = Session()
+        user = session.query(User).get(user_id)
+        if not user:
+            return jsonify({'message': 'user not found'}), 404
+
+        if not is_admin and user.email_u != get_jwt_identity():
+            # change another user password attemp
+            return jsonify({'message': 'Cannot change others password'}), 403
+
+        if not is_admin and not User.verify_hash(old_password, user.password_u):
+            # couldn't authenticate user who is not admin
+            return jsonify({'message': 'Wrong password'}), 401
+
+        user.password_u = User.generate_hash(new_password)
+        session.commit()
+
+        return jsonify({'message': 'Password changed'}), 200
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': 'Could  not change password'}), 500
+    finally:
+        if session:
+            session.close()
 
 
 def check_user_exists_by_id(user_id):

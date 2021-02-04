@@ -853,6 +853,53 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "localhost:5000/api/users/76/change-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NDkxODAsIm5iZiI6MTYxMjQ0OTE4MCwianRpIjoiZGZjNjM1NjYtM2UwNC00ZDY1LThkYTItZmFlMjZlZTcxMDdlIiwiZXhwIjoxNjEyNDc3OTgwLCJpZGVudGl0eSI6ImMud2ludGVyQGNibi1hbHBpbi5mciIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImNvbnN1bHRhbnQiXX19.UgpxEwx7Lwkip316J0rxeazErc6BkxJGUqR0lWigMGk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"new_password\": \"admin\",\n\t\"password\": \"machin chose\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/api/users/76/change-password",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"76",
+								"change-password"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}

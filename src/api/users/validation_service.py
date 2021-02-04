@@ -7,6 +7,21 @@ EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 class UserValidationService:
     @staticmethod
+    def validate_change_pwd(data, is_admin):
+        errors = DataValidationUtils.check_keys(['new_password'], data)
+        if 'new_password' in data and len(data['new_password']) < 5:
+            errors.append({
+                'code': ERROR_CODE,
+                'type': 'VALUE_ERROR',
+                'field': 'email_u',
+                'message': 'Password too short',
+            })
+        if not is_admin:
+            errors = errors + DataValidationUtils.check_keys(['password'], data)
+
+        return errors
+
+    @staticmethod
     def validate_post(user):
         errors = UserValidationService.validate_update(user)
 
