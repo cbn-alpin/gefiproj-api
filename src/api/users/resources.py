@@ -45,13 +45,17 @@ def get_user_by_id(user_id):
 
 @resources.route('/api/users/<int:user_id>', methods=['PUT'])
 @jwt_required
-@admin_required
 def update_user(user_id):
     current_app.logger.debug('In PUT /api/users/<int:user_id>')
 
     data = dict(request.get_json())
     if id not in data:
         data['id'] = user_id
+
+    claims = get_jwt_claims()
+    is_admin = False
+    if 'roles' in claims and 'administrateur' in claims['roles']:
+        is_admin = True
 
     validation_errors = UserValidationService.validate_update(data)
     if len(validation_errors) > 0:
@@ -70,6 +74,11 @@ def update_user(user_id):
         user = session.query(User).get(user_id)
         if user is None:
             return jsonify({'message': 'user not found'}), 404
+
+        print(is_admin)
+        print(get_jwt_identity())
+        if user.email_u != get_jwt_identity() and not is_admin:
+            return jsonify({'message': 'Cannot an other user'}), 403
 
         # check if new email or initials are already in use
         user_by_email = UserDBService.get_user_by_email(data.get('email_u'))
