@@ -16,9 +16,11 @@ resources = Blueprint('users', __name__)
 def get_all_users():
     current_app.logger.debug('In GET /api/users')
     session = Session()
-    users_objects = session.query(User).all()
+    users_objects = session.query(User) \
+        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
+        .all()
 
-    schema = UserSchema(many=True, exclude=['password_u'])
+    schema = UserSchema(many=True)
     users = schema.dump(users_objects)
 
     for user in users:
