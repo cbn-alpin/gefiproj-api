@@ -61,33 +61,33 @@ def update_user(user_id):
             'errors': validation_errors
         }), 422
 
-    # Check if user exists
-    existing_user = UserDBService.check_user_exists_by_id(user_id)
-    if type(existing_user) != User:
-        return jsonify(existing_user), 404
-
-    # check if new email or initials are already in use
-    user_by_email = UserDBService.get_user_by_email(data.get('email_u'))
-    user_by_initiales = UserDBService.get_user_by_initiales(data.get('initiales_u'))
-    if (user_by_email and (user_by_email['id_u'] != user_id)) \
-            or (user_by_initiales and (user_by_initiales['id_u'] != user_id)):
-        message = {'status': 'error', 'type': 'conflict'}
-        if user_by_email:
-            message['code'] = 'EMAIL_ALREADY_IN_USE'
-            message['message'] = 'A user with email <{}> is already in use'.format(data.get('email_u'))
-            return jsonify(message), 409
-
-        message['code'] = 'INITIALS_ALREADY_IN_USE'
-        message['message'] = 'A user with initials <{}> is already in use'.format(data.get('initiales_u'))
-        return jsonify(message), 409
-
-    new_roles = data['roles']
     session = None
+    updated_user = None
+
+    # Check if user exists
     try:
         session = Session()
         user = session.query(User).get(user_id)
-        user = UserDBService.merge_user(user, data)
+        if user is None:
+            return jsonify({'message': 'user not found'}), 404
 
+        # check if new email or initials are already in use
+        user_by_email = UserDBService.get_user_by_email(data.get('email_u'))
+        user_by_initiales = UserDBService.get_user_by_initiales(data.get('initiales_u'))
+        if (user_by_email and (user_by_email['id_u'] != user_id)) \
+                or (user_by_initiales and (user_by_initiales['id_u'] != user_id)):
+            message = {'status': 'error', 'type': 'conflict'}
+            if user_by_email:
+                message['code'] = 'EMAIL_ALREADY_IN_USE'
+                message['message'] = 'A user with email <{}> is already in use'.format(data.get('email_u'))
+                return jsonify(message), 409
+
+            message['code'] = 'INITIALS_ALREADY_IN_USE'
+            message['message'] = 'A user with initials <{}> is already in use'.format(data.get('initiales_u'))
+            return jsonify(message), 409
+
+        new_roles = data['roles']
+        user = UserDBService.merge_user(user, data)
         session.execute("delete from role_utilisateur where id_u = :user_id",
                         {'user_id': user.id_u})
         session.flush()
@@ -104,6 +104,8 @@ def update_user(user_id):
         updated_user = UserSchema(exclude=['password_u']) \
             .dump(user)
         updated_user['roles'] = new_roles
+    except Exception as e:
+        current_app.logger.error(e)
     finally:
         if session:
             session.close()
