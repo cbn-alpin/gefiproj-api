@@ -8,7 +8,6 @@ from src.shared.entity import Base
 
 class User(Base, db.Model):
     __tablename__ = "utilisateur"
-    __table_args__ = {'extend_existing': True}
 
     id_u = Column(db.Integer, primary_key=True)
     nom_u = Column(db.String(120), unique=False, nullable=False)
