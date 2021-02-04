@@ -1,7 +1,10 @@
 from src.shared.entity import Session
 from .entities import Receipt, ReceiptSchema
+from sqlalchemy import func
+
 from ..fundings.entities import Funding
 from ..projects.entities import Project
+from ..amounts.entities import Amount
 
 
 class ReceiptDBService:
@@ -32,21 +35,16 @@ class ReceiptDBService:
         session = Session()
         receipt_object = session.query(Receipt).filter_by(id_f=funding_id).order_by(Receipt.id_r).all()
 
-        rest_receipt_amount_object = session.execute("select r.id_r, (r.montant_r - sum(ma.montant_ma)) as difference "
-                                                     "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
-                                                     "where r.id_f=:funding_id group by r.id_r order by r.id_r",
-                                                     {'funding_id': funding_id})
-        # https://stackoverflow.com/a/22084672
-        rest_amounts = []
+        rest_receipt_amount_object = session.query(*[c.label(c.name) for c in Receipt.__table__.c ], ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference')) \
+            .join(Amount, Amount.id_r == Receipt.id_r, isouter=True) \
+            .filter(Receipt.id_f == funding_id)\
+            .group_by(Receipt.id_r)\
+            .order_by(Receipt.id_r.desc()) \
+            .all()
+            
+        receipts = []
         for r in rest_receipt_amount_object:
-            rest_amounts.append({'difference': r['difference'], 'id_r': r['id_r']})
-
-        # Transforming into JSON-serializable objects
-        schema = ReceiptSchema(many=True)
-        receipts = schema.dump(receipt_object)
-        if len(rest_amounts) > 0:
-            for i, receipt in enumerate(receipts, start=0):
-                receipt['difference'] = rest_amounts[i]['difference']
+            receipts.append(r._asdict())
 
         session.close()
         return receipts
