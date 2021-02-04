@@ -818,7 +818,50 @@ paths:
         "404":
           description: "Projet introuvable"
 
-  # Financeur
+  /api/users/{userId}/change-password:
+    post:
+      tags:
+        - "Utilisateurs"
+      summary: "Changer le mot de passe d'un utilisateur"
+      description: "Retourne un message de réussite"
+      operationId: "changeUserPassword"
+      produces:
+        - "application/json"
+      security:
+        - api_key: [ ]
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "id de l'utilisateur"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "password"
+          required: true
+          schema:
+            properties:
+              password:
+                type: string
+                description: "Ancien mot de passe. Inutile si administrateur"
+              new_password:
+                type: string
+                description: "Nouveau mot de passe"
+      responses:
+        "200":
+          description: "Mot de passe changé"
+          schema:
+            properties:
+              message:
+                type: string
+        "403":
+          description: "Erreur d'authentification"
+        "404":
+          description: "Utilisateur introuvable"
+        "500":
+          description: "Erreur serveur"
+
+        # Financeur
   /api/funders:
     get:
       tags:
