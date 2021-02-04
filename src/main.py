@@ -17,6 +17,7 @@ from src.api.receipts.resources import resources as receipts_ressources
 from src.api.status.resources import resources as status_ressources
 from src.api.users.auth_resources import resources as auth_resources
 from src.api.users.resources import resources as users_ressources
+from src.api.receipts_accountings.resources import resources as receipts_accountings_ressources
 # This project files
 from src.shared import logging
 from src.shared.config import write_to_yml
@@ -67,3 +68,4 @@ api.register_blueprint(amounts_ressources)
 api.register_blueprint(expenses_ressources)
 api.register_blueprint(fundings_export_ressources)
 api.register_blueprint(receipts_export_ressources)
+api.register_blueprint(receipts_accountings_ressources)
