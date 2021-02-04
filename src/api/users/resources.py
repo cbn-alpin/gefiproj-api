@@ -14,20 +14,12 @@ resources = Blueprint('users', __name__)
 @jwt_required
 @admin_required
 def get_all_users():
-    current_app.logger.debug('In GET /api/users')
-    session = Session()
-    users_objects = session.query(User) \
-        .with_entities(User.id_u, User.nom_u, User.prenom_u, User.initiales_u, User.email_u, User.active_u) \
-        .all()
-
-    schema = UserSchema(many=True)
-    users = schema.dump(users_objects)
-
-    for user in users:
-        user['roles'] = UserDBService.get_user_role_names_by_user_id_or_email(user['email_u'])
-
-    session.close()
-    return jsonify(users)
+    try:
+        current_app.logger.debug('In GET /api/users')
+        users = UserDBService.get_all_users()
+        return jsonify(users), 200
+    except Exception as error:
+        return jsonify(error), 404
 
 
 @resources.route('/api/users/<int:user_id>', methods=['GET'])
