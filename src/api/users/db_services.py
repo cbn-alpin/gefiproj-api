@@ -1,5 +1,6 @@
 from enum import Enum
 
+from flask import current_app
 from flask_jwt_extended import get_jwt_identity
 
 from src.shared.entity import Session
@@ -17,21 +18,34 @@ class Role(Enum):
 class UserDBService:
     @staticmethod
     def get_all_users():
-        session = Session()
-        users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'], (RoleAccess.nom_ra).label("role")) \
-        .join(UserRole, User.id_u == UserRole.id_u) \
-        .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
-        .order_by(User.id_u.asc()) \
-        .distinct(User.id_u) \
-        .all()
-        
-        users = []
-        for user in users_objects:
-            users.append(user._asdict())
-        
-        session.close()
-        return users
-    
+        session = None
+        try:
+            session = Session()
+            users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
+                                          (RoleAccess.nom_ra).label("roles")) \
+                .join(UserRole, User.id_u == UserRole.id_u) \
+                .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
+                .order_by(User.id_u.asc()) \
+                .all()
+
+            users = []
+            for user in users_objects:
+                user = {key: val for key, val in sorted(user._asdict().items(), key=lambda ele: ele[0])}
+                user['roles'] = [user['roles']]
+                user_found = next((sub for sub in users if sub['id_u'] == user['id_u']), None)
+                if user_found:
+                    user_index = users.index(user_found)
+                    users[user_index]['roles'] += user['roles']
+                else:
+                    users.append(user)
+
+            return users
+        except Exception as e:
+            current_app.logger.error(e)
+        finally:
+            if session:
+                session.close()
+
     @staticmethod
     def get_user_role_names_by_user_id_or_email(criteria):
         session = None
