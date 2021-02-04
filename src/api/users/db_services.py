@@ -8,6 +8,8 @@ from ..projects.db_service import ProjectDBService
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.user_role import UserRole
 
+from sqlalchemy import desc
+from sqlalchemy.inspection import inspect
 
 class Role(Enum):
     ADMIN = 'administrateur'
@@ -15,6 +17,23 @@ class Role(Enum):
 
 
 class UserDBService:
+    @staticmethod
+    def get_all_users():
+        session = Session()
+        users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'], (RoleAccess.nom_ra).label("role")) \
+        .join(UserRole, User.id_u == UserRole.id_u) \
+        .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
+        .order_by(User.id_u.asc()) \
+        .distinct(User.id_u) \
+        .all()
+        
+        users = []
+        for user in users_objects:
+            users.append(user._asdict())
+        
+        session.close()
+        return users
+    
     @staticmethod
     def get_user_role_names_by_user_id_or_email(criteria):
         session = None
@@ -44,21 +63,12 @@ class UserDBService:
 
     @staticmethod
     def check_user_exists_by_id(user_id):
-        try:
-            session = Session()
-            existing_user = session.query(User).filter_by(id_u=user_id).first()
-            session.close()
+        session = Session()
+        existing_user = session.query(User).filter_by(id_u=user_id).first()
+        session.close()
 
-            if existing_user is None:
-                raise ValueError('This user does not exist')
-            return existing_user
-        except ValueError:
-            resp = {
-                'code': 'USER_NOT_FOUND',
-                'message': f'User with id <{user_id}> does not exist.'
-            }
-
-            return resp
+        if existing_user is None:
+            raise ValueError('This user does not exist', 403)
 
     @staticmethod
     def get_user_by_email(user_email):
