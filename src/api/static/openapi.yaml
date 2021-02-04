@@ -28,6 +28,8 @@ tags:
     description: "Gestion des financeurs"
   - name: "Export"
     description: "Gestion des exports vers Google Sheet"
+  - name: "Recettes Comptables"
+    description: "Gestion des recettes comptables"
 schemes:
   - "http"
   - "https"
@@ -240,8 +242,6 @@ paths:
           description: "Erreur d'authentification"
         "404":
           description: "La dépense est introuvable."
-        "403":
-          description: "L'année de la dépense doit être unique."
         "204":
           description: "Opération réussie"
       security:
@@ -1047,6 +1047,119 @@ paths:
         "500":
           description: "Erreur survenue lors de la création du document google sheet"
 
+  # Recette Comptable
+  /api/receipts/accountings:
+    post:
+      tags:
+        - "Recettes Comptables"
+      summary: "Enregistre une nouvelle recette comptable"
+      description: "Retourne la nouvelle recette comptable créee"
+      operationId: "createReceiptAccounting"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informations de la nouvelle recette comptable"
+          required: true
+          schema:
+            $ref: "#/definitions/Recette_Comptable"
+      security:
+        - api_key: [ ]
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "403":
+          description: "L'année de la recette comptable doit être unique"
+        "200":
+          description: "Nouvelle recette comptable créée avec succès"
+          schema:
+            $ref: "#/definitions/Recette_Comptable"
+    get:
+      tags:
+        - "Recettes Comptables"
+      summary: "Récupérer les recettes comptables"
+      description: "Retourne la liste des recettes comptables"
+      operationId: "getAllReceiptsAccountings"
+      produces:
+        - "application/json"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "200":
+          description: "Retourne une liste des recettes comptables"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Recette_Comptable"
+      security:
+        - api_key: [ ]
+  /api/receipts/accountings/{receiptAccountingId}:
+    put:
+      tags:
+        - "Recettes Comptables"
+      summary: "Mettre à jour une recette comptable"
+      description: ""
+      operationId: "updateReceiptAccounting"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "receiptAccountingId"
+          in: "path"
+          description: "id de la recette comptable à mettre à jour"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Modifications à apporter au recette comptable"
+          required: true
+          schema:
+            $ref: "#/definitions/Recette_Comptable"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "La recette comptable est introuvable."
+        "403":
+          description: "L'année de la recette comptable doit être unique."
+        "200":
+          description: "Opération réussie"
+          schema:
+            $ref: "#/definitions/Recette_Comptable"
+        "422":
+          description: "Erreur de validation des entrées"
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - "Recettes Comptables"
+      summary: "Supprimer une recette comptable"
+      description: ""
+      operationId: "deleteReceiptAccounting"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "receiptAccountingId"
+          in: "path"
+          description: "id de la recette comptable à supprimer"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "401":
+          description: "Erreur d'authentification"
+        "404":
+          description: "La recette comptable est introuvable."
+        "204":
+          description: "Opération réussie"
+      security:
+        - api_key: [ ]
+
 securityDefinitions:
   api_key:
     type: apiKey
@@ -1301,6 +1414,24 @@ definitions:
         description: référence arrêté attributif du financeur
     required:
       - "nom_financeur"
+  Recette_Comptable:
+    type: object
+    properties:
+      id_rc:
+        type: integer
+        description: Identifiant de la recette comptable
+        example: 5
+      annee_rc:
+        type: integer
+        description: "Année de la recette comptable: Elle doit être unique."
+        example: 2019
+      montant_rc:
+        type: number
+        description: "Montant de la recette comptable"
+        example: 3793.67
+    required:
+      - "annee_rc"
+      - "montant_rc"
   ExportParams:
     type: object
     properties:
