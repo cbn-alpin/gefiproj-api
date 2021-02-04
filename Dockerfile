@@ -162,7 +162,8 @@ RUN export JWT_TEST_TOKEN=${JWT_TEST_TOKEN}
 RUN export FLASK_DEBUG=false
 
 EXPOSE 5000
-VOLUME $APP_HOME
+VOLUME ./config/
+VOLUME ./var/log/
 
 # CMD ["python", "-m", "unittest", "discover", "-v", "-s", "tests/", "-p", "'*_tests.py'"]
 CMD flask run -h 0.0.0.0
