@@ -46,7 +46,7 @@ class UserDBService:
                     users.append(user)
             
             return users
-        except Exception as e:
+        except (Exception, ValueError) as e:
             current_app.logger.error(e)
             raise
         finally:
@@ -101,7 +101,7 @@ class UserDBService:
                         response['roles'].append(user['roles'])
             
             return response
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -124,7 +124,7 @@ class UserDBService:
                 response = schema.dump(user_object)
 
             return response
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -151,10 +151,10 @@ class UserDBService:
             session.close()
             
             if user_object is not None:
-                msg = "L'email '{}' ou les initiales '{}' sont déjà utilisé par un autre utilisateur".format(email_u, initiales)
+                msg = "L'email '{}' ou les initiales '{}' sont déjà utilisés par un autre utilisateur".format(email_u, initiales)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
             return user_object
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -176,7 +176,7 @@ class UserDBService:
     
             if user is None:
                 msg = "Une erreur est survenue lors de l'enregistrement de cet utilisateur"
-                ManageErrorUtils.value_error(CodeError.REGISTER_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 404)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.INSERT_ERROR, msg, 500)
             else:
                 new_user = UserSchema(exclude=['password_u']).dump(user)
                 new_user['roles'] = new_roles
@@ -187,7 +187,7 @@ class UserDBService:
                     role = (1 if r == Role.ADMIN.value else 2)
                     UserRoleDBService.insert_user_role(new_user['id_u'],role)
             return new_user
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -231,7 +231,7 @@ class UserDBService:
             update_user = UserSchema(exclude=['password_u']).dump(user)
             update_user['roles'] = new_roles
             return update_user
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -239,7 +239,7 @@ class UserDBService:
                 session.close()
     
     @staticmethod
-    def change_pwd(user_id: int, new_password: str):
+    def change_pwd(user_id: int, new_password: str, email_u: str = None):
         session = None
         try:
             # Start DB session
@@ -247,10 +247,13 @@ class UserDBService:
             user = session.query(User).get(user_id)
             user.password_u = User.generate_hash(new_password)
             session.commit()
+            if user.password_u is None:                
+                msg = "Une erreur est survenue lors de la modification du mot de passe"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+                
             session.close()
-    
-            return {'message': 'Le Password a été bien modifié'}
-        except ValueError as error:
+            return {'message': 'Le mot de passe du mail \'{}\' a été bien modifié'.format(email_u)}
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -271,7 +274,7 @@ class UserDBService:
                 is_responsable = role[0] == Role.CONSULTANT.value
                 
             return is_responsable
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
 
@@ -286,7 +289,7 @@ class UserDBService:
                 is_admin = role[0] == Role.ADMIN.value
                 
             return is_admin
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
 
@@ -296,7 +299,7 @@ class UserDBService:
         try:
             user = User.find_by_login(data['login'])
             if not user:
-                msg = "Utilisateur introuvable. Les identifiants sont incorrectes."
+                msg = "L'email {} est incorrecte".format(data['login'])
                 ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
             if User.verify_hash(data['password'], user.password_u):
                 identity = data['login']
@@ -314,9 +317,12 @@ class UserDBService:
                     'access_token': access_token,
                     'refresh_token': refresh_token
                 }
+            else:
+                msg = "Le mot de passe est incorrecte"
+                ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
         
             return response
-        except ValueError as error:
+        except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
 

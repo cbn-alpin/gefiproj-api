@@ -22,7 +22,7 @@ class UserValidationService:
         try:
             # validation keys
             ManageCheckDataUtils.check_keys(['new_password'], data)
-            ManageCheckDataUtils.check_string_inf_lenght('new_password', data, 5)
+            ManageCheckDataUtils.check_string_lenght('new_password', data, 5)
         except ValueError as error:
             current_app.logger.warning(error)
             raise

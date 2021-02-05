@@ -22,7 +22,7 @@ def get_all_users():
     try:
         users = UserDBService.get_all_users()
         response = jsonify(users), 200
-    except Exception as error:
+    except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error)
     finally:
@@ -68,8 +68,8 @@ def update_user(user_id: int):
     response = None
     try:
         data = dict(request.get_json())
-        if id not in data:
-            data['id'] = user_id
+        if 'id_u' not in data:
+            data['id_u'] = user_id
             
         # Check forms
         UserValidationService.validate_update(data)
@@ -82,6 +82,7 @@ def update_user(user_id: int):
         new_roles = data['roles']
         del data['roles']
         response = UserDBService.update(data, old_roles, new_roles)
+        response = jsonify(response), 200
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
@@ -105,6 +106,11 @@ def change_password(user_id: int):
     response = None
     try:
         data = dict(request.get_json())
+        """
+        
+        TODO: pourquoi besoin du old password ????
+        
+        """
         old_password = data.get('password')
         new_password = data.get('new_password')
         # Check form
@@ -112,11 +118,11 @@ def change_password(user_id: int):
         # Check if user exists
         user = UserDBService.get_user_by_id(user_id)
 
-        response = UserDBService.change_pwd(user_id, new_password)
+        response = UserDBService.change_pwd(user_id, new_password, user['email_u'])
         response = jsonify(response), 200
     except ValueError as error:
         current_app.logger.error(error)
-        response = jsonify(error)
+        response = jsonify(error.args[0]), error.args[1]
     except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Impossible de changer le mot de passe de cet utilisateur'}), 500
