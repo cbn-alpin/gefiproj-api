@@ -262,7 +262,7 @@ def update_input_output(input_output_id):
             }), 404
 
         # check if new input_output unique
-        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es, input_output.annee_affectation_es)
+        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es, input_output.annee_affectation_es,input_output_id)
         if  unique_input_output is not None:
             return jsonify({
                 'status': 'error',

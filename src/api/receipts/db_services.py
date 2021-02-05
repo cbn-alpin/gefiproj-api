@@ -129,10 +129,15 @@ class InputOutputDBService:
 
 
     @staticmethod
-    def check_input_output_uniqueness(annee_recette, annee_affectation):
+    def check_input_output_uniqueness(annee_recette, annee_affectation, input_output_id=None):
         existing_input_output=None
         session = Session()
-        existing_input_output = session.query(InputOutput).filter_by(annee_recette_es=annee_recette, annee_affectation_es=annee_affectation).first()
+        existing_input_output = session.query(InputOutput).filter(InputOutput.annee_recette_es==annee_recette, InputOutput.annee_affectation_es==annee_affectation)
+
+        if input_output_id is not None:
+            existing_input_output = existing_input_output.filter(InputOutput.id_es!=input_output_id)
+
+        existing_input_output = existing_input_output.first()
         session.close()
         return existing_input_output
 
