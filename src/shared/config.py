@@ -1,7 +1,7 @@
+import json
 from io import StringIO
 from os import path, environ
 
-import json
 import yaml
 
 environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../../'))
@@ -9,23 +9,20 @@ environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__fil
 
 def create_json_config_file():
     data = {
-        'type': environ.get('GS_TYPE'),
-        'project_id': environ.get('GS_PROJECT_ID'),
-        'private_key_id': environ.get('GS_PRIVATE_KEY_ID'),
-        'private_key': environ.get('GS_PRIVATE_KEY'),
-        'client_email': environ.get('GS_CLIENT_EMAIL'),
-        'client_id': environ.get('GS_CLIENT_ID'),
-        'auth_uri': environ.get('GS_AUTH_URI'),
-        'token_uri': environ.get('GS_TOKEN_URI'),
-        'auth_provider_x509_cert_url': environ.get('GS_AUTH_PROVIDER'),
-        'client_x509_cert_url': environ.get('GS_CLIENT')
+        "type": "" + environ.get("GS_TYPE"),
+        "project_id": "" + environ.get("GS_PROJECT_ID"),
+        "private_key_id": "" + environ.get("GS_PRIVATE_KEY_ID"),
+        "private_key": "" + environ.get("GS_PRIVATE_KEY").replace('\\n', '\n'),
+        "client_email": "" + environ.get("GS_CLIENT_EMAIL"),
+        "client_id": "" + environ.get("GS_CLIENT_ID"),
+        "auth_uri": "" + environ.get("GS_AUTH_URI"),
+        "token_uri": "" + environ.get("GS_TOKEN_URI"),
+        "auth_provider_x509_cert_url": "" + environ.get("GS_AUTH_PROVIDER"),
+        "client_x509_cert_url": "" + environ.get("GS_CLIENT")
     }
 
-    with open('config/google-credentials.json', 'w', encoding='utf-8') as outfile:
-        str_ = json.dumps(data,
-                          indent=4, sort_keys=True,
-                          separators=(',', ': '), ensure_ascii=False)
-        outfile.write(str_)
+    with open('config/google-credentials.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 
 def create_yml_config_file():
