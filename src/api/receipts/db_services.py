@@ -1,5 +1,5 @@
 from src.shared.entity import Session
-from .entities import Receipt, ReceiptSchema
+from .entities import Receipt, ReceiptSchema, InputOutput, InputOutputSchema
 from ..fundings.entities import Funding
 from ..projects.entities import Project
 
@@ -118,3 +118,114 @@ class ReceiptDBService:
             return False
         finally:
             session.close()
+
+class InputOutputDBService:
+    @staticmethod
+    def check_input_output_exists(input_output_id):
+        existing_input_output=None
+        session = Session()
+        existing_input_output = session.query(InputOutput).filter_by(id_es=input_output_id).first()
+        session.close()
+        return existing_input_output
+
+
+    @staticmethod
+    def check_input_output_uniqueness(annee_recette, annee_affectation):
+        existing_input_output=None
+        session = Session()
+        existing_input_output = session.query(InputOutput).filter_by(annee_recette_es=annee_recette, annee_affectation_es=annee_affectation).first()
+        session.close()
+        return existing_input_output
+
+
+    @staticmethod
+    def get_input_output_by_id(input_output_id: int):
+        session = Session()
+        input_output_object = session.query(InputOutput).filter_by(id_es=input_output_id).first()
+
+        schema = InputOutputSchema()
+        input_output = schema.dump(input_output_object)
+        session.close()
+
+        return input_output
+
+    @staticmethod
+    def get_input_output_by_filter(query_param=None):
+        session = None
+        input_outputs = None
+        try:
+            session = Session()
+            input_outputs = session.query(InputOutput)
+
+            if query_param is not None:
+                annee_recette_es = query_param.get('annee_recette_es', default = None, type = int)
+                if annee_recette_es is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_recette_es == annee_recette_es)
+
+                annee_recette_es_sup = query_param.get('annee_recette_es_sup', default = None, type = int)
+                if annee_recette_es_sup is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_recette_es >= annee_recette_es_sup)
+
+                annee_recette_es_inf = query_param.get('annee_recette_es_inf', default = None, type = int)
+                if annee_recette_es_inf is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_recette_es <= annee_recette_es_inf)
+
+                annee_affectation_es = query_param.get('annee_affectation_es', default = None, type = int)
+                if annee_affectation_es is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_affectation_es == annee_affectation_es)
+
+                annee_affectation_es_sup = query_param.get('annee_affectation_es_sup', default = None, type = int)
+                if annee_affectation_es_sup is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_affectation_es >= annee_affectation_es_sup)
+
+                annee_affectation_es_inf = query_param.get('annee_affectation_es_inf', default = None, type = int)
+                if annee_affectation_es_inf is not None:
+                    input_outputs = input_outputs.filter(InputOutput.annee_affectation_es <= annee_affectation_es_inf)
+
+                montant_es = query_param.get('montant_es', default = None, type = float)
+                if montant_es is not None:
+                    input_outputs = input_outputs.filter(InputOutput.montant_es == montant_es)
+
+                montant_es_sup = query_param.get('montant_es_sup', default = None, type = float)
+                if montant_es_sup is not None:
+                    input_outputs = input_outputs.filter(InputOutput.montant_es >= montant_es_sup)
+
+                montant_es_inf = query_param.get('montant_es_inf', default = None, type = float)
+                if montant_es_inf is not None:
+                    input_outputs = input_outputs.filter(InputOutput.montant_es <= montant_es_inf)
+
+            input_outputs = input_outputs.all()
+            input_outputs = InputOutputSchema(many=True).dump(input_outputs)
+        finally:
+            session.close()
+
+        return input_outputs
+
+    @staticmethod
+    def insert(input_output: InputOutput):
+        session = Session()
+        session.add(input_output)
+        session.commit()
+
+        inserted_input_output = InputOutputSchema().dump(input_output)
+        session.close()
+        return inserted_input_output
+
+    @staticmethod
+    def update(input_output: InputOutput):
+        session = Session()
+        session.merge(input_output)
+        session.commit()
+
+        updated_input_output = InputOutputSchema().dump(input_output)
+        session.close()
+        return updated_input_output
+
+    @staticmethod
+    def delete(input_output_id: int) -> int:
+        session = Session()
+        session.query(InputOutput).filter_by(id_es=input_output_id).delete()
+        session.commit()
+        session.close()
+
+        return input_output_id

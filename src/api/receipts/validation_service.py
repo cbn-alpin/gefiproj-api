@@ -14,3 +14,15 @@ class ReceiptValidationService:
         errors = UserValidationService.check_float_montant('montant_r', receipt_data, errors)
 
         return errors
+
+class InputOutputValidationService:
+    @staticmethod
+    def validate_post(input_output_data):
+        input_output_keys = ['annee_recette_es', 'annee_affectation_es', 'montant_es']
+        errors = UserValidationService.check_keys(input_output_keys, input_output_data)
+
+        errors = UserValidationService.check_int_value('annee_recette_es', input_output_data, errors)
+        errors = UserValidationService.check_int_value('annee_affectation_es', input_output_data, errors)
+        errors = UserValidationService.check_float_montant('montant_es', input_output_data, errors)
+
+        return errors
