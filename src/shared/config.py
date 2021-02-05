@@ -121,7 +121,7 @@ def get_jwt_expirationt():
     cfg = get()
     jwt_exp_cfg = cfg['jwt']
 
-    return jwt_exp_cfg['expires_in']
+    return int(jwt_exp_cfg['expires_in'])
 
 
 # print('DB URI:' + get_engine_uri())
