@@ -9,11 +9,12 @@ from src.shared.entity import Base
 
 class UserRole(Base, db.Model):
     __tablename__ = 'role_utilisateur'
+    __table_args__ = {'extend_existing': True}
 
     id_ra = Column(Integer, ForeignKey(RoleAccess.id_ra), primary_key=True)
     id_u = Column(Integer, ForeignKey(User.id_u), primary_key=True)
 
-    def __init__(self, id_ra='', id_u=''):
+    def __init__(self, id_ra, id_u):
         if id_ra != '':
             self.id_ra = id_ra
         if id_u != '':

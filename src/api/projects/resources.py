@@ -56,7 +56,6 @@ def add_project():
     project = ProjectDBService.insert_project(project)
 
     new_project = ProjectSchema().dump(project)
-    new_project['responsable'] = UserDBService.process_get_user(new_project.get('responsable'))
 
     return jsonify(new_project), 201
 
