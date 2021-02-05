@@ -20,12 +20,15 @@ from src.api.users.resources import resources as users_ressources
 from src.api.receipts_accountings.resources import resources as receipts_accountings_ressources
 # This project files
 from src.shared import logging
-from src.shared.config import write_to_yml
+from src.shared.config import create_yml_config_file, create_json_config_file
 
 # Import all models for Migrate
 
 # Create config.yml file before export params
-write_to_yml()
+create_yml_config_file()
+
+# Create google-credentials.json file before export params
+create_json_config_file()
 
 # Initialize logging
 logging.setup()

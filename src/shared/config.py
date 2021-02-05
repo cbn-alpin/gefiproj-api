@@ -1,12 +1,34 @@
 from io import StringIO
 from os import path, environ
 
+import json
 import yaml
 
 environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../../'))
 
 
-def write_to_yml():
+def create_json_config_file():
+    data = {
+        'type': environ.get('GS_TYPE'),
+        'project_id': environ.get('GS_PROJECT_ID'),
+        'private_key_id': environ.get('GS_PRIVATE_KEY_ID'),
+        'private_key': environ.get('GS_PRIVATE_KEY'),
+        'client_email': environ.get('GS_CLIENT_EMAIL'),
+        'client_id': environ.get('GS_CLIENT_ID'),
+        'auth_uri': environ.get('GS_AUTH_URI'),
+        'token_uri': environ.get('GS_TOKEN_URI'),
+        'auth_provider_x509_cert_url': environ.get('GS_AUTH_PROVIDER'),
+        'client_x509_cert_url': environ.get('GS_CLIENT')
+    }
+
+    with open('config/google-credentials.json', 'w', encoding='utf-8') as outfile:
+        str_ = json.dumps(data,
+                          indent=4, sort_keys=True,
+                          separators=(',', ': '), ensure_ascii=False)
+        outfile.write(str_)
+
+
+def create_yml_config_file():
     data = dict(
         pathes=dict(
             root="{tc_root_dir}",
@@ -52,7 +74,7 @@ def write_to_yml():
         )
     )
 
-    with open('config/config.yml', 'w') as outfile:
+    with open('config/config.yml', 'w', encoding='utf-8') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
 

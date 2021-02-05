@@ -57,7 +57,13 @@ WORKDIR $APP_HOME
 RUN apt-get update && apt-get install -y --no-install-recommends netcat
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
-COPY --from=builder /usr/src/app/config/config.yml ./config/
+
+COPY --from=builder /usr/src/app/config/_config.yml ./config/
+RUN mv ./config/_config.yml ./config/config.yml
+
+COPY --from=builder /usr/src/app/config/_google-credentials.json.yml ./config/
+RUN mv ./config/_google-credentials.json.yml ./config/google-credentials.json.yml
+
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
