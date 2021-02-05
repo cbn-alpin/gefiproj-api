@@ -1,18 +1,19 @@
 from enum import Enum
 import numpy as np
 from flask import current_app
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, decode_token
+from marshmallow import EXCLUDE
 
 from src.shared.entity import Session
 from sqlalchemy import or_
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..projects.db_service import ProjectDBService
+from ..user_role.db_services import UserRoleDBService
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.entities import UserRole
+
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
 
-from ..user_role.db_services import UserRoleDBService
-from flask.json import jsonify
 
 class Role(Enum):
     ADMIN = 'administrateur'
@@ -89,7 +90,7 @@ class UserDBService:
             session.close()
             
             if user_array is None or len(user_array) == 0:
-                ManageErrorUtils.value_error(CodeError.DATA_NOT_FOUND, TError.VALUE_ERROR, 'Cet utilisateur n\'existe pas', 404)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Cet utilisateur n\'existe pas', 404)
             else:
                 for user in user_array:
                     user = {key: val for key, val in sorted(user._asdict().items(), key=lambda ele: ele[0])}
@@ -108,31 +109,50 @@ class UserDBService:
                 session.close()
 
     @staticmethod
-    def get_user_by_email(user_email):
-        session = Session()
-        user_object = session.query(User).filter_by(email_u=user_email).first()
+    def get_user_by_email(user_email: str):
+        session = None
+        response = None
+        try:
+            session = Session()
+            user_object = session.query(User).filter_by(email_u=user_email).first()
+            session.close()
+            
+            if user_object is None:
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Cet utilisateur n\'existe pas', 404)
+            else:
+                schema = UserSchema(exclude=['password_u'])
+                response = schema.dump(user_object)
 
-        schema = UserSchema(exclude=['password_u'])
-        user = schema.dump(user_object)
-
-        session.close()
-        return user
+            return response
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
 
     @staticmethod
-    def check_unique_mail_and_initiales(user_id: int, email_u: str, initiales: str):
+    def check_unique_mail_and_initiales(email_u: str, initiales: str, user_id: int = None):
         session = None
         user_object = None
         try:
             session = Session()
-            user_object = session.query(User) \
-                .filter(User.id_u != user_id) \
-                .filter(or_(User.email_u == email_u, User.initiales_u == initiales)) \
-                .first()
+            user_object = {}
+            if user_id is not None:
+                user_object = session.query(User) \
+                    .filter(User.id_u != user_id) \
+                    .filter(or_(User.email_u == email_u, User.initiales_u == initiales)) \
+                    .first()
+            else:
+                user_object = session.query(User) \
+                    .filter(or_(User.email_u == email_u, User.initiales_u == initiales)) \
+                    .first()
+                    
             session.close()
             
             if user_object is not None:
                 msg = "L'email '{}' ou les initiales '{}' sont déjà utilisé par un autre utilisateur".format(email_u, initiales)
-                ManageErrorUtils.value_error(CodeError.UNIQUE_CONSTRAINT_ERROR, TError.VALUE_ERROR, msg, 409)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
             return user_object
         except ValueError as error:
             current_app.logger.error(error)
@@ -142,30 +162,33 @@ class UserDBService:
                 session.close()
 
     @staticmethod
-    def insert(user, old_roles: list, new_roles: list):
+    def insert(user, new_roles: list):
         session = None
         new_user = None
         try:
-            for r in new_roles:
-                role = (1 if r == Role.ADMIN.value else 2)
-                if len(new_roles) > len(old_roles):
-                    UserRoleDBService.insert_user_role(user.id_u, role)
-                else:
-                    UserRoleDBService.update_user_role(user.id_u, role)
-
-            updated_user = UserSchema(exclude=['password_u']).dump(user)
-            updated_user['roles'] = new_roles
-            user = User(**updated_user)
+            posted_user = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'active_u', 'password_u')).load(user, unknown=EXCLUDE)
+            user = User(**posted_user)
             
             # Start DB session
             session = Session()
             session.add(user)
-            session.commit()
-            session.close()
+            session.flush()
     
-            new_user = UserSchema(exclude=['password_u']).dump(user)
+            if user is None:
+                msg = "Une erreur est survenue lors de l'enregistrement de cet utilisateur"
+                ManageErrorUtils.value_error(CodeError.REGISTER_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 404)
+            else:
+                new_user = UserSchema(exclude=['password_u']).dump(user)
+                new_user['roles'] = new_roles
+                session.commit()
+                session.close()
+                
+                for r in new_roles:
+                    role = (1 if r == Role.ADMIN.value else 2)
+                    UserRoleDBService.insert_user_role(new_user['id_u'],role)
             return new_user
         except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -177,18 +200,24 @@ class UserDBService:
         session = None
         update_user = None
         try:
-            #TODO meme role plusieur fois check
-            for r in new_roles:
+            updated_roles = new_roles
+            # role who is not in updated_roles
+            diff = np.setdiff1d(old_roles,updated_roles)
+            for r in diff:
                 role = (1 if r == Role.ADMIN.value else 2)
-                if len(new_roles) > len(old_roles):
-                    UserRoleDBService.insert_user_role(user['id_u'], role)
-                elif len(new_roles) < len(old_roles):
-                    diff = np.setdiff1d(old_roles,new_roles)[0]
-                    role = (1 if diff == Role.ADMIN.value else 2)
-                    UserRoleDBService.delete_user_role(user['id_u'], role)
-                    old_roles = list(set(old_roles) - set(diff))
-                else:
-                    UserRoleDBService.update_user_role(user['id_u'], role)
+                UserRoleDBService.delete_user_role(user['id_u'], role)
+                old_roles = list(set(old_roles) - set(diff))
+                
+            # updated role who is not in old_roles
+            diff = np.setdiff1d(updated_roles,old_roles)
+            for r in diff:
+                role = (1 if r == Role.ADMIN.value else 2)
+                UserRoleDBService.insert_user_role(user['id_u'], role)
+                updated_roles = list(set(updated_roles) - set(diff))
+                
+            for r in updated_roles:
+                role = (1 if r == Role.ADMIN.value else 2)
+                UserRoleDBService.update_user_role(user['id_u'], role)
 
             updated_user = UserSchema(exclude=['password_u']).dump(user)
             user = User(**updated_user)
@@ -212,7 +241,6 @@ class UserDBService:
     @staticmethod
     def change_pwd(user_id: int, new_password: str):
         session = None
-        response = None
         try:
             # Start DB session
             session = Session()
@@ -221,38 +249,82 @@ class UserDBService:
             session.commit()
             session.close()
     
-            response = {'message': 'Le Password a été bien modifié'}
+            return {'message': 'Le Password a été bien modifié'}
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
         finally:
             if session is not None:
                 session.close()
-            return response
     
     @staticmethod
     def is_responsable_of_projet(project_id: int):
-        is_responsable = False
-        project = ProjectDBService.get_project_by_id(project_id)
-        user = UserDBService.get_user_by_email(get_jwt_identity())
-        if project is not None and 'responsable' in project and \
-                user is not None and 'id_u' in user \
-                and user['id_u'] == project['responsable']['id_u']:
-            role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            is_responsable = role[0] == Role.CONSULTANT.value
-        return is_responsable
+        try:
+            is_responsable = False
+            project = ProjectDBService.get_project_by_id(project_id)
+            user = UserDBService.get_user_by_email(get_jwt_identity())
+            
+            if project is not None and 'responsable' in project and \
+                    user is not None and 'id_u' in user \
+                    and user['id_u'] == project['responsable']['id_u']:
+                role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
+                is_responsable = role[0] == Role.CONSULTANT.value
+                
+            return is_responsable
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
 
     @staticmethod
     def is_admin():
-        is_admin = False
-        user = UserDBService.get_user_by_email(get_jwt_identity())
-        if user is not None and 'id_u' in user:
-            role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
-            is_admin = role[0] == Role.ADMIN.value
-        return is_admin
+        try:
+            is_admin = False
+            user = UserDBService.get_user_by_email(get_jwt_identity())
+            
+            if user is not None and 'id_u' in user:
+                role = UserDBService.get_user_role_names_by_user_id_or_email(user['id_u'])
+                is_admin = role[0] == Role.ADMIN.value
+                
+            return is_admin
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+
+    @staticmethod
+    def auth_login(data):
+        response = None
+        try:
+            user = User.find_by_login(data['login'])
+            if not user:
+                msg = "Utilisateur introuvable. Les identifiants sont incorrectes."
+                ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
+            if User.verify_hash(data['password'], user.password_u):
+                identity = data['login']
+                access_token = create_access_token(identity=identity)
+                refresh_token = create_refresh_token(identity=identity)
+                
+                response = {
+                    'id_u': user.id_u,
+                    'nom_u': user.nom_u,
+                    'prenom_u': user.prenom_u,
+                    'initiales_u': user.initiales_u,
+                    'email_u': user.email_u,
+                    'roles': decode_token(access_token)['user_claims']['roles'],
+                    'active_u': user.active_u,
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
+                }
+        
+            return response
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
 
     @staticmethod
     def revoke_token(jti: str) -> RevokedToken or None:
         session = None
         revoked_token = None
-
+        response = None
         try:
             session = Session()
             r = RevokedToken(jti)
@@ -260,10 +332,19 @@ class UserDBService:
             session.commit()
 
             revoked_token = RevokedTokenSchema().dump(r)
+            if revoked_token.get('jti') is None:
+                msg = "Une erreur est survenu lorsque de la déconnexion"
+                ManageErrorUtils.exception(CodeError.LOGOUT_ERROR, TError.LOGOUT, msg, 400)
+            else: 
+                response = {"message": "Déconnexion réussit"}
+                
+            return response
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
         finally:
-            session.close()
-
-        return revoked_token
+            if session is not None:
+                session.close()
 
     @staticmethod
     def get_revoked_token_by_jti(jti: str):
@@ -277,5 +358,4 @@ class UserDBService:
         finally:
             if session:
                 session.close()
-
-        return token
+            return token

@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_claims, get_jwt_identity
-
+from flask_jwt_extended import jwt_required
 from .auth_resources import admin_required
+
 from .db_services import UserDBService
 from .entities import User
 from .validation_service import UserValidationService
@@ -76,7 +76,7 @@ def update_user(user_id: int):
         # Check if user exists
         user = UserDBService.get_user_by_id(user_id)
         # Check if new email or initials are already in use
-        UserDBService.check_unique_mail_and_initiales(user_id, data.get('email_u'), data.get('initiales_u'))
+        UserDBService.check_unique_mail_and_initiales(data.get('email_u'), data.get('initiales_u'), user_id)
 
         old_roles = user['roles']
         new_roles = data['roles']
@@ -89,7 +89,7 @@ def update_user(user_id: int):
         return response
 
 
-@resources.route('/api/users/<int:user_id>/change-password', methods=['POST'])
+@resources.route('/api/users/<int:user_id>/change-password', methods=['PUT'])
 @jwt_required
 @admin_required
 def change_password(user_id: int):

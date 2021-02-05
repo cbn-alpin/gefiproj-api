@@ -11,7 +11,7 @@ class UserRoleDBService:
         try:
             user_role = UserRoleDBService.get_user_role(id_u, id_ra)
             if user_role is None:
-                user_role = { 'id_u': id_u, 'id_ra': id_ra}
+                user_role = { 'id_u': id_u, 'id_ra': id_ra }
                 schema = UserRoleSchema(only=('id_u','id_ra')).load(user_role)
                 data = UserRole(**schema)
 

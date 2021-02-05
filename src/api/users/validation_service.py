@@ -1,5 +1,3 @@
-ERROR_CODE = "VALISATION ERROR"
-
 from src.shared.manage_check_data import ManageCheckDataUtils, CodeError, TError
 from flask import current_app
 
@@ -9,26 +7,36 @@ ROLES = ['administrateur', 'consultant']
         
 class UserValidationService:
     @staticmethod
+    def validate_login(data):
+        try:
+            # validation keys
+            ManageCheckDataUtils.check_keys(['login', 'password'], data)
+            ManageCheckDataUtils.check_format_value('login', data, str)
+            ManageCheckDataUtils.check_format_value('password', data, str)
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise
+
+    @staticmethod
     def validate_change_pwd(data):
         try:
             # validation keys
             ManageCheckDataUtils.check_keys(['new_password'], data)
-            ManageCheckDataUtils.check_string_sup_lenght('new_password', data, 5)
+            ManageCheckDataUtils.check_string_inf_lenght('new_password', data, 5)
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.warning(error)
             raise
 
     @staticmethod
     def validate_post(user):
         try:
-            user_keys = KEYS
-            user_keys.append(['password_u'])
+            user_keys = ['password_u']
             # validation keys
             ManageCheckDataUtils.check_keys(user_keys, user)
             # validate_update
             UserValidationService.validate_update(user)
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.warning(error)
             raise
         
     @staticmethod
@@ -46,6 +54,7 @@ class UserValidationService:
             ManageCheckDataUtils.check_format_value('active_u', user, bool)
             ManageCheckDataUtils.check_format_array('roles', user, list, 2)
             ManageCheckDataUtils.check_array_is_subset('roles', user['roles'], ROLES)
+            ManageCheckDataUtils.check_duplicate_value('roles', user)
         except ValueError as error:
             current_app.logger.warning(error)
             raise

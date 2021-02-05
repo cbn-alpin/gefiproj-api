@@ -1,196 +1,154 @@
 from functools import wraps
 
 from flask import Blueprint, current_app, request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_refresh_token_required, get_jwt_identity, \
-    verify_jwt_in_request, get_jwt_claims, decode_token, jwt_required, get_raw_jwt
-from marshmallow import EXCLUDE
-
-from src.api.users.db_services import UserDBService
-from src.api.users.entities import User, UserSchema
-from .validation_service import UserValidationService, ERROR_CODE
+from flask_jwt_extended import create_access_token, jwt_refresh_token_required, get_jwt_identity, \
+    verify_jwt_in_request, get_jwt_claims, jwt_required, get_raw_jwt
 from .. import jwt
 
-resources = Blueprint('auth', __name__)
+from src.api.users.db_services import UserDBService
+from .validation_service import UserValidationService
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+from jwt.exceptions import ExpiredSignatureError
 
+resources = Blueprint('auth', __name__)
 
 # https://stackoverflow.com/questions/33597150/using-flask-security-roles-with-flask-jwt-rest-api
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        verify_jwt_in_request()
-        claims = get_jwt_claims()
-        if 'roles' not in claims or 'administrateur' not in claims['roles']:
-            return jsonify({
-                'status': 'error',
-                'type': 'TOKEN_ERROR',
-                'code': 'TOKEN_HAS_NOT_ENOUGH_PRIVILEGES',
-                'message': 'This operation is permitted to admins only'
-            }), 403
+        try:
+            verify_jwt_in_request()
+            claims = get_jwt_claims()
+            if 'roles' not in claims or 'administrateur' not in claims['roles']:
+                msg = "Cette opération n'est autorisée que pour les adminisatreurs seulement"
+                ManageErrorUtils.exception(CodeError.TOKEN_HAS_NOT_ENOUGH_PRIVILEGES, TError.TOKEN_ERROR, msg, 403)
+            return fn(*args, **kwargs)
 
-        return fn(*args, **kwargs)
-
+        except (ValueError, Exception) as error:
+            current_app.logger.error(error)
+            return jsonify(error.args[0]), error.args[1]
     return wrapper
-
-
+        
+        
 @resources.route('/api/auth/login', methods=['POST'])
 def login():
     current_app.logger.debug('In POST /api/auth/login')
-
-    data = request.get_json()
-
-    user = User.find_by_login(data['login'])
-    if not user:
-        return jsonify({
-            'status': 'error',
-            'type': 'AUTHENTICATION',
-            'code': 'AUTHENTICATION_ERROR',
-            'message': 'User {} doesn\'t exist'.format(data['login'])
-        }), 404
-
-    if User.verify_hash(data['password'], user.password_u):
-        identity = data['login']
-        access_token = create_access_token(identity=identity)
-        refresh_token = create_refresh_token(identity=identity)
-
-        return {
-            'id_u': user.id_u,
-            'nom_u': user.nom_u,
-            'prenom_u': user.prenom_u,
-            'initiales_u': user.initiales_u,
-            'email_u': user.email_u,
-            'roles': decode_token(access_token)['user_claims']['roles'],
-            'active_u': user.active_u,
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
-
-    return jsonify({
-        'status': 'error',
-        'type': 'AUTHENTICATION',
-        'code': 'AUTHENTICATION_ERROR',
-        'message': 'Wrong credentials'
-    }), 403
-
+    response = None
+    try:
+        data = request.get_json()
+        UserValidationService.validate_login(data)
+        auth = UserDBService.auth_login(data)
+        response = jsonify(auth), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
+    
 
 @resources.route('/api/auth/logout', methods=['POST'])
 @jwt_required
 def logout():
     current_app.logger.debug('In POST /api/auth/logout')
-    jti = get_raw_jwt()['jti']
-
-    revoked_jti = UserDBService.revoke_token(jti)
-    if revoked_jti.get('jti') is None:
-        return jsonify({
-            'status': 'error',
-            'type': 'LOGOUT',
-            'code': 'LOGOUT_ERROR',
-            'message': 'An error occurred when logging out'
-        }), 400
-
-    return jsonify({"message": "Successfully logged out"}), 200
-
-
+    response = None
+    try:
+        jti = get_raw_jwt()['jti']
+        revoked_jti = UserDBService.revoke_token(jti)
+        response = jsonify(revoked_jti), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error)
+    finally:
+        return response
+    
+    
 @resources.route('/api/auth/register', methods=['POST'])
 @jwt_required
 @admin_required
 def add_user():
     current_app.logger.debug('In POST /api/auth/register')
-    posted_user_data = request.get_json()
+    response = None
+    try:
+        posted_user_data = request.get_json()
+        # Validate user posted data
+        UserValidationService.validate_post(posted_user_data)
+        # Check if new email or initials are already in use
+        UserDBService.check_unique_mail_and_initiales(posted_user_data.get('email_u'), posted_user_data.get('initiales_u'))
 
-    # validate user posted data
-    validation_errors = UserValidationService.validate_post(posted_user_data)
-    if len(validation_errors) > 0:
-        return jsonify({
-            'status': 'error',
-            'type': ERROR_CODE,
-            'code': 'AUTHENTICATION_ERROR',
-            'message': 'A validation error occurred',
-            'errors': validation_errors
-        }), 422
-
-    posted_user = UserSchema(only=('nom_u', 'prenom_u', 'email_u', 'initiales_u', 'active_u', 'password_u')) \
-        .load(posted_user_data, unknown=EXCLUDE)
-    user = User(**posted_user)
-
-    # check if user exists by initiales and email
-    user_by_email = UserDBService.get_user_by_email(user.email_u)
-    user_by_initiales = UserDBService.get_user_by_initiales(user.initiales_u)
-    if user_by_email or user_by_initiales:
-        message = {'status': 'error', 'type': 'conflict'}
-        if user_by_email:
-            message['code'] = 'EMAIL_ALREADY_IN_USE'
-            message['message'] = 'A user with email <{}> is already in use'.format(user.email_u)
-            return jsonify(message), 409
-
-        message['code'] = 'INITIALS_ALREADY_IN_USE'
-        message['message'] = 'A user with initials <{}> is already in use'.format(user.initiales_u)
-        return jsonify(message), 409
-
-    roles = posted_user_data['roles']
-
-    new_user = UserDBService.insert_user(user, roles)
-    if user is None:
-        return jsonify({
-            'status': 'error',
-            'type': 'REGISTER',
-            'code': 'REGISTER_ERROR',
-            'message': 'An error occurred when add the user'
-        })
-
-    new_user['roles'] = roles
-    return jsonify(new_user), 201
+        roles = posted_user_data['roles']
+        del posted_user_data['roles']
+        new_user = UserDBService.insert(posted_user_data, roles)
+        
+        response = jsonify(new_user), 201
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
 
 
 @resources.route('/api/auth/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
     current_app.logger.debug('In POST /api/auth/refresh')
-    user_identity = get_jwt_identity()
-    new_token = {
-        'access_token': create_access_token(identity=user_identity)
-    }
-    return jsonify(new_token), 200
+    try:
+        user_identity = get_jwt_identity()
+        new_token = {
+            'access_token': create_access_token(identity=user_identity)
+        }
+        return jsonify(new_token), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error)
 
-
+ 
 @jwt.user_claims_loader
 def add_claims_to_access_token(identity):
-    roles = UserDBService.get_user_role_names_by_user_id_or_email(identity)
-    return {'roles': roles}
+    try:
+        roles = UserDBService.get_user_role_names_by_user_id_or_email(identity)
+        return {'roles': roles}
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        return jsonify(error.args[0]), error.args[1]
 
 
 @jwt.token_in_blacklist_loader
 def is_token_in_blacklist(decrypted_token) -> bool:
-    jti = decrypted_token['jti']
-    token = UserDBService.get_revoked_token_by_jti(jti)
-    return token.get('jti') is not None
-
+    try:
+        jti = decrypted_token['jti']
+        token = UserDBService.get_revoked_token_by_jti(jti)
+        return token.get('jti') is not None
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        return jsonify(error.args[0]), error.args[1]
+        
 
 # https://flask-jwt-extended.readthedocs.io/en/latest/changing_default_behavior/
 @jwt.revoked_token_loader
 def revoked_token_handler():
-    return jsonify({
-        'status': 'error',
-        'type': 'TOKEN_ERROR',
-        'code': 'TOKEN_REVOKED_ERROR',
-        'message': 'The given token is no longer valid'
-    }), 401
-
-
+    try: 
+        msg = "Le token n'est plus valide"
+        ManageErrorUtils.exception(CodeError.TOKEN_REVOKED_ERROR, TError.TOKEN_ERROR, msg, 401)
+    except (ValueError, Exception) as error:
+        current_app.logger.debug(error)
+        return jsonify(error.args[0]), error.args[1]
+   
+   
 @jwt.expired_token_loader
 def expired_token_handler():
-    return jsonify({
-        'status': 'error',
-        'type': 'TOKEN_ERROR',
-        'code': 'TOKEN_EXPIRED',
-        'message': 'The given token has expired'
-    }), 401
+    try: 
+        msg = "Le token est expiré"
+        ManageErrorUtils.exception(CodeError.TOKEN_EXPIRED, TError.TOKEN_ERROR, msg, 401)
+    except (ValueError, Exception, ExpiredSignatureError) as error:
+        current_app.logger.debug(error)
+        return jsonify(error.args[0]), error.args[1]
 
 
 @jwt.unauthorized_loader
 def unauthorized_access_handler(e):
-    return jsonify({
-        'status': 'error',
-        'type': 'TOKEN_ERROR',
-        'code': 'TOKEN_REQUIRED',
-        'message': 'Missing authorization header. A valid token is required'
-    }), 401
+    try: 
+        msg = "Manque d'autorisation. Un valide token est demandé"
+        ManageErrorUtils.exception(CodeError.TOKEN_REQUIRED, TError.TOKEN_ERROR, msg, 401)
+    except (ValueError, Exception) as error:
+        current_app.logger.debug(error)
+        return jsonify(error.args[0]), error.args[1]

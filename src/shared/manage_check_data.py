@@ -51,10 +51,19 @@ class ManageCheckDataUtils:
             raise
 
     @staticmethod
-    def check_string_sup_lenght(key: str, data, size: int ):
+    def check_string_inf_lenght(key: str, data, size: int):
         try:
             if key in data and len(data[key]) < size:
                 message = "Erreur de la longueur du champs {}".format(key)
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, message, 422)
+        except ValueError as error:
+            raise
+
+    @staticmethod
+    def check_duplicate_value(key: str, data):
+        try:
+            if key in data and len(data[key]) > 0 and len(data[key]) != len(set(data[key])):
+                message = "Erreur de duplication de la valeur sur le champs {}".format(key)
+                ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, message, 422)
         except ValueError as error:
             raise
