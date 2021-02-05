@@ -58,7 +58,7 @@ def create_yml_config_file():
         ),
         jwt=dict(
             secret=("" + environ.get('JWT_SECRET') + ""),
-            expires_in=28800
+            expires_in=("" + environ.get('JWT_EXPIRES_IN') + "")
         ),
         test_token=dict(
             token=("" + environ.get('JWT_TEST_TOKEN') + "")
