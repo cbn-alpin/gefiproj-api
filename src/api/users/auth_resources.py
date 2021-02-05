@@ -84,7 +84,7 @@ def logout():
             'status': 'error',
             'type': 'LOGOUT',
             'code': 'LOGOUT_ERROR',
-            'message': 'An error occured when logging out'
+            'message': 'An error occurred when logging out'
         }), 400
 
     return jsonify({"message": "Successfully logged out"}), 200
@@ -104,7 +104,7 @@ def add_user():
             'status': 'error',
             'type': ERROR_CODE,
             'code': 'AUTHENTICATION_ERROR',
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
@@ -134,7 +134,7 @@ def add_user():
             'status': 'error',
             'type': 'REGISTER',
             'code': 'REGISTER_ERROR',
-            'message': 'An error occured when add the user'
+            'message': 'An error occurred when add the user'
         })
 
     new_user['roles'] = roles

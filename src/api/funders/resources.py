@@ -28,7 +28,7 @@ def add_funder():
         validation_errors = FunderValidationService.validate_post(posted_funder_data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
         # check
@@ -55,7 +55,7 @@ def update_funder(funder_id):
         validation_errors = FunderValidationService.validate_post(data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
         # check

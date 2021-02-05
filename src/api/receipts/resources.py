@@ -35,7 +35,7 @@ def add_receipt():
     validation_errors = ReceiptValidationService.validate_post(posted_receipt_data)
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
@@ -71,7 +71,7 @@ def update_receipt(id_receipt):
     validation_errors = ReceiptValidationService.validate_post(posted_receipt_data)
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
@@ -206,7 +206,7 @@ def add_input_output():
 
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
@@ -244,7 +244,7 @@ def update_input_output(input_output_id):
         validation_errors = InputOutputValidationService.validate_post(posted_input_output)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
 

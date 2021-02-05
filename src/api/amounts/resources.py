@@ -32,7 +32,7 @@ def add_amount():
         validation_errors = AmountValidationService.validate_post(posted_amount_data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
 
@@ -62,7 +62,7 @@ def update_amount(amount_id):
         validation_errors = AmountValidationService.validate_post(data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
             

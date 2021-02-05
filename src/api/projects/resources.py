@@ -22,7 +22,7 @@ def add_project():
     validation_errors = ProjectValidationService.validate_post(posted_data)
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
@@ -102,7 +102,7 @@ def update_project(proj_id):
         validation_errors = ProjectValidationService.validate_post(posted_data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
 

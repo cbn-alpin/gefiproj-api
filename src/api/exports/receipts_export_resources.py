@@ -23,7 +23,7 @@ def export_receipets():
     validation_errors = ExportValidationService.validate_receipts(post_data)
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 

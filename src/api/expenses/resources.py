@@ -30,7 +30,7 @@ def add_expense():
         validation_errors = ExpenseValidationService.validate_post(posted_expense_data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
         # check
@@ -59,7 +59,7 @@ def update_expense(expense_id):
         validation_errors = ExpenseValidationService.validate_post(data)
         if len(validation_errors) > 0:
             return jsonify({
-                'message': 'A validation error occured',
+                'message': 'A validation error occurred',
                 'errors': validation_errors
             }), 422
         # check

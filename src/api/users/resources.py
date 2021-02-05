@@ -61,7 +61,7 @@ def update_user(user_id):
     if len(validation_errors) > 0:
         return jsonify({
             'status': 'error',
-            'message': 'A validation error occured',
+            'message': 'A validation error occurred',
             'errors': validation_errors
         }), 422
 
