@@ -117,7 +117,7 @@ def is_token_in_blacklist(decrypted_token) -> bool:
     try:
         jti = decrypted_token['jti']
         token = UserDBService.get_revoked_token_by_jti(jti)
-        return token.get('jti') is not None
+        return token is not None and token.get('jti') is not None
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         return jsonify(error.args[0]), error.args[1]

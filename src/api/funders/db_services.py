@@ -2,6 +2,7 @@ from flask import Blueprint, current_app
 from src.shared.entity import Session
 from .entities import Funder, FunderSchema
 from ..fundings.entities import Funding
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 
 class FunderDBService:
     @staticmethod
@@ -66,14 +67,28 @@ class FunderDBService:
             raise ValueError(f'Ce financeur {funding[0][1]} est affecté à {len(funding)} financement(s)',404)
 
     @staticmethod
-    def check_exist_funder(funder_id: int):
-        session = Session()  
-        funder_existing = session.query(Funder).filter_by(id_financeur=funder_id).first()
-        session.close()
+    def get_funder_by_id(funder_id: int):
+        session = None
+        response = None
+        try:
+            session = Session()  
+            response = session.query(Funder).filter_by(id_financeur=funder_id).first()
+            session.close()
         
-        if funder_existing is None:
-            raise ValueError(f'Le financeur {funder_id} n\'existe pas.',404)
-   
+            if response is None:
+                ManageErrorUtils.value_error(CodeError.DB_VALUE_REFERENCED, TError.DATA_NOT_FOUND, 'Le financeur n\'existe pas', 404)
+        
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
+    
+        
+        
     @staticmethod
     def check_unique_funder_name(name: str, funder_id = None):
         session = Session()  

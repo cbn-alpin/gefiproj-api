@@ -1,10 +1,10 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
+from ..users.auth_resources import admin_required
 
 from .db_service import ProjectDBService
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
-from ..users.auth_resources import admin_required
 from ..users.db_services import UserDBService
 
 resources = Blueprint('projects', __name__)
@@ -138,9 +138,9 @@ def delete_project(project_id: int):
         # Check if project exists
         project = ProjectDBService.get_project_by_id(project_id)
         # Check if project has fundings referenced
-        FundingDBService.get_funding_by_project_id(project_id, check = True)
+        FundingDBService.check_project_not_have_funding(project_id)
         
-        response = ProjectDBService.delete_project(project_id, project['nom_p'])
+        response = ProjectDBService.delete(project_id, project['nom_p'])
         response = jsonify(response), 204
     except (ValueError, Exception) as error:
         current_app.logger.error(error)

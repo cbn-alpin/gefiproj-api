@@ -54,7 +54,7 @@ class ProjectDBService:
     
             if project is None:
                 msg = "Une erreur est survenue lors de l'enregistrement du projet"
-                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
             
             new_project = ProjectSchema().dump(project)
             session.close()
@@ -128,10 +128,9 @@ class ProjectDBService:
             session = Session()
             session.merge(project)
             session.commit()
-
-            updated_project = ProjectSchema().dump(project)
+            update_project = ProjectSchema().dump(project)
             session.close()
-            return updated_project   
+            return update_project   
         except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
@@ -140,9 +139,8 @@ class ProjectDBService:
                 session.close()             
 
     @staticmethod
-    def delete_project(project_id: int, nom_p: str):
+    def delete(project_id: int, nom_p: str):
         session = None
-        project = None
         try:
             session = Session()
             session.query(Project).filter_by(id_p=project_id).delete()

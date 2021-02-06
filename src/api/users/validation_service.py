@@ -11,8 +11,8 @@ class UserValidationService:
         try:
             # validation keys
             ManageCheckDataUtils.check_keys(['login', 'password'], data)
-            ManageCheckDataUtils.check_format_value('login', data, str)
-            ManageCheckDataUtils.check_format_value('password', data, str)
+            ManageCheckDataUtils.check_format_value('login', data, str, 'email')
+            ManageCheckDataUtils.check_format_value('password', data, str, 'mot de passe')
         except ValueError as error:
             current_app.logger.warning(error)
             raise
@@ -22,7 +22,7 @@ class UserValidationService:
         try:
             # validation keys
             ManageCheckDataUtils.check_keys(['new_password'], data)
-            ManageCheckDataUtils.check_string_lenght('new_password', data, 5)
+            ManageCheckDataUtils.check_string_lenght('new_password', 'mot de passe', data, 5)
         except ValueError as error:
             current_app.logger.warning(error)
             raise
@@ -46,15 +46,15 @@ class UserValidationService:
             # validation keys
             ManageCheckDataUtils.check_keys(user_keys, user)
             # validation format
-            ManageCheckDataUtils.check_format_value('nom_u', user, str)
-            ManageCheckDataUtils.check_format_value('prenom_u', user, str)
-            ManageCheckDataUtils.check_format_value('initiales_u', user, str)
-            ManageCheckDataUtils.check_format_value('email_u', user, str)
-            ManageCheckDataUtils.check_format_mail('email_u', user)
-            ManageCheckDataUtils.check_format_value('active_u', user, bool)
-            ManageCheckDataUtils.check_format_array('roles', user, list, 2)
-            ManageCheckDataUtils.check_array_is_subset('roles', user['roles'], ROLES)
-            ManageCheckDataUtils.check_duplicate_value('roles', user)
+            ManageCheckDataUtils.check_format_value('nom_u', user, str, 'nom')
+            ManageCheckDataUtils.check_format_value('prenom_u', user, str, 'prénom')
+            ManageCheckDataUtils.check_format_value('initiales_u', user, str, 'initiales')
+            ManageCheckDataUtils.check_format_value('email_u', user, str, 'email')
+            ManageCheckDataUtils.check_format_mail('email_u', user, 'email')
+            ManageCheckDataUtils.check_format_value('active_u', user, bool, 'active')
+            ManageCheckDataUtils.check_format_array('roles', user, 2, 'roles')
+            ManageCheckDataUtils.check_array_is_subset('roles', user['roles'], ROLES, 'roles')
+            ManageCheckDataUtils.check_duplicate_value('roles', user, 'roles')
         except ValueError as error:
             current_app.logger.warning(error)
             raise
