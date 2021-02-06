@@ -51,10 +51,13 @@ class ManageCheckDataUtils:
             raise
 
     @staticmethod
-    def check_string_inf_lenght(key: str, data, size: int):
+    def check_string_lenght(key: str, data, limitInf: int, limitSup: int = None):
         try:
-            if key in data and len(data[key]) < size:
-                message = "Erreur de la longueur du champs {}".format(key)
+            if limitSup is None and key in data and len(data[key]) < limitInf:
+                message = "Erreur sur la longueur du champs {}. Il doit avoir au moins {} caractères.".format(key,limitInf)
+                ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, message, 422)
+            elif limitSup is not None and key in data and (len(data[key]) < limitInf or len(data[key]) > limitSup):
+                message = "Erreur sur la longueur du champs {}. Il doit avoir entre {} et {} caractères".format(key, limitInf, limitSup)
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, message, 422)
         except ValueError as error:
             raise

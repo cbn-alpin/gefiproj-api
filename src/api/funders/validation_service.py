@@ -1,4 +1,4 @@
-from src.api.projects.validation_service import ERROR_CODE
+ERROR_CODE = "VALIDATION_ERROR"
 from src.shared.data_validation_utils import DataValidationUtils
 
 

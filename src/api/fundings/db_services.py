@@ -8,7 +8,8 @@ from ..amounts.entities import Amount
 from ..projects.entities import Project
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..users.db_services import UserDBService
-
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+from flask import current_app
 
 class Status(Enum):
     STATUS_DEFAULT = 'ANTR'
@@ -16,11 +17,30 @@ class Status(Enum):
 
 class FundingDBService:
     @staticmethod
-    def get_funding_by_project_id(project_id):
-        session = Session()
-        found_funding = session.query(Funding).filter_by(id_p=project_id).all()
-        session.close()
-        return found_funding
+    def get_funding_by_project_id(project_id: int, check = False):
+        session = None
+        response = None
+        try:
+            session = Session()
+            if check == False:
+                response = []
+                response = session.query(Funding).filter_by(id_p=project_id).all()
+            else:
+                response = session.query(Funding).filter_by(id_p=project_id).first()
+            
+            if check == True and response is not None:
+                ManageErrorUtils.value_error(CodeError.DB_VALUE_REFERENCED, TError.DELETE_ERROR, 'Le projet est réferencé à un ou plusieurs financements', 403)
+            elif check == False and len(response) == 0:
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Aucun financement est réferencé à ce projet', 404)
+        
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
 
     @staticmethod
     def check_project_exists(project_id):
