@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 from sqlalchemy import Column, String, Integer, Float, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from ..funders.entities import Funder, FunderSchema
@@ -46,11 +46,11 @@ class Funding(Base, db.Model):
 
 class FundingSchema(Schema):
     id_f = fields.Integer()
-    id_p = fields.Integer()
-    id_financeur = fields.Integer()
+    id_p = fields.Integer(required=True)
+    id_financeur = fields.Integer(required=True)
     financeur = fields.Nested(FunderSchema)
-    montant_arrete_f = fields.Float()
-    statut_f = fields.Str()
+    montant_arrete_f = fields.Float(required=True)
+    statut_f = fields.Str(validate=validate.OneOf(["ANTR", "ATR", "SOLDE"]), required=True)
     date_solde_f = fields.Date(allow_none=True)
     date_arrete_f = fields.Date(allow_none=True)
     date_limite_solde_f = fields.Date(allow_none=True)
@@ -59,4 +59,7 @@ class FundingSchema(Schema):
     numero_titre_f = fields.Str(allow_none=True)
     annee_titre_f = fields.Str(allow_none=True)
     imputation_f = fields.Str(allow_none=True)
+    # TODO find solution to replace because option unknown=INCLUDE don't work in a list
     difference = fields.Float(allow_none=True)
+    solde = fields.Float(allow_none=True)
+    nom_financeur = fields.Str(allow_none=True)

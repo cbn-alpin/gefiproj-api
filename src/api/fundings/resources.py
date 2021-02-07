@@ -1,101 +1,149 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from src.api.users.auth_resources import admin_required
+
 from .db_services import FundingDBService
 from .validation_service import FundingValidationService
+from src.api.projects.db_service import ProjectDBService
+from src.api.funders.db_services import FunderDBService
 
 resources = Blueprint('fundings', __name__)
 
 
 @resources.route('/api/projects/<int:project_id>/fundings', methods=['GET'])
 @jwt_required
-def get_fundings_by_project(project_id):
+def get_fundings_by_project(project_id: int):
+    """This function get all fundings referenced by the project passed in the parameter
+
+    Args:
+        project_id (int): id of project
+
+    Returns:
+        Response: list of fundings
+    """
+    current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
+    response = None
     try:
-        current_app.logger.debug('In GET /api/projects/<int:project_id>/fundings')
-        # Checks
-        FundingDBService.check_project_exists(project_id)  
-        response = FundingDBService.get_funding_by_project(project_id)
-        return jsonify(response), 200
-    except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
+        # Checks if project exist
+        ProjectDBService.get_project_by_id(project_id)  
+        response = FundingDBService.get_fundings_by_project(project_id)
+        response = jsonify(response), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
+
 
 @resources.route('/api/funders/<int:funder_id>/fundings', methods=['GET'])
 @jwt_required
-def get_fundings_by_funder(funder_id):
-    try:
-        current_app.logger.debug('In GET /api/funders/<int:funder_id>/fundings')
+def get_fundings_by_funder(funder_id: int):
+    """This function get all fundings referenced by his funder
 
+    Args:
+        funder_id (int): id of funder
+
+    Returns:
+        Response: list of fundings
+    """
+    current_app.logger.debug('In GET /api/funders/<int:funder_id>/fundings')
+    response = None
+    try:
+        # Checks if funder exist
+        FunderDBService.get_funder_by_id(funder_id)
         response = FundingDBService.get_funding_by_funder(funder_id)
-        return jsonify(response), 200
-    except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
+        response = jsonify(response), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
+
 
 @resources.route('/api/fundings', methods=['POST'])
 @jwt_required
 def add_funding():
+    """This function created a new funding
+
+    Returns:
+        Response: funding created
+    """
+    current_app.logger.debug('In POST /api/fundings')
+    response = None
     try:
-        current_app.logger.debug('In POST /api/fundings')
         # Load data
         posted_funding = request.get_json()
-        # check posted data fields
-        validation_errors = FundingValidationService.validate_post(posted_funding)
-        if len(validation_errors) > 0:
-            return jsonify({
-                'message': 'A validation error occurred',
-                'errors': validation_errors
-            }), 422
-
-        # Checks
-        FundingDBService.check_project_exists(posted_funding['id_p'])
-        
-        response = FundingDBService.insert_funding(posted_funding)
-        return jsonify(response), 201
-    except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
+        # Check posted data fields
+        FundingValidationService.validate(posted_funding)
+        # Checks project exist
+        ProjectDBService.get_project_by_id(posted_funding['id_p'])
+        # Insert
+        response = FundingDBService.insert(posted_funding)
+        response = jsonify(response), 201
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
 
 
 @resources.route('/api/fundings/<int:funding_id>', methods=['PUT'])
 @jwt_required
-def update_funding(funding_id):
+def update_funding(funding_id: int):
+    """This function update a funding
+
+    Args:
+        funding_id (int): id of funding
+
+    Returns:
+        Response: description of funding updated
+    """
+    current_app.logger.debug('In PUT /api/fundings/<int:funding_id>')
+    response = None
     try:
-        current_app.logger.debug('In PUT /api/fundings/<int:funding_id>')
         # Load data
         data = request.get_json()
         if 'id_f' not in data:
             data['id_f'] = funding_id
         
-        # check can modify
+        # Check can modify
         FundingDBService.can_update(data['id_p'])
-        # validate fields to update
-        validation_errors = FundingValidationService.validate_post(data)
-        if len(validation_errors) > 0:
-            return jsonify({
-                'message': 'A validation error occurred',
-                'errors': validation_errors
-            }), 422
-            
+        # Validate fields to update
+        FundingValidationService.validate(data)
         # Checks
-        FundingDBService.check_funding_exists(data['id_f'])
+        FundingDBService.get_funding_by_id(data['id_f'])
         
-        response = FundingDBService.update_funding(data)
-        return jsonify(response), 200
-    except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
-    except Exception as error:
-        return jsonify(error.args[0]), error.args[1]
+        response = FundingDBService.update(data)
+        response = jsonify(response), 200
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response
 
 
 @resources.route('/api/fundings/<int:funding_id>', methods=['DELETE'])
 @jwt_required
 @admin_required
-def delete_funding(funding_id):
-    try:
-        current_app.logger.debug('In DELETE /api/fundings/<int:funding_id>')
-        # check
-        FundingDBService.check_funding_exists(funding_id)
-        FundingDBService.delete_children(funding_id)
+def delete_funding(funding_id: int):
+    """This function delete a funding refernced by his id
 
-        response = FundingDBService.delete_funding(funding_id)
-        return jsonify(response), 204
-    except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
+    Args:
+        funding_id (int): id of funding
+
+    Returns:
+    """
+    current_app.logger.debug('In DELETE /api/fundings/<int:funding_id>')
+    try:
+        # Check if project exists
+        FundingDBService.get_funding_by_id(funding_id)
+        # Delete others entity referenced if exist
+        FundingDBService.delete_entities_referenced(funding_id)
+
+        response = FundingDBService.delete(funding_id)
+        response = jsonify(response), 204
+    except (ValueError, Exception) as error:
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    finally:
+        return response

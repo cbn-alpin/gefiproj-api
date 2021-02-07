@@ -1,68 +1,60 @@
-import re
+from src.shared.manage_check_data import ManageCheckDataUtils, CodeError, TError
+from flask import current_app
 
-from src.shared.data_validation_utils import DataValidationUtils, ERROR_CODE
+KEYS = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'active_u', 'roles']
+ROLES = ['administrateur', 'consultant']
 
-EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-
-
+        
 class UserValidationService:
     @staticmethod
-    def validate_change_pwd(data, is_admin):
-        errors = DataValidationUtils.check_keys(['new_password'], data)
-        if 'new_password' in data and len(data['new_password']) < 5:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': 'email_u',
-                'message': 'Password too short',
-            })
-        if not is_admin:
-            errors = errors + DataValidationUtils.check_keys(['password'], data)
+    def validate_login(data):
+        try:
+            # validation keys
+            ManageCheckDataUtils.check_keys(['login', 'password'], data)
+            ManageCheckDataUtils.check_format_value('login', data, str, 'email')
+            ManageCheckDataUtils.check_format_value('password', data, str, 'mot de passe')
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise
 
-        return errors
+    @staticmethod
+    def validate_change_pwd(data):
+        try:
+            # validation keys
+            ManageCheckDataUtils.check_keys(['new_password'], data)
+            ManageCheckDataUtils.check_string_lenght('new_password', 'mot de passe', data, 5)
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise
 
     @staticmethod
     def validate_post(user):
-        errors = UserValidationService.validate_update(user)
-
-        user_keys = ['password_u']
-        errors = errors + DataValidationUtils.check_keys(user_keys, user)
-
-        return errors
-
+        try:
+            user_keys = ['password_u']
+            # validation keys
+            ManageCheckDataUtils.check_keys(user_keys, user)
+            # validate_update
+            UserValidationService.validate_update(user)
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise
+        
     @staticmethod
     def validate_update(user):
-        errors = []
-
-        user_keys = ['nom_u', 'prenom_u', 'initiales_u', 'email_u', 'active_u', 'roles']
-        errors = DataValidationUtils.check_keys(user_keys, user)
-
-        if 'email_u' in user \
-                and not re.search(EMAIL_REGEX, user['email_u']):
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': 'email_u',
-                'message': 'Parameter <email_u> must be a valid email address',
-            })
-
-        if 'roles' in user:
-            errors = DataValidationUtils.check_list('roles', user, errors)
-
-            if len(user['roles']) > 2:
-                errors.append({
-                    'code': ERROR_CODE,
-                    'type': 'VALUE_ERROR',
-                    'field': 'roles',
-                    'message': 'Parameter <roles> must be an array of at most 2 items',
-                })
-            else:
-                for role in user['roles']:
-                    if role != 'consultant' and role != 'administrateur':
-                        errors.append({
-                            'code': ERROR_CODE,
-                            'type': 'VALUE_ERROR',
-                            'field': 'roles',
-                            'message': 'Parameter <roles> must be either <consultant> or <administrateur>',
-                        })
-        return errors
+        try:
+            user_keys = KEYS
+            # validation keys
+            ManageCheckDataUtils.check_keys(user_keys, user)
+            # validation format
+            ManageCheckDataUtils.check_format_value('nom_u', user, str, 'nom')
+            ManageCheckDataUtils.check_format_value('prenom_u', user, str, 'prénom')
+            ManageCheckDataUtils.check_format_value('initiales_u', user, str, 'initiales')
+            ManageCheckDataUtils.check_format_value('email_u', user, str, 'email')
+            ManageCheckDataUtils.check_format_mail('email_u', user, 'email')
+            ManageCheckDataUtils.check_format_value('active_u', user, bool, 'active')
+            ManageCheckDataUtils.check_format_array('roles', user, 2, 'roles')
+            ManageCheckDataUtils.check_array_is_subset('roles', user['roles'], ROLES, 'roles')
+            ManageCheckDataUtils.check_duplicate_value('roles', user, 'roles')
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise

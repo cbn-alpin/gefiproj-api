@@ -13,8 +13,8 @@ class Project(Base, db.Model):
     id_p = Column(db.Integer, primary_key=True)
     code_p = Column(db.Integer, unique=True, nullable=False)
     nom_p = Column(db.String(250), unique=True, nullable=False)
-    statut_p = Column(db.Boolean(250), unique=True, default=False)
-    id_u = Column(db.Integer, ForeignKey('utilisateur.id_u'))  # foreign_key definition
+    statut_p = Column(db.Boolean(250), default=False)
+    id_u = Column(db.Integer, ForeignKey('utilisateur.id_u'))
     responsable = relationship(User)
 
     def __init__(self, code_p, nom_p, statut_p, id_u, id_p='', responsable=''):

@@ -43,7 +43,7 @@ def add_receipt():
     receipt = Receipt(**posted_receipt)
 
     # check funding
-    FundingDBService.check_funding_exists(receipt.id_f)
+    FundingDBService.get_funding_by_id(receipt.id_f)
 
     # check there is no receipt for this funding this yeat
     receipts_of_year = ReceiptDBService.get_receipts_of_year_by_funding_id(receipt.id_f, receipt.annee_r)

@@ -1,6 +1,5 @@
-from src.api.projects.validation_service import ERROR_CODE
 from src.shared.data_validation_utils import DataValidationUtils
-
+ERROR_CODE = "VALIDATION_ERROR"
 
 class ExpenseValidationService:
     @staticmethod
