@@ -1,6 +1,7 @@
 from os import environ, path
 
 import gspread
+import gspread_formatting as gsf
 from flask import current_app
 
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -45,6 +46,7 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
         data.insert(0, header_column_names)
+
         work_sheet.batch_update([{
             'range': f'A1:{last_column_letter}{len(data)}',
             'values': data
@@ -63,8 +65,20 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
                 'bottom': {"style": "SOLID"},
                 'left': {"style": "SOLID"},
             },
-            "horizontalAlignment": "CENTER",
+            "horizontalAlignment": "LEFT",
+            "wrapStrategy": "WRAP"
         })
+
+        # Freeze the first (person) column and the top 2 (project) rows
+        work_sheet.freeze(cols=1)
+
+        fmt = gsf.cellFormat(
+            textFormat=gsf.textFormat(
+                bold=True,
+                fontSize=12
+            )
+        )
+        gsf.format_cell_range(work_sheet, 'A1:Z1', fmt)
 
         return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
     except Exception as e:
