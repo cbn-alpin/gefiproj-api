@@ -3,15 +3,36 @@ from os import environ, path
 import gspread
 import gspread_formatting as gsf
 from flask import current_app
+from datetime import date
+
+
+def export_year_to_str(version: int, value: int):
+    if version == 1:
+        return str(date.today().year + value)[-2:]
+    else:
+        return str(date.today().year + value)[-2:]
+
 
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
-DEFAULT_FUNDINGS_HEADER = ['id_p', 'code_p', 'nom_p', 'id_u', 'initiales_u', 'id_f', 'date_arrete_f',
-                           'date_limite_solde_f',
-                           'montant_arrete_f', 'commentaire_admin_f', 'imputation_f', 'numero_titre_f', 'statut_f',
-                           'id_financeur', 'nom_financeur', 'recette_avant', 'recette_a', 'recette_a2', 'recette_a3',
-                           'recette_a4', 'recette_a5', 'recette_apres']
+DEFAULT_FUNDINGS_HEADER = [
+    'Code projet',
+    'Nom projet',
+    'Financeur',
+    'Responsable',
+    'Date arrêté ou commande',
+    'Date limite de solde',
+    'Montant arrêté ou commande',
+    'Recettes avant ',
+    'Recettes ',
+    'Recettes ',
+    'Recettes ',
+    'Recettes ',
+    'Recettes ',
+    'Recettes après '
+]
+
 DEFAULT_RECEIPTS_HEADER = [
     'annee_recette', 'montant_recette', 'affectation_avant',
     'affectation_a', 'affectation_a2', 'affectation_a3',
@@ -75,10 +96,11 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         fmt = gsf.cellFormat(
             textFormat=gsf.textFormat(
                 bold=True,
-                fontSize=12
+                fontSize=11
             )
         )
         gsf.format_cell_range(work_sheet, 'A1:Z1', fmt)
+        gsf.set_column_width(work_sheet, 'B', 400)
 
         return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
     except Exception as e:
@@ -95,21 +117,13 @@ def export_funding_item_from_row_proxy(row_proxy):
     if 'date_limite_solde_f' in row_proxy and row_proxy['date_limite_solde_f']:
         date_limite_solde_f = row_proxy['date_limite_solde_f'].strftime("%d/%m/%Y")
 
-    return [row_proxy['id_p'],
-            row_proxy['code_p'],
+    return [row_proxy['code_p'],
             row_proxy['nom_p'],
-            row_proxy['id_u'],
+            row_proxy['nom_financeur'],
             row_proxy['initiales_u'],
-            row_proxy['id_f'],
             date_arrete_f,
             date_limite_solde_f,
             row_proxy['montant_arrete_f'],
-            row_proxy['commentaire_admin_f'],
-            row_proxy['imputation_f'],
-            row_proxy['numero_titre_f'],
-            row_proxy['statut_f'],
-            row_proxy['id_financeur'],
-            row_proxy['nom_financeur'],
             row_proxy['recette_avant'],
             row_proxy['recette_a'],
             row_proxy['recette_a2'],

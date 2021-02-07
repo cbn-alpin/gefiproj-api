@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
-    DEFAULT_FUNDINGS_HEADER
+    DEFAULT_FUNDINGS_HEADER, export_year_to_str
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
@@ -71,6 +71,15 @@ def export_fundings():
             'annee_max': annee_max,
             'version': version,
         }), 200
+
+    # Add years in header_column_names
+    header_column_names[7] = header_column_names[7] + export_year_to_str(version, 0)
+    header_column_names[8] = header_column_names[8] + export_year_to_str(version, 0)
+    header_column_names[9] = header_column_names[9] + export_year_to_str(version, 1)
+    header_column_names[10] = header_column_names[10] + export_year_to_str(version, 2)
+    header_column_names[11] = header_column_names[11] + export_year_to_str(version, 3)
+    header_column_names[12] = header_column_names[12] + export_year_to_str(version, 4)
+    header_column_names[13] = header_column_names[13] + export_year_to_str(version, 4)
 
     document_created = write_fundings_to_google_docs(file_name, header_column_names, export_data, shares)
 
