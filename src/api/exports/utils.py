@@ -1,9 +1,10 @@
+from datetime import date
 from os import environ, path
 
 import gspread
 import gspread_formatting as gsf
 from flask import current_app
-from datetime import date
+from gspread import Worksheet
 
 
 def export_year_to_str(version: int, value: int):
@@ -44,6 +45,30 @@ def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
 
+def set_cells_format(worksheet: Worksheet):
+    requests = [{
+        "repeatCell": {
+            "range": {
+                "startColumnIndex": 5,
+                "endColumnIndex": 6,
+            },
+            "cell": {
+                "userEnteredFormat": {
+                    "numberFormat": {
+                        "type": "DATE",
+                        "pattern": "dd/mm/yyyy"
+                    }
+                }
+            },
+            "fields": "userEnteredFormat.numberFormat"
+        }
+    }]
+    body = {
+        'requests': requests
+    }
+    return worksheet.batch_update(body)
+
+
 def write_fundings_to_google_docs(document_tile, header_column_names, data, shares):
     """
     This method creates a google sheet document to export the funding data betweeen two dates
@@ -67,7 +92,6 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
         data.insert(0, header_column_names)
-
         work_sheet.batch_update([{
             'range': f'A1:{last_column_letter}{len(data)}',
             'values': data
@@ -87,8 +111,29 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
                 'left': {"style": "SOLID"},
             },
             "horizontalAlignment": "LEFT",
+            "verticalAlignment": "MIDDLE",
             "wrapStrategy": "WRAP"
         })
+
+        # Set Column as DATE format
+        work_sheet.format(f'E1:F{len(data)}', {
+            'numberFormat': {
+                'type': 'DATE',
+                'pattern': 'dd/mm/yyyy'
+            }
+        })
+
+        # Set Column as DATE format
+        # Source : https://developers.google.com/sheets/api/guides/formats#number_format_examples
+        work_sheet.format(f'G1:N{len(data)}', {
+            'numberFormat': {
+                'type': 'CURRENCY',
+                'pattern': '[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]"0 €"'
+            },
+            "horizontalAlignment": "RIGHT",
+        })
+
+        work_sheet.set_basic_filter(name=(f'A:{last_column_letter}'))
 
         # Freeze the first (person) column and the top 2 (project) rows
         work_sheet.freeze(cols=1)
@@ -96,11 +141,14 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         fmt = gsf.cellFormat(
             textFormat=gsf.textFormat(
                 bold=True,
-                fontSize=11
+                fontSize=10
             )
         )
         gsf.format_cell_range(work_sheet, 'A1:Z1', fmt)
         gsf.set_column_width(work_sheet, 'B', 400)
+        gsf.set_column_width(work_sheet, 'D', 120)
+        gsf.set_column_width(work_sheet, 'E', 200)
+        gsf.set_column_width(work_sheet, 'F', 200)
 
         return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
     except Exception as e:
