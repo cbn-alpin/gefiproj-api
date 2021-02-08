@@ -90,7 +90,7 @@ def update_user(user_id: int):
         return response
 
 
-@resources.route('/api/users/<int:user_id>/change-password', methods=['PUT'])
+@resources.route('/api/users/<int:user_id>/change-password', methods=['POST'])
 @jwt_required
 @admin_required
 def change_password(user_id: int):
@@ -102,7 +102,7 @@ def change_password(user_id: int):
     Returns:
         Response: description of user
     """
-    current_app.logger.debug('In PUT /api/users/<int:user_id>')
+    current_app.logger.debug('In PUT /api/users/<int:user_id>/change-password')
     response = None
     try:
         data = dict(request.get_json())

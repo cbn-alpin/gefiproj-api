@@ -1,8 +1,8 @@
 from src.shared.manage_check_data import ManageCheckDataUtils
 from flask import current_app
-from src.shared.data_validation_utils import DataValidationUtils
 
 KEYS = ['nom_financeur']
+
 
 class FunderValidationService:
     @staticmethod

@@ -21,5 +21,5 @@ class Expense(Base, db.Model):
 
 class ExpenseSchema(Schema):
     id_d = fields.Integer()
-    annee_d = fields.Integer()
-    montant_d = fields.Float()
+    annee_d = fields.Integer(required=True)
+    montant_d = fields.Float(required=True)

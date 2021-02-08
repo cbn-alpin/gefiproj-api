@@ -66,7 +66,7 @@ class ManageCheckDataUtils:
     @staticmethod
     def check_not_none(key: str, data, name: str):
         try:
-            if key in data and data[key] is None:
+            if key in data and (data[key] is None or data[key] <= 0):
                 message = "Le champs '{}' est vide".format(name)
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, message, 422)
         except ValueError as error:

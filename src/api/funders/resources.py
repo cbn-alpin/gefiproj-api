@@ -95,13 +95,13 @@ def update_funder(funder_id: int):
 @jwt_required
 @admin_required
 def delete_funder(funder_id: int):
-    """[summary]
+    """This function delete a funder
 
     Args:
-        funder_id (int): [description]
+        funder_id (int): id of funder
 
     Returns:
-        [type]: [description]
+        Response: description of funder
     """
     current_app.logger.debug('In DELETE /api/funders/<int:funder_id>')
     response = None

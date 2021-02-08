@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app
+from flask import current_app
 from src.shared.entity import Session
 from .entities import Funder, FunderSchema
 from ..fundings.entities import Funding
