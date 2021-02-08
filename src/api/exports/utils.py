@@ -35,9 +35,9 @@ DEFAULT_FUNDINGS_HEADER = [
 ]
 
 DEFAULT_RECEIPTS_HEADER = [
-    'annee_recette', 'montant_recette', 'affectation_avant',
-    'affectation_a', 'affectation_a2', 'affectation_a3',
-    'affectation_a4', 'affectation_a5', 'affectation_apres'
+    "Année de recette", "Recettes de l'année", "Montant affecté avant ",
+    "Montant affecté à ", "Montant affecté à ", "Montant affecté à ",
+    "Montant affecté à ", "Montant affecté à ", "Montant affecté après "
 ]
 
 
@@ -154,6 +154,92 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
     except Exception as e:
         current_app.logger.error(e)
         return None
+
+
+def write_rececipts_to_google_docs(document_title, header_column_names, data, shares):
+    # TODO: use pivot tables https://developers.google.com/sheets/api/samples/pivot-tables
+    try:
+        data.insert(0, header_column_names)
+        sheet_batch_object = build_sheet_batch(data, data[1][0])
+        # return sheet_batch_object
+        gc = get_google_service_account()
+        google_sheet = gc.create(document_title)
+
+        for it in shares:
+            google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+
+        work_sheet = google_sheet.sheet1
+
+        work_sheet.batch_update(sheet_batch_object)
+
+        return {'title': document_title, 'lines': len(data) + len(data) * 4, 'url': google_sheet.url}
+    except Exception as e:
+        current_app.logger.error(f'write_rececipts_to_google_docs: {e}')
+        return None
+
+
+def build_sheet_batch(data, annee_ref):
+    last_column_letter = SHEET_COLUMN_LETTERS[len(data[0]) - 1]
+    in_out_ref = data.pop(1)
+    table_1_length = len(data)
+    batch_objet = []
+    additional_table_header = generate_additional_table_header(header_length=len(data[0]) - 1, min_year=data[1][0])
+
+    batch_objet += [
+        {'range': f'A1:{last_column_letter}{table_1_length}', 'values': data},
+    ]
+
+    additional_table_start = table_1_length + 4
+    for i, it in enumerate(data):
+        if i == 0:
+            continue
+        new_table = [
+            {
+                'range': f'A{additional_table_start}:A{additional_table_start}', 'values': [[f'Bilan {it[0]}']],
+            },
+            {
+                'range': f'A{additional_table_start + 1}:{last_column_letter}{additional_table_start + 4}',
+                'values': generate_additional_table_rows(additional_table_header, target_year=it[0])
+            }
+        ]
+        additional_table_start += 6
+        batch_objet += new_table
+
+    return batch_objet
+
+
+def generate_additional_table_header(header_length, min_year):
+    header = [f'Avant {min_year}']
+    for i in range(header_length):
+        if i == 0:
+            continue
+        header.append(f'{int(min_year) + i}')
+    return header
+
+
+def generate_additional_table_rows(additional_table_header, target_year):
+    """
+        retourne une liste de 3 lignes => [[], [], []]
+        chaque ligne a autant de col que additional_table_header
+        les 2 premières lignes correspondant à la col target_year sont vides
+    """
+    table_rows = [additional_table_header]
+    for j in range(3):
+        table_rows.append(build_additional_single_row(additional_table_header,
+                                                      row_formula=f'=formule de {j}',
+                                                      target_year=target_year))
+
+    return table_rows
+
+
+def build_additional_single_row(header_row, row_formula, target_year):
+    row = []
+    for i, header in enumerate(header_row):
+        if header_row[i] == target_year:
+            row.append('')
+            continue
+        row.append(row_formula)
+    return row
 
 
 def export_funding_item_from_row_proxy(row_proxy):

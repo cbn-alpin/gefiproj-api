@@ -26,7 +26,9 @@ class ExportDBService:
 
         try:
             session = Session()
-            result = session.execute("select * from bilan_financier(:annee_ref)", {'annee_ref': annee_ref})
+            result = session.execute("select * from bilan_financier(:annee_ref) ORDER BY annee_recette",
+                                     {'annee_ref': annee_ref}
+                                     )
             return result
         except Exception as se:
             current_app.logger.error(se, exc_info=True)
