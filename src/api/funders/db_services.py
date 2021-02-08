@@ -4,67 +4,27 @@ from .entities import Funder, FunderSchema
 from ..fundings.entities import Funding
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 
+
 class FunderDBService:
     @staticmethod
     def get_all_funders():
-        session = Session()  
-        funder_object = session.query(Funder).order_by(Funder.nom_financeur).all()
-        # Transforming into JSON-serializable objects
-        schema = FunderSchema(many=True)
-        funders = schema.dump(funder_object)
-        # Serializing as JSON
-        session.close()
-        return funders
+        session = None
+        response = []
+        try:
+            session = Session()  
+            funders_object = session.query(Funder).order_by(Funder.nom_financeur).all()
+            # Transforming into JSON-serializable objects
+            schema = FunderSchema(many=True)
+            response = schema.dump(funders_object)
             
-    @staticmethod
-    def insert(funder):
-        posted_funder = FunderSchema(only=('nom_financeur', 'ref_arret_attributif_financeur')).load(funder)
-        data = Funder(**posted_funder)
-        
-        session = Session()
-        session.add(data)
-        session.commit()
-
-        inserted_Funder = FunderSchema().dump(data)
-        session.close()
-        return inserted_Funder
-
-
-    @staticmethod
-    def update(funder):
-        update_funder = FunderSchema(only=('id_financeur', 'nom_financeur', 'ref_arret_attributif_financeur')).load(funder)
-        data = Funder(**update_funder)
-        
-        session = Session()
-        session.merge(data)
-        session.commit()
-
-        updated_funder = FunderSchema().dump(data)
-        session.close()
-        return updated_funder
-    
-    @staticmethod
-    def delete(funder_id: int):
-        session = Session()
-        funder = session.query(Funder).filter_by(id_financeur=funder_id).first()
-        session.delete(funder)
-        session.commit()
-        session.close()
-        response = {
-            'message': f'Le financeur {funder.nom_financeur} a été supprimé'
-        }
-        return response
-    
-    @staticmethod
-    def check_funder_use_in_funding(funder_id: int):
-        session = Session()  
-        funding = session.query(Funding.id_f, Funder.nom_financeur) \
-            .join(Funder, Funder.id_financeur == Funding.id_financeur) \
-            .filter(Funder.id_financeur==funder_id).all()
-        session.close()
-        
-        if funding is not None and len(funding) > 0:
-            raise ValueError(f'Ce financeur {funding[0][1]} est affecté à {len(funding)} financement(s)',404)
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
 
     @staticmethod
     def get_funder_by_id(funder_id: int):
@@ -72,12 +32,14 @@ class FunderDBService:
         response = None
         try:
             session = Session()  
-            response = session.query(Funder).filter_by(id_financeur=funder_id).first()
-            session.close()
+            funder = session.query(Funder).filter_by(id_financeur=funder_id).first()
         
-            if response is None:
-                ManageErrorUtils.value_error(CodeError.DB_VALUE_REFERENCED, TError.DATA_NOT_FOUND, 'Le financeur n\'existe pas', 404)
-        
+            if funder is None:
+                msg = "Le financeur n'existe pas"
+                ManageErrorUtils.value_error(CodeError.DB_VALUE_REFERENCED, TError.DATA_NOT_FOUND, msg, 404)
+            
+            schema = FunderSchema()
+            response = schema.dump(funder)
             session.close()
             return response
         except (Exception, ValueError) as error:
@@ -87,16 +49,116 @@ class FunderDBService:
             if session is not None:
                 session.close()
     
+    @staticmethod
+    def check_unique_funder_name(name: str, funder_id:int = None):
+        session = None
+        response = None
+        try:
+            session = Session()  
+            if funder_id is not None:
+                response = session.query(Funder) \
+                    .filter(Funder.id_financeur != funder_id, Funder.nom_financeur == name) \
+                    .first()
+            else:
+                response = session.query(Funder).filter_by(nom_financeur=name).first()
+            
+            if response is not None:
+                msg = "Le nom du financeur '{} est déjà utilisé sur un autre financeur".format(name)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
+
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()      
+            
+    @staticmethod
+    def insert(funder):
+        session = None
+        new_funder = None
+        try:
+            posted_funder = FunderSchema(only=('nom_financeur', 'ref_arret_attributif_financeur')).load(funder)
+            funder = Funder(**posted_funder)
         
+            session = Session()
+            session.add(funder)
+            session.commit()
+            
+            if funder is None:
+                msg = "Une erreur est survenue lors de l'enregistrement du financeur"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
+            
+            new_funder = FunderSchema().dump(funder)
+            session.close()
+            return new_funder
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
         
     @staticmethod
-    def check_unique_funder_name(name: str, funder_id = None):
-        session = Session()  
-        if funder_id is not None:
-            funder_existing = session.query(Funder).filter(Funder.id_financeur != funder_id, Funder.nom_financeur == name).first()
-        else:
-            funder_existing = session.query(Funder).filter_by(nom_financeur=name).first()
-        session.close()
+    def update(funder):
+        session = None
+        update_funder = None
+        try:
+            data = FunderSchema(only=('id_financeur', 'nom_financeur', 'ref_arret_attributif_financeur')).load(funder)
+            funder = Funder(**data)
         
-        if funder_existing is not None:
-            raise ValueError(f'Le financeur {name} existe déjà.',403)
+            session = Session()
+            session.merge(funder)
+            session.commit()
+
+            update_funder = FunderSchema().dump(funder)
+            session.close()
+            return update_funder
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()            
+    
+    @staticmethod
+    def delete(funder_id: int, nom: str):
+        session = None
+        try:
+            session = Session()
+            session.query(Funder).filter_by(id_financeur=funder_id).delete()
+            session.commit()
+            session.close()
+            return { 'message': 'Le financeur \'{}\' a été supprimé'.format(nom) }
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
+                
+    @staticmethod
+    def check_funder_referenced_in_funding(funder_id: int, name: str):
+        session = None
+        try:
+            session = Session() 
+            fundings = [] 
+            fundings = session.query(Funder) \
+                .join(Funding, Funder.id_financeur == Funding.id_financeur) \
+                .filter(Funder.id_financeur == funder_id) \
+                .all()
+                
+            if fundings is not None and len(fundings) > 0:
+                msg = "Le financeur '{}' est affecté à un ou plusieurs financements".format(name)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
+
+            session.close()
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()

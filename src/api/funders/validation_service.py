@@ -1,13 +1,17 @@
-ERROR_CODE = "VALIDATION_ERROR"
+from src.shared.manage_check_data import ManageCheckDataUtils
+from flask import current_app
 from src.shared.data_validation_utils import DataValidationUtils
 
+KEYS = ['nom_financeur']
 
 class FunderValidationService:
     @staticmethod
-    def validate_post(funder_data):
-        financeur_keys = ['nom_financeur']
-        errors = DataValidationUtils.check_keys(financeur_keys, funder_data)
-
-        errors = DataValidationUtils.check_string_value('nom_financeur', funder_data, errors)
-        return errors
-    
+    def validate(funder):
+        try:
+            financeur_keys = KEYS
+            ManageCheckDataUtils.check_keys(financeur_keys, funder)
+            ManageCheckDataUtils.check_format_value('nom_financeur', funder, str, 'nom du financeur')
+            ManageCheckDataUtils.check_string_lenght('nom_financeur', 'nom du financeur', funder, 2, 250)
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise

@@ -2,7 +2,7 @@ from flask import current_app
 from enum import Enum 
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 from sqlalchemy import func, case
-from marshmallow import INCLUDE
+from marshmallow import INCLUDE, EXCLUDE
 from src.shared.entity import Session
 
 from .entities import Funding, FundingSchema
@@ -112,7 +112,7 @@ class FundingDBService:
             posted_funding = FundingSchema(only=(
                 'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f', 'date_limite_solde_f',
                 'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f', 'imputation_f')) \
-                .load(funding)
+                .load(funding, unknown=EXCLUDE)
             funding = Funding(**posted_funding)
 
             # Persist funding
@@ -146,7 +146,7 @@ class FundingDBService:
                 'id_f', 'id_p', 'id_financeur', 'montant_arrete_f', 'statut_f', 'date_solde_f', 'date_arrete_f',
                 'date_limite_solde_f', 'commentaire_admin_f', 'commentaire_resp_f', 'numero_titre_f', 'annee_titre_f',
                 'imputation_f')) \
-                .load(funding)
+                .load(funding, unknown=EXCLUDE)
             funding = Funding(**funding)
             # Start DB session
             session = Session()

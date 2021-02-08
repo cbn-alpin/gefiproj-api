@@ -21,5 +21,5 @@ class Funder(Base, db.Model):
 
 class FunderSchema(Schema):
     id_financeur = fields.Integer()
-    nom_financeur = fields.Str()
+    nom_financeur = fields.Str(required=True)
     ref_arret_attributif_financeur = fields.Str(allow_none=True)
