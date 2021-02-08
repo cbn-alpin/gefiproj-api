@@ -176,7 +176,7 @@ class UserDBService:
     
             if user is None:
                 msg = "Une erreur est survenue lors de l'enregistrement de cet utilisateur"
-                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.INSERT_ERROR, msg, 500)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 500)
             else:
                 new_user = UserSchema(exclude=['password_u']).dump(user)
                 new_user['roles'] = new_roles
@@ -226,12 +226,18 @@ class UserDBService:
             session = Session()
             session.merge(user)
             session.commit()
-            session.close()
-    
+            
+            if user is None:
+                msg = "Une erreur est survenue lors de la modification des données de l'utilisateur"
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 500)
+            
             update_user = UserSchema(exclude=['password_u']).dump(user)
             update_user['roles'] = new_roles
+            
+            session.close()
             return update_user
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -247,13 +253,15 @@ class UserDBService:
             user = session.query(User).get(user_id)
             user.password_u = User.generate_hash(new_password)
             session.commit()
-            if user.password_u is None:                
+            
+            if user is None:                
                 msg = "Une erreur est survenue lors de la modification du mot de passe"
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
                 
             session.close()
             return {'message': 'Le mot de passe du mail \'{}\' a été bien modifié'.format(email_u)}
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:

@@ -18,12 +18,18 @@ class UserRoleDBService:
                 session = Session()
                 session.add(data)
                 session.commit()
+                
+                if data is None:                
+                    msg = "Une erreur est survenue lors de l'insertion d'un rôle à un utilisateur"
+                    ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
+           
                 # Return created data
                 response = UserRoleSchema().dump(data)
                 session.close()
                 
             return response
         except Exception as error:
+            session.rollback()
             raise
         finally:
             if session is not None:
@@ -44,10 +50,15 @@ class UserRoleDBService:
                 session.merge(data)
                 session.commit()
                 
+                if data is None:                
+                    msg = "Une erreur est survenue lors de la modification du rôle d'un utilisateur"
+                    ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+                
                 response = UserRoleSchema().dump(data)
                 session.close()
             return response
         except Exception as error:
+            session.rollback()
             raise
         finally:
             if session is not None:
@@ -58,15 +69,18 @@ class UserRoleDBService:
         session = None
         try:
             session = Session()
-            user_role = session.query(UserRole) \
+            data = session.query(UserRole) \
                 .filter(UserRole.id_u == id_u, UserRole.id_ra == id_ra) \
-                .first()
+                .delete()
+            session.commit()
+            
+            if data is None:                
+                msg = "Une erreur est survenue lors de la suppression du rôle d'un utilisateur"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
                 
-            if user_role is not None:
-                session.delete(user_role)
-                session.commit()
             session.close()
         except Exception as error:
+            session.rollback()
             raise
         finally:
             if session is not None:

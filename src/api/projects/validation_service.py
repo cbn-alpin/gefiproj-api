@@ -16,6 +16,9 @@ class ProjectValidationService:
             ManageCheckDataUtils.check_string_lenght('nom_p', 'nom', project, 3, 250)
             ManageCheckDataUtils.check_format_value('statut_p', project, bool, 'statut')
             ManageCheckDataUtils.check_format_value('id_u', project, int, 'responsable')
+            
+            ManageCheckDataUtils.check_not_none('code_p', project, 'code projet')
+            ManageCheckDataUtils.check_not_none('id_u', project, 'responsable')
         except ValueError as error:
             current_app.logger.warning(error)
             raise

@@ -13,6 +13,7 @@ class UserValidationService:
             ManageCheckDataUtils.check_keys(['login', 'password'], data)
             ManageCheckDataUtils.check_format_value('login', data, str, 'email')
             ManageCheckDataUtils.check_format_value('password', data, str, 'mot de passe')
+            ManageCheckDataUtils.check_not_none('password', data, 'mot de passe')
         except ValueError as error:
             current_app.logger.warning(error)
             raise
@@ -33,6 +34,7 @@ class UserValidationService:
             user_keys = ['password_u']
             # validation keys
             ManageCheckDataUtils.check_keys(user_keys, user)
+            ManageCheckDataUtils.check_string_lenght('password_u', 'mot de passe', user, 5)
             # validate_update
             UserValidationService.validate_update(user)
         except ValueError as error:
@@ -55,6 +57,11 @@ class UserValidationService:
             ManageCheckDataUtils.check_format_array('roles', user, 2, 'roles')
             ManageCheckDataUtils.check_array_is_subset('roles', user['roles'], ROLES, 'roles')
             ManageCheckDataUtils.check_duplicate_value('roles', user, 'roles')
+            
+            ManageCheckDataUtils.check_not_none('nom_u', user, 'nom')
+            ManageCheckDataUtils.check_not_none('prenom_u', user, 'prénom')
+            ManageCheckDataUtils.check_not_none('initiales_u', user, 'initiales')
+            ManageCheckDataUtils.check_not_none('email_u', user, 'email')
         except ValueError as error:
             current_app.logger.warning(error)
             raise

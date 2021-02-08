@@ -31,6 +31,10 @@ class FundingValidationService:
             ManageCheckDataUtils.check_format_value('statut_f', funding, str, 'statut')
             ManageCheckDataUtils.check_array_is_subset('statut_f', [funding['statut_f']], STATUS, 'statut')
             
+            ManageCheckDataUtils.check_not_none('id_p', funding, 'id projet')
+            ManageCheckDataUtils.check_not_none('id_financeur', funding, 'id financeur')
+            ManageCheckDataUtils.check_not_none('montant_arrete_f', funding, 'montant arrêté ou commande')
+            
             # Check date
             if 'date_arrete_f' in funding:
                 ManageCheckDataUtils.check_format_date('date_arrete_f', funding, 'date arrêté ou commande')

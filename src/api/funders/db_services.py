@@ -113,11 +113,16 @@ class FunderDBService:
             session = Session()
             session.merge(funder)
             session.commit()
-
+            
+            if funder is None:                
+                msg = "Une erreur est survenue lors de la modification du financeur"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+                        
             update_funder = FunderSchema().dump(funder)
             session.close()
             return update_funder
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -129,11 +134,17 @@ class FunderDBService:
         session = None
         try:
             session = Session()
-            session.query(Funder).filter_by(id_financeur=funder_id).delete()
+            data = session.query(Funder).filter_by(id_financeur=funder_id).delete()
             session.commit()
+            
+            if data is None:                
+                msg = "Une erreur est survenue lors de la suppression du financeur"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
+          
             session.close()
             return { 'message': 'Le financeur \'{}\' a été supprimé'.format(nom) }
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:

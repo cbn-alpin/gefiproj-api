@@ -153,11 +153,16 @@ class FundingDBService:
             session.merge(funding)
             session.commit()
 
+            if funding is None:                
+                msg = "Une erreur est survenue lors de la modification du financement"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+            
             # Return updated funding
             updated_funding = FundingSchema().dump(funding)
             session.close()
             return updated_funding
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -200,8 +205,13 @@ class FundingDBService:
         session = None
         try:
             session = Session()
-            session.query(Funding).filter_by(id_f=funding_id).delete()
+            data = session.query(Funding).filter_by(id_f=funding_id).delete()
             session.commit()
+            
+            if data is None:                
+                msg = "Une erreur est survenue lors de la suppression du financement"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
+          
             session.close()
             return {'message': f'Le financement \'{funding_id}\' a été supprimé'.format(funding_id)}
         except (Exception, ValueError) as error:
@@ -232,21 +242,4 @@ class FundingDBService:
             raise
         finally:
             if session is not None:
-                session.close()       
-
-    @staticmethod
-    def convert_funding_dates(funding):
-        if 'date_solde_f' in funding and funding['date_solde_f'] is not None:
-            funding['date_solde_f'] = FundingDBService.date_convert(funding['date_solde_f'])
-        if 'date_arrete_f' in funding and funding['date_solde_f'] is not None:
-            funding['date_arrete_f'] = FundingDBService.date_convert(funding['date_arrete_f'])
-        if 'date_limite_solde_f' in funding and funding['date_solde_f'] is not None:
-            funding['date_limite_solde_f'] = FundingDBService.date_convert(funding['date_limite_solde_f'])
-        return funding
-    
-    @staticmethod
-    def date_convert(date_time_str):
-        date = None
-        date_time_obj = date_time_str.strftime('%Y-%m-%d')
-        return date_time_obj
-    
+                session.close()

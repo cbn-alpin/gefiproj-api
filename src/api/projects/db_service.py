@@ -128,10 +128,16 @@ class ProjectDBService:
             session = Session()
             session.merge(project)
             session.commit()
+            
+            if project is None:                
+                msg = "Une erreur est survenue lors de la modification du projet"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+               
             update_project = ProjectSchema().dump(project)
             session.close()
             return update_project   
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -143,11 +149,17 @@ class ProjectDBService:
         session = None
         try:
             session = Session()
-            session.query(Project).filter_by(id_p=project_id).delete()
+            data = session.query(Project).filter_by(id_p=project_id).delete()
             session.commit()
+            
+            if data is None:                
+                msg = "Une erreur est survenue lors de la suppression du projet"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
+           
             session.close()
             return {'message': 'Le projet \'{}\' a été supprimé'.format(nom_p)}
         except (Exception, ValueError) as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
