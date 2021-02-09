@@ -1,64 +1,23 @@
-ERROR_CODE = 'VALIDATION_ERROR'
+from src.shared.manage_check_data import ManageCheckDataUtils
+from flask import current_app
+
+KEYS = ['montant_ma', 'annee_ma', 'id_r']
 
 
 class AmountValidationService:
     @staticmethod
-    def check_keys(keys: [], amount):
-        errors = []
-
-        for key in keys:
-            if key not in amount:
-                errors.append({
-                    'code': ERROR_CODE,
-                    'type': 'MISSING_PARAMETER',
-                    'field': key,
-                    'message': 'Le champs <{}> est manquant'.format(key),
-                })
-        return errors
-
-    @staticmethod
-    def check_int_value(key: str, data, errors: []):
-        err = errors
+    def validate(amount):
         try:
-            if key in data:
-                data[key] = int(data[key])
-            else:
-                raise ValueError
-        except ValueError:
-            err.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': key,
-                'message': f'<{key}> doit être défini et doit être un nombre entier.',
-            })
-        return err
-
-    @staticmethod
-    def check_float_montant(key: str, data, errors: []):
-        err = errors
-        try:
-            if key in data:
-                if float(data[key]) <= 0:
-                    raise ValueError
-            else:
-                raise ValueError
-        except ValueError:
-            errors.append({
-                'code': ERROR_CODE,
-                'type': 'VALUE_ERROR',
-                'field': key,
-                'message': f'<{key}> doit être défini avec un nombre supérieur à 0.',
-            })
-
-        return err
-
-    @staticmethod
-    def validate_post(amount_data):
-        amount_keys = ['id_r', 'montant_ma', 'annee_ma']
-        errors = AmountValidationService.check_keys(amount_keys, amount_data)
-
-        errors = AmountValidationService.check_int_value('id_r', amount_data, errors)
-        errors = AmountValidationService.check_float_montant('montant_ma', amount_data, errors)
-        errors = AmountValidationService.check_int_value('annee_ma', amount_data, errors)
-        return errors
-    
+            amount_keys = KEYS
+            ManageCheckDataUtils.check_keys(amount_keys, amount)
+            
+            ManageCheckDataUtils.check_format_value('annee_ma', amount, int, 'année du montant affecté')
+            ManageCheckDataUtils.check_format_value('montant_ma', amount, float, 'montant du montant affecté')
+            ManageCheckDataUtils.check_format_value('id_r', amount, int, 'id de la recette')
+        
+            ManageCheckDataUtils.check_not_none('annee_ma', amount, 'année du montant affecté')
+            ManageCheckDataUtils.check_not_none('montant_ma', amount, 'montant du montant affecté')
+            ManageCheckDataUtils.check_not_none('id_r', amount, 'id de la recette')
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise

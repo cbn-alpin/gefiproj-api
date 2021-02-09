@@ -3,9 +3,11 @@ from .entities import Receipt, ReceiptSchema, InputOutput, InputOutputSchema
 from .entities import Receipt, ReceiptSchema
 from sqlalchemy import func
 
+from flask import current_app
 from ..fundings.entities import Funding
 from ..projects.entities import Project
 from ..amounts.entities import Amount
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 
 
 class ReceiptDBService:
@@ -52,14 +54,26 @@ class ReceiptDBService:
 
     @staticmethod
     def get_receipt_by_id(receipt_id: int):
-        session = Session()
-        receipt_object = session.query(Receipt).filter_by(id_r=receipt_id).first()
+        session = None
+        response = None
+        try:
+            session = Session()
+            receipt = session.query(Receipt).filter_by(id_r=receipt_id).first()
 
-        schema = ReceiptSchema()
-        receipt = schema.dump(receipt_object)
-        session.close()
-
-        return receipt
+            if receipt is None:
+                msg = "La recette n'existe pas"
+                ManageErrorUtils.value_error(CodeError.DB_VALUE_REFERENCED, TError.DATA_NOT_FOUND, msg, 404)
+            
+            schema = ReceiptSchema()
+            response = schema.dump(receipt)
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
 
     @staticmethod
     def insert(receipt: Receipt):

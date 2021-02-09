@@ -1,116 +1,157 @@
-from flask import Blueprint, current_app
+from flask import current_app
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+
 from src.shared.entity import Session
-from ..receipts.entities import Receipt, ReceiptSchema
+from ..receipts.entities import Receipt
 from .entities import Amount, AmountSchema
 from sqlalchemy import func
 from sqlalchemy.orm import join
 
+
 class AmountDBService:
     @staticmethod
-    def check_receipt_exists_by_id(receipt_id: int):
-        session = Session()
-        existing_receipt = session.query(Receipt).filter_by(id_r=receipt_id).first()
-        session.close()
-        
-        if existing_receipt is None:
-            raise ValueError(f'La recette {receipt_id} n\'existe pas.',404)
-
-    @staticmethod
-    def check_amount_exists_by_id(amount_id: int):
-        session = Session()
-        existing_receipt = session.query(Amount).filter_by(id_ma=amount_id).first()
-        session.close()
-        
-        if existing_receipt is None:
-            raise ValueError(f'Le montant affecté {amount_id} n\'existe pas.',404)
-
-
-    @staticmethod
     def get_amount_by_receipt_id(receipt_id: int):
-        session = Session()  
-        amounts_object = session.query(Amount).filter_by(id_r=receipt_id).all()
+        session = None
+        response = None
+        try:
+            session = Session()  
+            amounts = []
+            amounts = session.query(Amount).filter_by(id_r=receipt_id).all()
 
-        # Transforming into JSON-serializable objects
-        schema = AmountSchema(many=True)
-        amounts = schema.dump(amounts_object)
-        # Serializing as JSON
-        session.close()
-        return amounts
-    
+            # Transforming into JSON-serializable objects
+            schema = AmountSchema(many=True)
+            amounts = schema.dump(amounts)
+            # Serializing as JSON
+            session.close()
+            return amounts
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
     
     @staticmethod
     def insert(amount):
-        posted_amount = AmountSchema(only=('id_r', 'montant_ma', 'annee_ma')).load(amount)
-        data = Amount(**posted_amount)
-        
-        session = Session()
-        session.add(data)
-        session.commit()
+        session = None
+        new_amount = None
+        try:
+            posted_amount = AmountSchema(only=('id_r', 'montant_ma', 'annee_ma')).load(amount)
+            amount = Amount(**posted_amount)
+            
+            session = Session()
+            session.add(amount)
+            session.commit()
+            
+            if amount is None:
+                msg = "Une erreur est survenue lors de l'enregistrement du montant affecté"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
 
-        inserted_amount = AmountSchema().dump(data)
-        session.close()
-        return inserted_amount
 
+            new_amount = AmountSchema().dump(amount)
+            session.close()
+            return new_amount
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
 
     @staticmethod
     def update(amount):
-        posted_amount = AmountSchema(only=('id_ma', 'id_r', 'montant_ma', 'annee_ma')).load(amount)
-        data = Amount(**posted_amount)
-        
-        session = Session()
-        session.merge(data)
-        session.commit()
-
-        updated_amount = AmountSchema().dump(data)
-        session.close()
-        return updated_amount
-
+        session = None
+        updated_amount = None
+        try:
+            data = AmountSchema(only=('id_ma', 'id_r', 'montant_ma', 'annee_ma')).load(amount)
+            amount = Amount(**data)
+            
+            session = Session()
+            session.merge(amount)
+            session.commit()
+            
+            if amount is None:                
+                msg = "Une erreur est survenue lors de la modification du montant affecté"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
+           
+            updated_amount = AmountSchema().dump(amount)
+            session.close()
+            return updated_amount
+        except (Exception, ValueError) as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()  
 
     @staticmethod
     def delete(amount_id: int):
-        session = Session()
-        amount = session.query(Amount).filter_by(id_ma=amount_id).first()
-        session.delete(amount)
-        session.commit()
-        session.close()
-        response = {
-            'message': f'Le montant affecté {amount_id} a été supprimé'
-        }
-        return response
-    
-    @staticmethod
-    def check_sum_value(amount):
-        session = Session()     
-        diff = -1
-        res = []
-        # insert
-        if 'id_ma' not in amount:
-            res = session.execute("select (r.montant_r - COALESCE(sum(ma.montant_ma), 0)) as difference "
-                                                        "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
-                                                        "where r.id_r=:receipt_id group by r.id_r",
-                                                        {'receipt_id': amount['id_r']})
+        session = None
+        try:
+            session = Session()
+            data = session.query(Amount).filter_by(id_ma=amount_id).delete()
+            session.commit()
             
-        # update
-        elif 'id_ma' in amount :
-            res = session.execute("select (r.montant_r - COALESCE(sum(ma.montant_ma), 0)) as difference "
-                                                        "from recette r left join montant_affecte ma on ma.id_r = r.id_r "
-                                                        "where r.id_r=:receipt_id and ma.id_ma=:amount_id group by r.id_r",
-                                                        {'receipt_id': amount['id_r'], 'amount_id': amount['id_ma']})        
-                    
-        if res is not None: 
-            rest_amounts = 0
-            for r in res:
-                rest_amounts = float(r['difference'])
-            diff = rest_amounts + float(amount['montant_ma'])
-        
-        session.close()
-        return diff >= 0
+            if data is None:                
+                msg = "Une erreur est survenue lors de la suppression du montant affecté"
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
+           
+            session.close()
+            return { 'message': 'Le montant affecté de l\'année a été supprimé' }
+        except (Exception, ValueError) as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
     
     @staticmethod
-    def check_error_sum_value(amount):
-        if AmountDBService.check_sum_value(amount) == False:
-            raise ValueError(f'Erreur de valeur: la somme des montants affectés est supérieur au montant de sa recette.',422)
+    def check_sum_value(amount, amount_id: int = None):
+        session = None
+        response = []
+        try:
+            session = Session()     
+            diff = -1
+            if amount_id is None:
+                # check insert
+                response = session.query(Receipt, \
+                    ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
+                    .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
+                    .filter(Receipt.id_r == amount['id_r']) \
+                    .group_by(Receipt.id_f)
+            else:
+                # check update
+                response = session.query(Receipt, \
+                    ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
+                    .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
+                    .filter(Receipt.id_r == amount['id_r'], Amount.id_ma != amount_id) \
+                    .group_by(Receipt.id_f)
+                    
+            if response is not None or len(response) > 0: 
+                rest_amounts = 0
+                for r in response:
+                    rest_amounts = float(r['difference'])
+                if amount_id is None:
+                    diff = rest_amounts
+                else:
+                    diff = rest_amounts - float(amount['montant_ma'])
+            
+            if diff < 0:
+                msg = "Erreur de valeur: la somme des montants affectés est supérieur au montant de sa recette."
+                ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
 
+            session.close()
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()      
+    
+    # TODO remove
     @staticmethod
     def delete_amounts_by_receipt_id(receipt_id: int):
         session = Session()
@@ -121,13 +162,30 @@ class AmountDBService:
         session.close()
         
     @staticmethod
-    def check_unique_amount_by_year_and_receipt(year: int, receipt_id: int, amount_id = None):
-        session = Session()  
-        if amount_id is not None:
-            expense_existing = session.query(Amount).filter(Amount.id_ma != amount_id, Amount.id_r == receipt_id, Amount.annee_ma == year).first()
-        else:
-            expense_existing = session.query(Amount).filter_by(id_r=receipt_id, annee_ma=year).first()
-        session.close()
+    def check_unique_amount_by_year_and_receipt_id(year: int, receipt_id: int, amount_id = None):
+        session = None
+        response = None
+        try:
+            session = Session()  
+            if amount_id is not None:
+                response = session.query(Amount) \
+                    .filter(Amount.id_ma != amount_id, Amount.id_r == receipt_id, Amount.annee_ma == year) \
+                    .first()
+            else:
+                response = session.query(Amount) \
+                    .filter_by(id_r=receipt_id, annee_ma=year) \
+                    .first()
+                    
+            if response is not None:
+                msg = "L\'année {} du montant affecté de cette recette est déjà utilisé sur un autre montant affecté".format(year)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
+
+            session.close()
+            return response
+        except (Exception, ValueError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()      
         
-        if expense_existing is not None:
-            raise ValueError(f'L\'année {year} du montant affecté existe déjà.',403)

@@ -58,10 +58,10 @@ def add_expense():
 @jwt_required
 @admin_required
 def update_expense(expense_id: int):
-    """[summary]
+    """This function update a data of expense
 
     Args:
-        expense_id (int): is of expense
+        expense_id (int): id of expense
 
     Returns:
         Response: description of expense
@@ -74,7 +74,7 @@ def update_expense(expense_id: int):
         if 'id_d' not in data:
             data['id_d'] = expense_id
             
-        # Calidate fields to update
+        # Validate fields to update
         ExpenseValidationService.validate(data)
         # Check expense exist
         ExpenseDBService.get_expense_by_id(expense_id)

@@ -26,7 +26,7 @@ class Amount(Base, db.Model):
 
 class AmountSchema(Schema):
     id_ma = fields.Integer()
-    montant_ma = fields.Float()
-    annee_ma = fields.Integer()
-    id_r = fields.Integer()
-    recette = fields.Nested(ReceiptSchema)
+    montant_ma = fields.Float(required=True)
+    annee_ma = fields.Integer(required=True)
+    id_r = fields.Integer(required=True)
+    # recette = fields.Nested(ReceiptSchema)
