@@ -17,8 +17,13 @@ DEFAULT_RECEIPTS_HEADER = [
     'affectation_a4', 'affectation_a5', 'affectation_apres'
 ]
 
+from src.shared.config import create_json_config_file
+
 
 def get_google_service_account():
+    credentials_path = path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json')
+    if not path.exists(credentials_path):
+        create_json_config_file()
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
 
