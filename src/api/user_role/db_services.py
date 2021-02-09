@@ -1,6 +1,8 @@
 from src.shared.entity import Session
 from ..user_role.entities import UserRole, UserRoleSchema
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
+import sqlalchemy
+from flask import current_app
 
 
 class UserRoleDBService:
@@ -28,8 +30,9 @@ class UserRoleDBService:
                 session.close()
                 
             return response
-        except Exception as error:
+        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
             session.rollback()
+            current_app.logger.error(e)
             raise
         finally:
             if session is not None:
@@ -57,8 +60,9 @@ class UserRoleDBService:
                 response = UserRoleSchema().dump(data)
                 session.close()
             return response
-        except Exception as error:
+        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
             session.rollback()
+            current_app.logger.error(e)
             raise
         finally:
             if session is not None:
@@ -79,8 +83,9 @@ class UserRoleDBService:
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
                 
             session.close()
-        except Exception as error:
+        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
             session.rollback()
+            current_app.logger.error(e)
             raise
         finally:
             if session is not None:
@@ -102,7 +107,8 @@ class UserRoleDBService:
                 response = schema.dump(user_role_object)
                 
             return response
-        except Exception as error:
+        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+            current_app.logger.error(e)
             raise
         finally:
             if session is not None:

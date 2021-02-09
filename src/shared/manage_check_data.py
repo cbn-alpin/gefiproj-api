@@ -2,7 +2,7 @@ from .manage_error import ManageErrorUtils, CodeError, TError
 import re
 import datetime
 
-EMAIL_REGEX = '^[a-z0-9A-Z._%+-]+[@]\w+[.-_]\w{2,3}$'
+EMAIL_REGEX = '^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$'
 
 
 class ManageCheckDataUtils:
