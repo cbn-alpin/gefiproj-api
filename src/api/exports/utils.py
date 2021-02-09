@@ -40,6 +40,10 @@ DEFAULT_RECEIPTS_HEADER = [
     "Montant affecté à ", "Montant affecté à ", "Montant affecté après "
 ]
 
+ADDITIONNAL_TABLE_ROW_COL_STARTS = ['Montant affecté de {} vers n',
+                                    'Montant affecté de n vers {}',
+                                    'Bilan {}/n']
+
 
 def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
@@ -178,28 +182,39 @@ def write_rececipts_to_google_docs(document_title, header_column_names, data, sh
         return None
 
 
-def build_sheet_batch(data, annee_ref):
-    last_column_letter = SHEET_COLUMN_LETTERS[len(data[0]) - 1]
-    in_out_ref = data.pop(1)
-    table_1_length = len(data)
+def build_sheet_batch(data_table, annee_ref):
+    last_column_letter = SHEET_COLUMN_LETTERS[len(data_table[0]) - 1]
+    in_out_ref = data_table.pop(1)
+    table_1_length = len(data_table)
     batch_objet = []
-    additional_table_header = generate_additional_table_header(header_length=len(data[0]) - 1, min_year=data[1][0])
+    additional_table_header = generate_additional_table_header(header_length=len(data_table[0]) - 1,
+                                                               min_year=data_table[1][0])
 
     batch_objet += [
-        {'range': f'A1:{last_column_letter}{table_1_length}', 'values': data},
+        {'range': f'A1:{last_column_letter}{table_1_length}', 'values': data_table},
     ]
 
+    # c'est à cette ligne qu'on commence à inserer les tableaux complémentaires
     additional_table_start = table_1_length + 4
-    for i, it in enumerate(data):
+    receipt_start_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 1]
+    receipt_end_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 6]
+    for i, row in enumerate(data_table):
         if i == 0:
+            # sauter la ligne du header
             continue
         new_table = [
             {
-                'range': f'A{additional_table_start}:A{additional_table_start}', 'values': [[f'Bilan {it[0]}']],
+                'range': f'A{additional_table_start}:A{additional_table_start}', 'values': [[f'Bilan {row[0]}']],
             },
             {
                 'range': f'A{additional_table_start + 1}:{last_column_letter}{additional_table_start + 4}',
-                'values': generate_additional_table_rows(additional_table_header, target_year=it[0])
+                'values': generate_additional_table_rows(additional_table_header, target_year=row[0])
+            },
+            # commence après la dernière colonne du tableau complementaire
+            {
+                'range': f'{receipt_start_col}{additional_table_start + 1}'
+                         f':{receipt_end_col}{additional_table_start + 2}',
+                'values': generate_receipt_tables_batch()
             }
         ]
         additional_table_start += 6
@@ -209,9 +224,15 @@ def build_sheet_batch(data, annee_ref):
 
 
 def generate_additional_table_header(header_length, min_year):
-    header = [f'Avant {min_year}']
+    """
+    On génère l'entête des tableaux complementaires pour l'utiliser dans toutes les tableaux qui seront générés
+    :param header_length: Longueur de la
+    :param min_year: Première année du tableau
+    :return: Liste de string qui represente l'entête
+    """
+    header = ['Année n', f'Avant {min_year}']
     for i in range(header_length):
-        if i == 0:
+        if i == 0 or i == 1:
             continue
         header.append(f'{int(min_year) + i}')
     return header
@@ -226,20 +247,44 @@ def generate_additional_table_rows(additional_table_header, target_year):
     table_rows = [additional_table_header]
     for j in range(3):
         table_rows.append(build_additional_single_row(additional_table_header,
-                                                      row_formula=f'=formule de {j}',
-                                                      target_year=target_year))
+                                                      row_formula=f'=formule de row {j}',
+                                                      target_year=target_year, row=j))
 
     return table_rows
 
 
-def build_additional_single_row(header_row, row_formula, target_year):
-    row = []
+def build_additional_single_row(header_row, row_formula, target_year, row):
+    """
+    Construit une des 3 lignes des tableaux complémentaires.
+    Doit laisser les 2 premières colonnes de l'année de référence vides
+    :param header_row: Header des tableaux complémentaires
+    :param row_formula: Formule à appliquer
+    :param target_year: Année cible
+    :param row: Ligne du tableau complementaire
+    :return: liste de chaines de
+    """
+    row = [ADDITIONNAL_TABLE_ROW_COL_STARTS[row]]
     for i, header in enumerate(header_row):
-        if header_row[i] == target_year:
+        if header == target_year and row != 2:
             row.append('')
             continue
         row.append(row_formula)
     return row
+
+
+def generate_receipt_tables_batch():
+    """
+    Génère les linges recettes présents à droite des tableaux complémentaires
+    :return: Une liste de string [[]]
+    """
+    header = ['Recettes comptables {}', 'Bilan des affectations à {}', 'Total recettes affectées {}'
+                                                                       'Dépenses {}', 'Bilan comptable {}',
+              "Bilan d'activité {}"]
+    row = []
+    for i, col in enumerate(header):
+        row.append(i)
+
+    return [header, row]
 
 
 def export_funding_item_from_row_proxy(row_proxy):
