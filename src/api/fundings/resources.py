@@ -120,8 +120,10 @@ def update_funding(funding_id: int):
         FundingDBService.can_update(data['id_p'])
         # Validate fields to update
         FundingValidationService.validate(data)
-        # Checks
+        # Checks if funding exist
         FundingDBService.get_funding_by_id(data['id_f'])
+        # Checks if sum receipts is < of amount funding
+        FundingDBService.check_sum_with_receipt(data)
         
         response = FundingDBService.update(data)
         response = jsonify(response), 200

@@ -232,3 +232,29 @@ class FundingDBService:
         finally:
             if session is not None:
                 session.close()
+
+    @staticmethod
+    def check_sum_with_receipt(funding):
+        session = None
+        try:
+            session = Session()
+            sum_receipts = session.query( Funding.montant_arrete_f, \
+                (func.coalesce(func.sum(Receipt.montant_r), 0)).label('sum')) \
+                .join(Receipt, Receipt.id_f == Funding.id_f, isouter=True) \
+                .filter(Funding.id_f == funding['id_f']) \
+                .group_by(Funding.id_f) \
+                .all()
+            sum_receipts = ( 0 if len(sum_receipts) == 0 else float(sum_receipts[0][1]) )
+            diff = float(funding['montant_arrete_f']) - sum_receipts
+                
+            if diff < 0:
+                msg = "Erreur de valeur: la somme des montants des recettes est supérieur au montant arrêté du financement modifié."
+                ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
+
+            session.close()
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
