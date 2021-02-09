@@ -4,6 +4,7 @@ from src.api.users.auth_resources import admin_required
 
 from src.api.expenses.db_services import ExpenseDBService
 from src.api.expenses.validation_service import ExpenseValidationService
+import sqlalchemy
 
 resources = Blueprint('expenses', __name__)
 
@@ -24,6 +25,9 @@ def get_expenses():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des dépenses'}), 500
     finally:
         return response
 
@@ -50,6 +54,9 @@ def add_expense():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement de la dépense'}), 500
     finally:
         return response
 
@@ -86,6 +93,9 @@ def update_expense(expense_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification de la dépense'}), 500
     finally:
         return response
 
@@ -111,5 +121,8 @@ def delete_expense(expense_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la suppression de la dépense'}), 500
     finally:
         return response

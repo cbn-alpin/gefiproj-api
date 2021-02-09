@@ -3,6 +3,7 @@ from src.api.expenses.entities import Expense, ExpenseSchema
 from src.shared.entity import Session
 from sqlalchemy import desc
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+import sqlalchemy
 
 
 class ExpenseDBService:
@@ -19,7 +20,7 @@ class ExpenseDBService:
             
             session.close()
             return expenses
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -43,13 +44,12 @@ class ExpenseDBService:
 
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
                 session.close()      
-        
         
     @staticmethod
     def insert(expense):
@@ -64,14 +64,10 @@ class ExpenseDBService:
             session.add(expense)
             session.commit()
             
-            if expense is None:
-                msg = "Une erreur est survenue lors de l'enregistrement de la dépense"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
-
             new_expense = ExpenseSchema().dump(expense)
             session.close()
             return new_expense
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -91,14 +87,10 @@ class ExpenseDBService:
             session.merge(expense)
             session.commit()
             
-            if expense is None:                
-                msg = "Une erreur est survenue lors de la modification de la dépense"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-              
             update_funder = ExpenseSchema().dump(expense)
             session.close()
             return update_funder
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -114,13 +106,9 @@ class ExpenseDBService:
             data = session.query(Expense).filter_by(id_d=expense_id).delete()
             session.commit()
              
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression de la dépense"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-           
             session.close()
             return { 'message': 'Le dépense de l\'année \'{}\' a été supprimé'.format(year) }
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -144,7 +132,7 @@ class ExpenseDBService:
             response = schema.dump(expense)
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:

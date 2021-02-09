@@ -3,6 +3,7 @@ from src.shared.entity import Session
 from .entities import Funder, FunderSchema
 from ..fundings.entities import Funding
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+import sqlalchemy
 
 
 class FunderDBService:
@@ -19,7 +20,7 @@ class FunderDBService:
             
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -42,7 +43,7 @@ class FunderDBService:
             response = schema.dump(funder)
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -68,7 +69,7 @@ class FunderDBService:
 
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -86,10 +87,6 @@ class FunderDBService:
             session = Session()
             session.add(funder)
             session.commit()
-            
-            if funder is None:
-                msg = "Une erreur est survenue lors de l'enregistrement du financeur"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
             
             new_funder = FunderSchema().dump(funder)
             session.close()
@@ -114,14 +111,10 @@ class FunderDBService:
             session.merge(funder)
             session.commit()
             
-            if funder is None:                
-                msg = "Une erreur est survenue lors de la modification du financeur"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-                        
             update_funder = FunderSchema().dump(funder)
             session.close()
             return update_funder
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -137,13 +130,9 @@ class FunderDBService:
             data = session.query(Funder).filter_by(id_financeur=funder_id).delete()
             session.commit()
             
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression du financeur"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-          
             session.close()
             return { 'message': 'Le financeur \'{}\' a été supprimé'.format(nom) }
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -167,7 +156,7 @@ class FunderDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
 
             session.close()
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:

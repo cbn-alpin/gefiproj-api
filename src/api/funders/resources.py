@@ -4,6 +4,7 @@ from src.api.users.auth_resources import admin_required
 
 from .db_services import FunderDBService
 from .validation_service import FunderValidationService
+import sqlalchemy
 
 resources = Blueprint('funders', __name__)
 
@@ -24,6 +25,9 @@ def get_all_funders():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des financeurs'}), 500
     finally:
         return response
 
@@ -51,6 +55,9 @@ def add_funder():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement du financement'}), 500
     finally:
         return response
 
@@ -86,6 +93,9 @@ def update_funder(funder_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification du financeur'}), 500
     finally:
         return response
 
@@ -116,6 +126,8 @@ def delete_funder(funder_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la suppression du financement'}), 500
     finally:
         return response
-

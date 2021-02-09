@@ -11,6 +11,7 @@ from ..receipts.entities import Receipt, ReceiptSchema
 from ..users.db_services import UserDBService
 from src.api.funders.entities import Funder
 from datetime import datetime
+import sqlalchemy
 
 
 class Status(Enum):
@@ -54,7 +55,7 @@ class FundingDBService:
                 
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -73,7 +74,7 @@ class FundingDBService:
         
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -97,7 +98,7 @@ class FundingDBService:
             # Serializing as JSON
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -120,15 +121,11 @@ class FundingDBService:
             session.add(funding)
             session.commit()
             
-            if funding is None:
-                msg = "Une erreur est survenue lors de l'enregistrement du financement"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
-            
             # Return created funding
             new_funding = FundingSchema().dump(funding)
             session.close()
             return new_funding
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -153,15 +150,11 @@ class FundingDBService:
             session.merge(funding)
             session.commit()
 
-            if funding is None:                
-                msg = "Une erreur est survenue lors de la modification du financement"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-            
             # Return updated funding
             updated_funding = FundingSchema().dump(funding)
             session.close()
             return updated_funding
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -175,7 +168,7 @@ class FundingDBService:
             if UserDBService.is_responsable_of_projet(project_id) == False and UserDBService.is_admin() == False:
                 msg = 'Ce financement ne peut pas être modifier car vous n\'êtes ni administrateur ni responsable du projet.'
                 ManageErrorUtils.exception(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 403)
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         
@@ -193,7 +186,7 @@ class FundingDBService:
             
             session.close()
             return funding
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -208,13 +201,9 @@ class FundingDBService:
             data = session.query(Funding).filter_by(id_f=funding_id).delete()
             session.commit()
             
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression du financement"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-          
             session.close()
             return {'message': f'Le financement \'{funding_id}\' a été supprimé'.format(funding_id)}
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -237,7 +226,7 @@ class FundingDBService:
                 
             session.commit()
             session.close()
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:

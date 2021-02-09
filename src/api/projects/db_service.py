@@ -6,6 +6,7 @@ from marshmallow import EXCLUDE
 from src.shared.entity import Session
 from .entities import Project, ProjectSchema
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+import sqlalchemy
 
 
 class ProjectDBService:
@@ -32,7 +33,7 @@ class ProjectDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
 
             return project
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -52,14 +53,10 @@ class ProjectDBService:
             session.add(project)
             session.commit()
     
-            if project is None:
-                msg = "Une erreur est survenue lors de l'enregistrement du projet"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
-            
             new_project = ProjectSchema().dump(project)
             session.close()
             return new_project
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -83,8 +80,8 @@ class ProjectDBService:
             # Serializing as JSON
             session.close()
             return projects
-        except (Exception, ValueError) as e:
-            current_app.logger.error(e)
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+            current_app.logger.error(error)
             raise
         finally:
             if session is not None:
@@ -109,7 +106,7 @@ class ProjectDBService:
             project = schema.dump(project_object)
             session.close()
             return project
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -129,14 +126,10 @@ class ProjectDBService:
             session.merge(project)
             session.commit()
             
-            if project is None:                
-                msg = "Une erreur est survenue lors de la modification du projet"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-               
             update_project = ProjectSchema().dump(project)
             session.close()
             return update_project   
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -152,16 +145,13 @@ class ProjectDBService:
             data = session.query(Project).filter_by(id_p=project_id).delete()
             session.commit()
             
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression du projet"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-           
             session.close()
             return {'message': 'Le projet \'{}\' a été supprimé'.format(nom_p)}
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
-                session.close()       
+                session.close()    
+   

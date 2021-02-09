@@ -6,6 +6,7 @@ from .db_service import ProjectDBService
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
 from ..users.db_services import UserDBService
+import sqlalchemy
 
 resources = Blueprint('projects', __name__)
 
@@ -35,6 +36,9 @@ def add_project():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement du projet'}), 500
     finally:
         return response
 
@@ -57,6 +61,9 @@ def get_all_projects():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error)
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données projets'}), 500
     finally:
         return response
 
@@ -80,6 +87,9 @@ def get_project_by_id(project_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données projets'}), 500
     finally:
         return response
 
@@ -117,6 +127,9 @@ def update_project(project_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification des données du projet'}), 500
     finally:
         return response
 
@@ -145,5 +158,8 @@ def delete_project(project_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la suppression du projet'}), 500
     finally:
         return response
