@@ -121,15 +121,16 @@ class AmountDBService:
                     ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
                     .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
                     .filter(Receipt.id_r == amount['id_r']) \
-                    .group_by(Receipt.id_f)
+                    .group_by(Receipt.id_r)
             else:
                 # check update
                 response = session.query(Receipt, \
                     ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
                     .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
                     .filter(Receipt.id_r == amount['id_r'], Amount.id_ma != amount_id) \
-                    .group_by(Receipt.id_f)
-                    
+                    .group_by(Receipt.id_r)
+            
+            print(response)
             if response is not None or len(response) > 0: 
                 rest_amounts = 0
                 for r in response:

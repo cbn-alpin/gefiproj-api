@@ -51,6 +51,7 @@ class UserValidationService:
             ManageCheckDataUtils.check_format_value('nom_u', user, str, 'nom')
             ManageCheckDataUtils.check_format_value('prenom_u', user, str, 'prénom')
             ManageCheckDataUtils.check_format_value('initiales_u', user, str, 'initiales')
+            ManageCheckDataUtils.check_string_lenght('initiales_u', user, 'initiales', 2, 3)
             ManageCheckDataUtils.check_format_value('email_u', user, str, 'email')
             ManageCheckDataUtils.check_format_mail('email_u', user, 'email')
             ManageCheckDataUtils.check_format_value('active_u', user, bool, 'active')
