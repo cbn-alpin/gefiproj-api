@@ -44,6 +44,9 @@ ADDITIONNAL_TABLE_ROW_COL_STARTS = ['Montant affecté de {} vers n',
                                     'Montant affecté de n vers {}',
                                     'Bilan {}/n']
 
+RECEIPT_TABLES_HEADER = ['Recettes comptables {}', 'Bilan des affectations à {}', 'Total recettes affectées {}',
+                         'Dépenses {}', 'Bilan comptable {}', "Bilan d'activité {}"]
+
 
 def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
@@ -165,7 +168,7 @@ def write_rececipts_to_google_docs(document_title, header_column_names, data, sh
     try:
         data.insert(0, header_column_names)
         sheet_batch_object = build_sheet_batch(data, data[1][0])
-        # return sheet_batch_object
+
         gc = get_google_service_account()
         google_sheet = gc.create(document_title)
 
@@ -182,47 +185,6 @@ def write_rececipts_to_google_docs(document_title, header_column_names, data, sh
         return None
 
 
-def build_sheet_batch(data_table, annee_ref):
-    last_column_letter = SHEET_COLUMN_LETTERS[len(data_table[0]) - 1]
-    in_out_ref = data_table.pop(1)
-    table_1_length = len(data_table)
-    batch_objet = []
-    additional_table_header = generate_additional_table_header(header_length=len(data_table[0]) - 1,
-                                                               min_year=data_table[1][0])
-
-    batch_objet += [
-        {'range': f'A1:{last_column_letter}{table_1_length}', 'values': data_table},
-    ]
-
-    # c'est à cette ligne qu'on commence à inserer les tableaux complémentaires
-    additional_table_start = table_1_length + 4
-    receipt_start_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 1]
-    receipt_end_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 6]
-    for i, row in enumerate(data_table):
-        if i == 0:
-            # sauter la ligne du header
-            continue
-        new_table = [
-            {
-                'range': f'A{additional_table_start}:A{additional_table_start}', 'values': [[f'Bilan {row[0]}']],
-            },
-            {
-                'range': f'A{additional_table_start + 1}:{last_column_letter}{additional_table_start + 4}',
-                'values': generate_additional_table_rows(additional_table_header, target_year=row[0])
-            },
-            # commence après la dernière colonne du tableau complementaire
-            {
-                'range': f'{receipt_start_col}{additional_table_start + 1}'
-                         f':{receipt_end_col}{additional_table_start + 2}',
-                'values': generate_receipt_tables_batch()
-            }
-        ]
-        additional_table_start += 6
-        batch_objet += new_table
-
-    return batch_objet
-
-
 def generate_additional_table_header(header_length, min_year):
     """
     On génère l'entête des tableaux complementaires pour l'utiliser dans toutes les tableaux qui seront générés
@@ -236,6 +198,57 @@ def generate_additional_table_header(header_length, min_year):
             continue
         header.append(f'{int(min_year) + i}')
     return header
+
+
+def build_sheet_batch(data_table, annee_ref):
+    """
+    Construit tous les tableaux qui doivent être exportés pour garantir l'insertion en une unique opération
+    :param data_table:
+    :param annee_ref:
+    :return:
+    """
+    last_column_letter = SHEET_COLUMN_LETTERS[len(data_table[0]) - 1]
+    in_out_ref = data_table.pop(1)  # ligne d'entrée sortie, celle qui commence à 0
+    table_1_length = len(data_table)
+    additional_table_header = generate_additional_table_header(header_length=len(data_table[0]) - 1,
+                                                               min_year=data_table[1][0])
+    batch_objet = []
+
+    # contruction du tableau principal
+    batch_objet += [
+        {'range': f'A1:{last_column_letter}{table_1_length}', 'values': data_table},
+    ]
+
+    # construction des tableaux annexes
+    additional_table_start = table_1_length + 4
+    receipt_start_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 1]
+    receipt_end_col = SHEET_COLUMN_LETTERS[len(data_table[0]) + 6]
+    for i, row in enumerate(data_table):
+        if i == 0:
+            # sauter la ligne du header
+            continue
+        new_table = [
+            {
+                # titre du tableau complementaire
+                'range': f'A{additional_table_start}:A{additional_table_start}',
+                'values': [[f'Bilan {row[0]}']],
+            },
+            {
+                # Tableau complementaire
+                'range': f'A{additional_table_start + 1}:{last_column_letter}{additional_table_start + 4}',
+                'values': generate_additional_table_rows(additional_table_header, target_year=row[0])
+            },
+            {
+                # Tableau des dépenses et des recettes
+                'range': f'{receipt_start_col}{additional_table_start + 1}'
+                         f':{receipt_end_col}{additional_table_start + 2}',
+                'values': generate_receipt_tables_batch()
+            }
+        ]
+        additional_table_start += 6
+        batch_objet += new_table
+
+    return batch_objet
 
 
 def generate_additional_table_rows(additional_table_header, target_year):
@@ -277,14 +290,11 @@ def generate_receipt_tables_batch():
     Génère les linges recettes présents à droite des tableaux complémentaires
     :return: Une liste de string [[]]
     """
-    header = ['Recettes comptables {}', 'Bilan des affectations à {}', 'Total recettes affectées {}'
-                                                                       'Dépenses {}', 'Bilan comptable {}',
-              "Bilan d'activité {}"]
     row = []
-    for i, col in enumerate(header):
+    for i, col in enumerate(RECEIPT_TABLES_HEADER):
         row.append(i)
 
-    return [header, row]
+    return [RECEIPT_TABLES_HEADER, row]
 
 
 def export_funding_item_from_row_proxy(row_proxy):
