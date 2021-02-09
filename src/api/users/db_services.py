@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, get_jw
 from marshmallow import EXCLUDE
 
 from src.shared.entity import Session
-from sqlalchemy import sqlalchemy, or_
+from sqlalchemy import or_
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..projects.db_service import ProjectDBService
 from ..user_role.db_services import UserRoleDBService
@@ -13,6 +13,7 @@ from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.entities import UserRole
 
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
+import sqlalchemy
 
 
 class Role(Enum):
