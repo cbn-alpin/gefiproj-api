@@ -5,6 +5,7 @@ from .auth_resources import admin_required
 from .db_services import UserDBService
 from .entities import User
 from .validation_service import UserValidationService
+import sqlalchemy
 
 resources = Blueprint('users', __name__)
 
@@ -25,6 +26,9 @@ def get_all_users():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error)
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données utilisateurs'}), 500
     finally:
         return response
 
@@ -48,6 +52,9 @@ def get_user_by_id(user_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données utilisateur'}), 500
     finally:
         return response
 
@@ -86,6 +93,9 @@ def update_user(user_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification de l\'utilisateur'}), 500
     finally:
         return response
 
@@ -106,11 +116,6 @@ def change_password(user_id: int):
     response = None
     try:
         data = dict(request.get_json())
-        """
-        
-        TODO: pourquoi besoin du old password ????
-        
-        """
         old_password = data.get('password')
         new_password = data.get('new_password')
         # Check form
@@ -123,8 +128,8 @@ def change_password(user_id: int):
     except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except Exception as e:
+    except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
         current_app.logger.error(e)
-        response = jsonify({'message': 'Impossible de changer le mot de passe de cet utilisateur'}), 500
+        response = jsonify({'message': 'Une erreur est survenue lors du changement du mot de passe de l\'utilisateur'}), 500
     finally:
         return response

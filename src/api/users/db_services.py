@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, get_jw
 from marshmallow import EXCLUDE
 
 from src.shared.entity import Session
-from sqlalchemy import or_
+from sqlalchemy import sqlalchemy, or_
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..projects.db_service import ProjectDBService
 from ..user_role.db_services import UserRoleDBService
@@ -46,7 +46,7 @@ class UserDBService:
                     users.append(user)
             
             return users
-        except (Exception, ValueError) as e:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
             current_app.logger.error(e)
             raise
         finally:
@@ -101,7 +101,7 @@ class UserDBService:
                         response['roles'].append(user['roles'])
             
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -124,7 +124,7 @@ class UserDBService:
                 response = schema.dump(user_object)
 
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -154,7 +154,7 @@ class UserDBService:
                 msg = "L'email '{}' ou les initiales '{}' sont déjà utilisés par un autre utilisateur".format(email_u, initiales)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
             return user_object
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -174,10 +174,7 @@ class UserDBService:
             session.add(user)
             session.flush()
     
-            if user is None:
-                msg = "Une erreur est survenue lors de l'enregistrement de cet utilisateur"
-                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 500)
-            else:
+            if user is not None:
                 new_user = UserSchema(exclude=['password_u']).dump(user)
                 new_user['roles'] = new_roles
                 session.commit()
@@ -187,7 +184,7 @@ class UserDBService:
                     role = (1 if r == Role.ADMIN.value else 2)
                     UserRoleDBService.insert_user_role(new_user['id_u'],role)
             return new_user
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -227,16 +224,12 @@ class UserDBService:
             session.merge(user)
             session.commit()
             
-            if user is None:
-                msg = "Une erreur est survenue lors de la modification des données de l'utilisateur"
-                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 500)
-            
             update_user = UserSchema(exclude=['password_u']).dump(user)
             update_user['roles'] = new_roles
             
             session.close()
             return update_user
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -260,7 +253,7 @@ class UserDBService:
                 
             session.close()
             return {'message': 'Le mot de passe du mail \'{}\' a été bien modifié'.format(email_u)}
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -334,7 +327,7 @@ class UserDBService:
                 ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
         
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
 
