@@ -314,17 +314,21 @@ class UserDBService:
                 access_token = create_access_token(identity=identity)
                 refresh_token = create_refresh_token(identity=identity)
                 
-                response = {
-                    'id_u': user.id_u,
-                    'nom_u': user.nom_u,
-                    'prenom_u': user.prenom_u,
-                    'initiales_u': user.initiales_u,
-                    'email_u': user.email_u,
-                    'roles': decode_token(access_token)['user_claims']['roles'],
-                    'active_u': user.active_u,
-                    'access_token': access_token,
-                    'refresh_token': refresh_token
-                }
+                if user.active_u == False:
+                    msg = "Le compte {} n'est plus actif".format(data['login'])
+                    ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.INACTIVE_ACCOUNT, msg, 403)
+                else:
+                    response = {
+                        'id_u': user.id_u,
+                        'nom_u': user.nom_u,
+                        'prenom_u': user.prenom_u,
+                        'initiales_u': user.initiales_u,
+                        'email_u': user.email_u,
+                        'roles': decode_token(access_token)['user_claims']['roles'],
+                        'active_u': user.active_u,
+                        'access_token': access_token,
+                        'refresh_token': refresh_token
+                    }
             else:
                 msg = "Le mot de passe est incorrecte"
                 ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
