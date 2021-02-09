@@ -10,7 +10,7 @@ from src.api.fundings.entities import Funding
 from src.api.projects.entities import Project
 from src.api.receipts.entities import Receipt
 from src.api.role_acces.entities import RoleAccess
-from src.api.user_role.user_role import UserRole
+from src.api.user_role.entities import UserRole
 from src.api.users.entities import User, RevokedToken
 
 
