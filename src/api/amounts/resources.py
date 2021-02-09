@@ -5,6 +5,7 @@ from ..users.auth_resources import admin_required
 from .db_services import AmountDBService
 from .validation_service import AmountValidationService
 from src.api.receipts.db_services import ReceiptDBService
+import sqlalchemy
 
 resources = Blueprint('amounts', __name__)
 
@@ -30,6 +31,9 @@ def get_amounts_by_receipt(receipt_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la récupération des montants affectés'}), 500
     finally:
         return response
 
@@ -59,6 +63,9 @@ def add_amount():
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la\'enregistrement du montant affecté'}), 500
     finally:
         return response
 
@@ -95,6 +102,9 @@ def update_amount(amount_id: int):
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification du montant affecté'}), 500
     finally:
         return response
 
@@ -114,12 +124,15 @@ def delete_amount(amount_id: int):
     response = None
     try:
         # Check
-        ReceiptDBService.get_receipt_by_id(amount_id)
+        amount = AmountDBService.get_amount_by_id(amount_id)
 
-        response = AmountDBService.delete(amount_id)
+        response = AmountDBService.delete(amount_id, amount['annee_ma'])
         response = jsonify(response), 204
     except (ValueError, Exception) as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
+    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors de la suppression du montant affecté'}), 500
     finally:
         return response

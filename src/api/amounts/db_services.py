@@ -6,6 +6,7 @@ from ..receipts.entities import Receipt
 from .entities import Amount, AmountSchema
 from sqlalchemy import func
 from sqlalchemy.orm import join
+import sqlalchemy
 
 
 class AmountDBService:
@@ -24,13 +25,34 @@ class AmountDBService:
             # Serializing as JSON
             session.close()
             return amounts
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
                 session.close()
     
+    @staticmethod
+    def get_amount_by_id(amount_id: int):
+        session = None
+        response = None
+        try:
+            session = Session()  
+            amount = session.query(Amount).filter_by(id_ma=amount_id).first()
+
+            # Transforming into JSON-serializable objects
+            schema = AmountSchema()
+            response = schema.dump(amount)
+            # Serializing as JSON
+            session.close()
+            return response
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
+                
     @staticmethod
     def insert(amount):
         session = None
@@ -42,16 +64,11 @@ class AmountDBService:
             session = Session()
             session.add(amount)
             session.commit()
-            
-            if amount is None:
-                msg = "Une erreur est survenue lors de l'enregistrement du montant affecté"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
-
 
             new_amount = AmountSchema().dump(amount)
             session.close()
             return new_amount
-        except ValueError as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -71,14 +88,10 @@ class AmountDBService:
             session.merge(amount)
             session.commit()
             
-            if amount is None:                
-                msg = "Une erreur est survenue lors de la modification du montant affecté"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-           
             updated_amount = AmountSchema().dump(amount)
             session.close()
             return updated_amount
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -87,20 +100,16 @@ class AmountDBService:
                 session.close()  
 
     @staticmethod
-    def delete(amount_id: int):
+    def delete(amount_id: int, year: int):
         session = None
         try:
             session = Session()
             data = session.query(Amount).filter_by(id_ma=amount_id).delete()
             session.commit()
             
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression du montant affecté"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-           
             session.close()
-            return { 'message': 'Le montant affecté de l\'année a été supprimé' }
-        except (Exception, ValueError) as error:
+            return { 'message': 'Le montant affecté de l\'année {} a été supprimé'.format(year) }
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -121,38 +130,31 @@ class AmountDBService:
                     ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
                     .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
                     .filter(Receipt.id_r == amount['id_r']) \
-                    .group_by(Receipt.id_r)
+                    .group_by(Receipt.id_r).all()
+                diff = (0 if len(response) == 0 else float(response[0][1]))
             else:
                 # check update
                 response = session.query(Receipt, \
                     ( Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0) ).label('difference') ) \
                     .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
                     .filter(Receipt.id_r == amount['id_r'], Amount.id_ma != amount_id) \
-                    .group_by(Receipt.id_r)
-            
-            print(response)
-            if response is not None or len(response) > 0: 
-                rest_amounts = 0
-                for r in response:
-                    rest_amounts = float(r['difference'])
-                if amount_id is None:
-                    diff = rest_amounts
-                else:
-                    diff = rest_amounts - float(amount['montant_ma'])
+                    .group_by(Receipt.id_r).all()
+                difference = (float(amount['montant_ma']) if len(response) == 0 else float(response[0][1]))
+                diff = difference - float(amount['montant_ma'])
             
             if diff < 0:
                 msg = "Erreur de valeur: la somme des montants affectés est supérieur au montant de sa recette."
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
 
             session.close()
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
                 session.close()      
     
-    # TODO remove
+    # TODO remove !!!!!!!!!!!!!!!!!!!!
     @staticmethod
     def delete_amounts_by_receipt_id(receipt_id: int):
         session = Session()
@@ -183,7 +185,7 @@ class AmountDBService:
 
             session.close()
             return response
-        except (Exception, ValueError) as error:
+        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
             current_app.logger.error(error)
             raise
         finally:
