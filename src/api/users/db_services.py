@@ -13,7 +13,6 @@ from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.entities import UserRole
 
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
-import sqlalchemy
 
 
 class Role(Enum):
@@ -23,17 +22,28 @@ class Role(Enum):
 
 class UserDBService:
     @staticmethod
-    def get_all_users():
+    def get_all_users(is_active_only: bool):
         session = None
         users = None
         try:
             session = Session()
-            users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
-                                          (RoleAccess.nom_ra).label("roles")) \
-                .join(UserRole, User.id_u == UserRole.id_u) \
-                .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
-                .order_by(User.id_u.asc()) \
-                .all()
+            users_objects = []
+            if is_active_only == False:
+                users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
+                                            (RoleAccess.nom_ra).label("roles")) \
+                    .join(UserRole, User.id_u == UserRole.id_u) \
+                    .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
+                    .order_by(User.id_u.asc()) \
+                    .all()
+            else:
+                users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
+                                            (RoleAccess.nom_ra).label("roles")) \
+                    .join(UserRole, User.id_u == UserRole.id_u) \
+                    .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
+                    .filter(User.active_u == True) \
+                    .order_by(User.id_u.asc()) \
+                    .all()
+                    
             session.close()
             users = []
             for user in users_objects:

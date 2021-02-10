@@ -21,7 +21,10 @@ def get_all_users():
     current_app.logger.debug('In GET /api/users')
     response = None
     try:
-        users = UserDBService.get_all_users()
+        query_params = dict(request.args)
+        is_active_only = True if ('is_active_only' in query_params and (query_params['is_active_only'] == True or query_params['is_active_only'] == 'True' or query_params['is_active_only'] == 'true') ) \
+                                else False
+        users = UserDBService.get_all_users(is_active_only)
         response = jsonify(users), 200
     except ValueError as error:
         current_app.logger.error(error)

@@ -6,7 +6,12 @@ from marshmallow import EXCLUDE
 from src.shared.entity import Session
 from .entities import Project, ProjectSchema
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
+from enum import Enum
 
+class Status(Enum):
+    STATUS_DEFAULT = False
+    STATUS_SOLDE = True
+    
 
 class ProjectDBService:
     @staticmethod
@@ -109,6 +114,9 @@ class ProjectDBService:
 
             if project_object is None:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Le projet n\'existe pas', 404)
+            if project_object is not None and project_object.statut_p == Status.STATUS_SOLDE.value:
+                msg = "Le projet {} est soldé. Les actions dans les tableaux financements, recettes et montants affectés relié à ce projet sont interdit.".format(project_object.nom_p)
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
             
             # Transforming into JSON-serializable objects
             schema = ProjectSchema(exclude=['id_u'])
