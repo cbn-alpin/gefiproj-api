@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, get_jw
 from marshmallow import EXCLUDE
 
 from src.shared.entity import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..projects.db_service import ProjectDBService
 from ..user_role.db_services import UserRoleDBService
@@ -13,6 +13,7 @@ from ..role_acces.entities import RoleAccess, RoleAccessSchema
 from ..user_role.entities import UserRole
 
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
+from src.api.projects.entities import Project
 
 
 class Role(Enum):
@@ -22,13 +23,13 @@ class Role(Enum):
 
 class UserDBService:
     @staticmethod
-    def get_all_users(is_active_only: bool):
+    def get_all_users(is_responsable_only: bool):
         session = None
         users = None
         try:
             session = Session()
             users_objects = []
-            if is_active_only == False:
+            if is_responsable_only == False:
                 users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
                                             (RoleAccess.nom_ra).label("roles")) \
                     .join(UserRole, User.id_u == UserRole.id_u) \
@@ -39,8 +40,9 @@ class UserDBService:
                 users_objects = session.query(*[c.label(c.name) for c in User.__table__.c if c.name != 'password_u'],
                                             (RoleAccess.nom_ra).label("roles")) \
                     .join(UserRole, User.id_u == UserRole.id_u) \
+                    .join(Project, Project.id_u == User.id_u, isouter=True) \
                     .join(RoleAccess, UserRole.id_ra == RoleAccess.id_ra) \
-                    .filter(User.active_u == True) \
+                    .filter(or_(User.active_u == True, and_(User.active_u == False, Project.id_u == User.id_u))) \
                     .order_by(User.id_u.asc()) \
                     .all()
                     

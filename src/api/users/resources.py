@@ -22,9 +22,9 @@ def get_all_users():
     response = None
     try:
         query_params = dict(request.args)
-        is_active_only = True if ('is_active_only' in query_params and (query_params['is_active_only'] == True or query_params['is_active_only'] == 'True' or query_params['is_active_only'] == 'true') ) \
+        is_responsable_or_active = True if ('is_responsable_or_active' in query_params and (query_params['is_responsable_or_active'] == True or query_params['is_responsable_or_active'] == 'True' or query_params['is_responsable_or_active'] == 'true') ) \
                                 else False
-        users = UserDBService.get_all_users(is_active_only)
+        users = UserDBService.get_all_users(is_responsable_or_active)
         response = jsonify(users), 200
     except ValueError as error:
         current_app.logger.error(error)
