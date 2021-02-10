@@ -121,7 +121,7 @@ def update_project(project_id: int):
         # Check if user with id_u exists
         UserDBService.get_user_by_id(posted_data['id_u'])
         
-        response = jsonify(ProjectDBService.update(posted_data))
+        response = ProjectDBService.update(posted_data)
         response = jsonify(response), 200
     except ValueError as error:
         current_app.logger.error(error)
