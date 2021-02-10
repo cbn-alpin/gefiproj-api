@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import DEFAULT_RECEIPTS_HEADER, export_receipt_item_from_row_proxy, \
     write_rececipts_to_google_docs
+from src.api.exports.basic_formatting import basic_formatting_receipt
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
@@ -14,7 +15,6 @@ resources = Blueprint('exports_receipts', __name__)
 
 @resources.route('/api/export/receipts', methods=['POST'])
 @jwt_required
-@admin_required
 def export_receipets():
     current_app.logger.debug('In POST /api/export/receipts')
 
@@ -79,11 +79,16 @@ def export_receipets():
             'code': 'EXPORT_V1_ERROR'
         }), 500
 
+    # basic formatting
+    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'])
+
     return jsonify({
         'message': 'successfully created google sheet',
+        'spreadsheetId': document_created['spreadsheetId'],
+        'session': document_created['session'],
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
-        'shares': shares,
+        # 'shares': shares,
         'annee_ref': annee_ref,
     }), 200

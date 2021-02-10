@@ -4,7 +4,6 @@ from os import environ, path
 import gspread
 import gspread_formatting as gsf
 from flask import current_app
-from gspread import Worksheet
 
 
 def export_year_to_str(version: int, value: int):
@@ -31,7 +30,8 @@ DEFAULT_FUNDINGS_HEADER = [
     'Recettes ',
     'Recettes ',
     'Recettes ',
-    'Recettes après '
+    'Recettes après ',
+    'Status'
 ]
 
 DEFAULT_RECEIPTS_HEADER = [
@@ -52,30 +52,6 @@ def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
 
-def set_cells_format(worksheet: Worksheet):
-    requests = [{
-        "repeatCell": {
-            "range": {
-                "startColumnIndex": 5,
-                "endColumnIndex": 6,
-            },
-            "cell": {
-                "userEnteredFormat": {
-                    "numberFormat": {
-                        "type": "DATE",
-                        "pattern": "dd/mm/yyyy"
-                    }
-                }
-            },
-            "fields": "userEnteredFormat.numberFormat"
-        }
-    }]
-    body = {
-        'requests': requests
-    }
-    return worksheet.batch_update(body)
-
-
 def write_fundings_to_google_docs(document_tile, header_column_names, data, shares):
     """
     This method creates a google sheet document to export the funding data betweeen two dates
@@ -83,7 +59,7 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
 
     :param document_tile:
     :param header_column_names: Header column names of the sheet
-    :param data: Data to be exported
+    :param data: Data to be exported minus statut_f (used for background color)
     :param shares: User mails and permissions to share the created document with
     :return:
     """
@@ -92,13 +68,20 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         gc = get_google_service_account()
         google_sheet = gc.create(document_tile)
 
-        for it in shares:
-            google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+        # Stop Sharing Document
+        # => increase quotas limitation : https://developers.google.com/sheets/api/limits
+        # for it in shares:
+        #    google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+        google_sheet.share(value=None, perm_type='anyone', role='writer')
 
         work_sheet = google_sheet.sheet1
+        # Set name current worksheet
+        # google_sheet.worksheet('Projets')
+
         last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
         data.insert(0, header_column_names)
+
         work_sheet.batch_update([{
             'range': f'A1:{last_column_letter}{len(data)}',
             'values': data
@@ -157,7 +140,9 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         gsf.set_column_width(work_sheet, 'E', 200)
         gsf.set_column_width(work_sheet, 'F', 200)
 
-        return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
+        return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url, 'spreadsheetId': google_sheet.id,
+                'session': gc.auth.token}
+
     except Exception as e:
         current_app.logger.error(e)
         return None
@@ -172,14 +157,15 @@ def write_rececipts_to_google_docs(document_title, header_column_names, data, sh
         gc = get_google_service_account()
         google_sheet = gc.create(document_title)
 
-        for it in shares:
-            google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+        google_sheet.share(value=None, perm_type='anyone', role='writer')
 
         work_sheet = google_sheet.sheet1
 
         work_sheet.batch_update(sheet_batch_object)
 
-        return {'title': document_title, 'lines': len(data) + len(data) * 4, 'url': google_sheet.url}
+        return {'title': document_title, 'lines': len(data) + len(data) * 4, 'url': google_sheet.url,
+                'spreadsheetId': google_sheet.id, 'session': gc.auth.token}
+
     except Exception as e:
         current_app.logger.error(f'write_rececipts_to_google_docs: {e}')
         return None
@@ -197,6 +183,7 @@ def generate_additional_table_header(header_length, min_year):
         if i == 0 or i == 1:
             continue
         header.append(f'{int(min_year) + i}')
+
     return header
 
 
@@ -319,7 +306,8 @@ def export_funding_item_from_row_proxy(row_proxy):
             row_proxy['recette_a3'],
             row_proxy['recette_a4'],
             row_proxy['recette_a5'],
-            row_proxy['recette_apres']
+            row_proxy['recette_apres'],
+            row_proxy['statut_f']
             ]
 
 
