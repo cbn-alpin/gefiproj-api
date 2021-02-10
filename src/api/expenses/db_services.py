@@ -3,7 +3,6 @@ from src.api.expenses.entities import Expense, ExpenseSchema
 from src.shared.entity import Session
 from sqlalchemy import desc
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
-import sqlalchemy
 
 
 class ExpenseDBService:
@@ -20,7 +19,10 @@ class ExpenseDBService:
             
             session.close()
             return expenses
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -44,7 +46,10 @@ class ExpenseDBService:
 
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -67,7 +72,11 @@ class ExpenseDBService:
             new_expense = ExpenseSchema().dump(expense)
             session.close()
             return new_expense
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -90,7 +99,11 @@ class ExpenseDBService:
             update_funder = ExpenseSchema().dump(expense)
             session.close()
             return update_funder
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -108,7 +121,11 @@ class ExpenseDBService:
              
             session.close()
             return { 'message': 'Le dépense de l\'année \'{}\' a été supprimé'.format(year) }
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -132,7 +149,10 @@ class ExpenseDBService:
             response = schema.dump(expense)
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:

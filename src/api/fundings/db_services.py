@@ -11,7 +11,6 @@ from ..receipts.entities import Receipt, ReceiptSchema
 from ..users.db_services import UserDBService
 from src.api.funders.entities import Funder
 from datetime import datetime
-import sqlalchemy
 
 
 class Status(Enum):
@@ -55,7 +54,10 @@ class FundingDBService:
                 
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -74,7 +76,10 @@ class FundingDBService:
         
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -98,7 +103,10 @@ class FundingDBService:
             # Serializing as JSON
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -125,7 +133,11 @@ class FundingDBService:
             new_funding = FundingSchema().dump(funding)
             session.close()
             return new_funding
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -154,7 +166,11 @@ class FundingDBService:
             updated_funding = FundingSchema().dump(funding)
             session.close()
             return updated_funding
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -168,7 +184,10 @@ class FundingDBService:
             if UserDBService.is_responsable_of_projet(project_id) == False and UserDBService.is_admin() == False:
                 msg = 'Ce financement ne peut pas être modifier car vous n\'êtes ni administrateur ni responsable du projet.'
                 ManageErrorUtils.exception(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 403)
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         
@@ -182,11 +201,14 @@ class FundingDBService:
 
             if funding is None:
                 msg = 'Le financement \'{funding_id}\' n\'existe pas.'.format(funding_id)
-                ManageErrorUtils.exception(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
             
             session.close()
             return funding
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -203,7 +225,12 @@ class FundingDBService:
             
             session.close()
             return {'message': f'Le financement \'{funding_id}\' a été supprimé'.format(funding_id)}
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -226,7 +253,12 @@ class FundingDBService:
                 
             session.commit()
             session.close()
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -252,7 +284,10 @@ class FundingDBService:
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
 
             session.close()
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:

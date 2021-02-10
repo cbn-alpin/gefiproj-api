@@ -4,7 +4,6 @@ from src.api.users.auth_resources import admin_required
 
 from src.api.expenses.db_services import ExpenseDBService
 from src.api.expenses.validation_service import ExpenseValidationService
-import sqlalchemy
 
 resources = Blueprint('expenses', __name__)
 
@@ -22,10 +21,10 @@ def get_expenses():
     try:
         response = ExpenseDBService.get_all_expenses()
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des dépenses'}), 500
     finally:
@@ -51,10 +50,10 @@ def add_expense():
         
         created_expense = ExpenseDBService.insert(posted_expense)
         response = jsonify(created_expense), 201
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement de la dépense'}), 500
     finally:
@@ -90,10 +89,10 @@ def update_expense(expense_id: int):
         
         response = ExpenseDBService.update(data)
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la modification de la dépense'}), 500
     finally:
@@ -118,10 +117,10 @@ def delete_expense(expense_id: int):
 
         response = ExpenseDBService.delete(expense_id, expense['annee_d'])
         response = jsonify(response), 204
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la suppression de la dépense'}), 500
     finally:

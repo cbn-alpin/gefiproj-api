@@ -6,7 +6,6 @@ from .db_service import ProjectDBService
 from .validation_service import ProjectValidationService
 from ..fundings.db_services import FundingDBService
 from ..users.db_services import UserDBService
-import sqlalchemy
 
 resources = Blueprint('projects', __name__)
 
@@ -33,10 +32,10 @@ def add_project():
 
         response = ProjectDBService.insert(posted_data)
         response = jsonify(response), 201
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement du projet'}), 500
     finally:
@@ -58,10 +57,10 @@ def get_all_projects():
         query_error = ProjectValidationService.validate_get_all(query_params)
         response = ProjectDBService.get_all_projects()
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
-        response = jsonify(error)
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        response = jsonify(error.args[0]), error.args[1]
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données projets'}), 500
     finally:
@@ -84,10 +83,10 @@ def get_project_by_id(project_id: int):
     try:
         project = ProjectDBService.get_project_by_id(project_id)
         response = jsonify(project), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données projets'}), 500
     finally:
@@ -124,10 +123,10 @@ def update_project(project_id: int):
         
         response = jsonify(ProjectDBService.update(posted_data))
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la modification des données du projet'}), 500
     finally:
@@ -155,10 +154,10 @@ def delete_project(project_id: int):
         
         response = ProjectDBService.delete(project_id, project['nom_p'])
         response = jsonify(response), 204
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la suppression du projet'}), 500
     finally:

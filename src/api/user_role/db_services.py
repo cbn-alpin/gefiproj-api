@@ -1,7 +1,6 @@
 from src.shared.entity import Session
 from ..user_role.entities import UserRole, UserRoleSchema
 from src.shared.manage_error import ManageErrorUtils, CodeError, TError
-import sqlalchemy
 from flask import current_app
 
 
@@ -21,18 +20,18 @@ class UserRoleDBService:
                 session.add(data)
                 session.commit()
                 
-                if data is None:                
-                    msg = "Une erreur est survenue lors de l'insertion d'un rôle à un utilisateur"
-                    ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.INSERT_ERROR, msg, 404)
-           
                 # Return created data
                 response = UserRoleSchema().dump(data)
                 session.close()
                 
             return response
-        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        except Exception as error:
             session.rollback()
-            current_app.logger.error(e)
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(error)
             raise
         finally:
             if session is not None:
@@ -53,16 +52,16 @@ class UserRoleDBService:
                 session.merge(data)
                 session.commit()
                 
-                if data is None:                
-                    msg = "Une erreur est survenue lors de la modification du rôle d'un utilisateur"
-                    ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UPDATE_ERROR, msg, 404)
-                
                 response = UserRoleSchema().dump(data)
                 session.close()
             return response
-        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        except Exception as error:
             session.rollback()
-            current_app.logger.error(e)
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(error)
             raise
         finally:
             if session is not None:
@@ -78,14 +77,14 @@ class UserRoleDBService:
                 .delete()
             session.commit()
             
-            if data is None:                
-                msg = "Une erreur est survenue lors de la suppression du rôle d'un utilisateur"
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
-                
             session.close()
-        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        except Exception as error:
             session.rollback()
-            current_app.logger.error(e)
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(error)
             raise
         finally:
             if session is not None:
@@ -107,8 +106,11 @@ class UserRoleDBService:
                 response = schema.dump(user_role_object)
                 
             return response
-        except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
-            current_app.logger.error(e)
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
             raise
         finally:
             if session is not None:

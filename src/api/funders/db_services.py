@@ -3,7 +3,6 @@ from src.shared.entity import Session
 from .entities import Funder, FunderSchema
 from ..fundings.entities import Funding
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
-import sqlalchemy
 
 
 class FunderDBService:
@@ -20,7 +19,10 @@ class FunderDBService:
             
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -43,7 +45,10 @@ class FunderDBService:
             response = schema.dump(funder)
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -69,7 +74,10 @@ class FunderDBService:
 
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -91,6 +99,10 @@ class FunderDBService:
             new_funder = FunderSchema().dump(funder)
             session.close()
             return new_funder
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
         except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
@@ -114,7 +126,11 @@ class FunderDBService:
             update_funder = FunderSchema().dump(funder)
             session.close()
             return update_funder
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -132,7 +148,11 @@ class FunderDBService:
             
             session.close()
             return { 'message': 'Le financeur \'{}\' a été supprimé'.format(nom) }
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -156,7 +176,10 @@ class FunderDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DELETE_ERROR, msg, 404)
 
             session.close()
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:

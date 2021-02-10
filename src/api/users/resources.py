@@ -23,10 +23,10 @@ def get_all_users():
     try:
         users = UserDBService.get_all_users()
         response = jsonify(users), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
-        response = jsonify(error)
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        response = jsonify(error.args[0]), error.args[1]
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données utilisateurs'}), 500
     finally:
@@ -49,10 +49,10 @@ def get_user_by_id(user_id: int):
     try:
         user = UserDBService.get_user_by_id(user_id)
         response = jsonify(user), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données utilisateur'}), 500
     finally:
@@ -90,10 +90,10 @@ def update_user(user_id: int):
         del data['roles']
         response = UserDBService.update(data, old_roles, new_roles)
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la modification de l\'utilisateur'}), 500
     finally:
@@ -128,7 +128,7 @@ def change_password(user_id: int):
     except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (Exception, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors du changement du mot de passe de l\'utilisateur'}), 500
     finally:

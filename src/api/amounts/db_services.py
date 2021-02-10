@@ -6,7 +6,6 @@ from ..receipts.entities import Receipt
 from .entities import Amount, AmountSchema
 from sqlalchemy import func
 from sqlalchemy.orm import join
-import sqlalchemy
 
 
 class AmountDBService:
@@ -25,7 +24,10 @@ class AmountDBService:
             # Serializing as JSON
             session.close()
             return amounts
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -46,7 +48,10 @@ class AmountDBService:
             # Serializing as JSON
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -68,7 +73,11 @@ class AmountDBService:
             new_amount = AmountSchema().dump(amount)
             session.close()
             return new_amount
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -91,7 +100,11 @@ class AmountDBService:
             updated_amount = AmountSchema().dump(amount)
             session.close()
             return updated_amount
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -109,7 +122,11 @@ class AmountDBService:
             
             session.close()
             return { 'message': 'Le montant affecté de l\'année {} a été supprimé'.format(year) }
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -147,7 +164,10 @@ class AmountDBService:
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
 
             session.close()
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -185,7 +205,10 @@ class AmountDBService:
 
             session.close()
             return response
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:

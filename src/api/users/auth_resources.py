@@ -9,9 +9,9 @@ from src.api.users.db_services import UserDBService
 from .validation_service import UserValidationService
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 from jwt.exceptions import ExpiredSignatureError
-import sqlalchemy
 
 resources = Blueprint('auth', __name__)
+
 
 # https://stackoverflow.com/questions/33597150/using-flask-security-roles-with-flask-jwt-rest-api
 def admin_required(fn):
@@ -25,9 +25,12 @@ def admin_required(fn):
                 ManageErrorUtils.exception(CodeError.TOKEN_HAS_NOT_ENOUGH_PRIVILEGES, TError.TOKEN_ERROR, msg, 403)
             return fn(*args, **kwargs)
 
-        except (ValueError, Exception) as error:
+        except ValueError as error:
             current_app.logger.error(error)
-            return jsonify(error.args[0]), error.args[1]
+            raise
+        except Exception as e:
+            current_app.logger.error(error)
+            raise
     return wrapper
         
         
@@ -40,10 +43,10 @@ def login():
         UserValidationService.validate_login(data)
         auth = UserDBService.auth_login(data)
         response = jsonify(auth), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la connexion'}), 500
     finally:
@@ -59,10 +62,10 @@ def logout():
         jti = get_raw_jwt()['jti']
         revoked_jti = UserDBService.revoke_token(jti)
         response = jsonify(revoked_jti), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
-        response = jsonify(error)
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+        response = jsonify(error.args[0]), error.args[1]
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la déconnexion'}), 500
     finally:
@@ -87,10 +90,10 @@ def add_user():
         new_user = UserDBService.insert(posted_user_data, roles)
         
         response = jsonify(new_user), 201
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement d\'un nouvel utilisateur'}), 500
     finally:
@@ -101,15 +104,21 @@ def add_user():
 @jwt_refresh_token_required
 def refresh():
     current_app.logger.debug('In POST /api/auth/refresh')
+    response = None
     try:
         user_identity = get_jwt_identity()
         new_token = {
             'access_token': create_access_token(identity=user_identity)
         }
-        return jsonify(new_token), 200
-    except (ValueError, Exception) as error:
+        response = jsonify(new_token), 200
+    except ValueError as error:
         current_app.logger.error(error)
-        response = jsonify(error)
+        response = jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        response = jsonify({'message': 'Une erreur est survenue lors du refresh token. {}'.format(e)}), 500
+    finally:
+        return response
 
  
 @jwt.user_claims_loader
@@ -117,9 +126,12 @@ def add_claims_to_access_token(identity):
     try:
         roles = UserDBService.get_user_role_names_by_user_id_or_email(identity)
         return {'roles': roles}
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         return jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': '{}'.format(e)}), 500
 
 
 @jwt.token_in_blacklist_loader
@@ -128,9 +140,12 @@ def is_token_in_blacklist(decrypted_token) -> bool:
         jti = decrypted_token['jti']
         token = UserDBService.get_revoked_token_by_jti(jti)
         return token is not None and token.get('jti') is not None
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         return jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': '{}'.format(e)}), 500
         
 
 # https://flask-jwt-extended.readthedocs.io/en/latest/changing_default_behavior/
@@ -139,9 +154,9 @@ def revoked_token_handler():
     try: 
         msg = "Le token n'est plus valide"
         ManageErrorUtils.exception(CodeError.TOKEN_REVOKED_ERROR, TError.TOKEN_ERROR, msg, 401)
-    except (ValueError, Exception) as error:
-        current_app.logger.debug(error)
-        return jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': '{}'.format(e)}), 401
    
    
 @jwt.expired_token_loader
@@ -149,9 +164,9 @@ def expired_token_handler():
     try: 
         msg = "Le token est expiré"
         ManageErrorUtils.exception(CodeError.TOKEN_EXPIRED, TError.TOKEN_ERROR, msg, 401)
-    except (ValueError, Exception, ExpiredSignatureError) as error:
-        current_app.logger.debug(error)
-        return jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': '{}'.format(e)}), 401
 
 
 @jwt.unauthorized_loader
@@ -159,6 +174,6 @@ def unauthorized_access_handler(e):
     try: 
         msg = "Manque d'autorisation. Un valide token est demandé"
         ManageErrorUtils.exception(CodeError.TOKEN_REQUIRED, TError.TOKEN_ERROR, msg, 401)
-    except (ValueError, Exception) as error:
-        current_app.logger.debug(error)
-        return jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify({'message': '{}'.format(e)}), 401

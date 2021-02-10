@@ -6,7 +6,6 @@ from .db_services import FundingDBService
 from .validation_service import FundingValidationService
 from src.api.projects.db_service import ProjectDBService
 from src.api.funders.db_services import FunderDBService
-import sqlalchemy
 
 resources = Blueprint('fundings', __name__)
 
@@ -29,10 +28,10 @@ def get_fundings_by_project(project_id: int):
         ProjectDBService.get_project_by_id(project_id)  
         response = FundingDBService.get_fundings_by_project(project_id)
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données financements'}), 500
     finally:
@@ -57,10 +56,10 @@ def get_fundings_by_funder(funder_id: int):
         FunderDBService.get_funder_by_id(funder_id)
         response = FundingDBService.get_funding_by_funder(funder_id)
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la récupération des données financements'}), 500
     finally:
@@ -87,10 +86,10 @@ def add_funding():
         # Insert
         response = FundingDBService.insert(posted_funding)
         response = jsonify(response), 201
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement du financement'}), 500
     finally:
@@ -127,12 +126,12 @@ def update_funding(funding_id: int):
         
         response = FundingDBService.update(data)
         response = jsonify(response), 200
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
-        response = jsonify({'message': 'Une erreur est survenue lors de la modification du financement'}), 500
+        response = jsonify({'message': 'Une erreur est survenue lors de la modification du financement. {}'.format(error.args[0])}), 500
     finally:
         return response
 
@@ -157,10 +156,10 @@ def delete_funding(funding_id: int):
 
         response = FundingDBService.delete(funding_id)
         response = jsonify(response), 204
-    except (ValueError, Exception) as error:
+    except ValueError as error:
         current_app.logger.error(error)
         response = jsonify(error.args[0]), error.args[1]
-    except (sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as e:
+    except Exception as e:
         current_app.logger.error(e)
         response = jsonify({'message': 'Une erreur est survenue lors de la suppression du financement'}), 500
     finally:

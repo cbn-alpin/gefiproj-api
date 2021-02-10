@@ -6,7 +6,6 @@ from marshmallow import EXCLUDE
 from src.shared.entity import Session
 from .entities import Project, ProjectSchema
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
-import sqlalchemy
 
 
 class ProjectDBService:
@@ -33,7 +32,10 @@ class ProjectDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
 
             return project
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -56,7 +58,11 @@ class ProjectDBService:
             new_project = ProjectSchema().dump(project)
             session.close()
             return new_project
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -80,7 +86,10 @@ class ProjectDBService:
             # Serializing as JSON
             session.close()
             return projects
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -106,7 +115,10 @@ class ProjectDBService:
             project = schema.dump(project_object)
             session.close()
             return project
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -129,7 +141,11 @@ class ProjectDBService:
             update_project = ProjectSchema().dump(project)
             session.close()
             return update_project   
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
@@ -147,7 +163,11 @@ class ProjectDBService:
             
             session.close()
             return {'message': 'Le projet \'{}\' a été supprimé'.format(nom_p)}
-        except (Exception, ValueError, sqlalchemy.exc.SQLAlchemyError, sqlalchemy.exc.DBAPIError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             session.rollback()
             current_app.logger.error(error)
             raise
