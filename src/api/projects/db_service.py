@@ -114,10 +114,7 @@ class ProjectDBService:
 
             if project_object is None:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Le projet n\'existe pas', 404)
-            if project_object is not None and project_object.statut_p == Status.STATUS_SOLDE.value:
-                msg = "Le projet {} est soldé. Les actions dans les tableaux financements, recettes et montants affectés relié à ce projet sont interdit.".format(project_object.nom_p)
-                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
-            
+
             # Transforming into JSON-serializable objects
             schema = ProjectSchema(exclude=['id_u'])
             project = schema.dump(project_object)
@@ -132,7 +129,20 @@ class ProjectDBService:
         finally:
             if session is not None:
                 session.close()
-                
+    
+    @staticmethod
+    def is_project_solde(project):
+        try:
+            if project is not None and project['statut_p'] == Status.STATUS_SOLDE.value:
+                msg = "Le projet {} est soldé. Les actions dans les tableaux financements, recettes et montants affectés relié à ce projet sont interdit.".format(project['nom_p'])
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+
     @staticmethod
     def update(project):
         session = None
