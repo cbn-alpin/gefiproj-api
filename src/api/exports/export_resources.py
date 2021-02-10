@@ -5,7 +5,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
-    DEFAULT_FUNDINGS_HEADER
+    DEFAULT_FUNDINGS_HEADER, export_year_to_str, delete_column_by_index, \
+    basic_formatting_funding
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
@@ -72,6 +73,15 @@ def export_fundings():
             'version': version,
         }), 200
 
+    # Add years in header_column_names
+    header_column_names[7] = header_column_names[7] + export_year_to_str(version, 0)
+    header_column_names[8] = header_column_names[8] + export_year_to_str(version, 0)
+    header_column_names[9] = header_column_names[9] + export_year_to_str(version, 1)
+    header_column_names[10] = header_column_names[10] + export_year_to_str(version, 2)
+    header_column_names[11] = header_column_names[11] + export_year_to_str(version, 3)
+    header_column_names[12] = header_column_names[12] + export_year_to_str(version, 4)
+    header_column_names[13] = header_column_names[13] + export_year_to_str(version, 4)
+
     document_created = write_fundings_to_google_docs(file_name, header_column_names, export_data, shares)
 
     if not document_created:
@@ -82,11 +92,21 @@ def export_fundings():
             'code': 'EXPORT_V1_ERROR'
         }), 500
 
+    # Before send data to front
+    # make some conditional format
+    # conditional_formatting_funding(document_created['session'], document_created['spreadsheetId'], document_created['lines'])
+    basic_formatting_funding(document_created['session'], document_created['spreadsheetId'], export_data)
+
+    # delete last column
+    delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 14)
+
     return jsonify({
         'message': 'successfully created google sheet',
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
+        'spreadsheetId': document_created['spreadsheetId'],
+        'session': document_created['session'],
         'shares': shares,
         'annee_ref': annee_ref,
         'annee_max': annee_max,

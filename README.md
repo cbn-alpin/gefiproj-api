@@ -99,6 +99,13 @@ cmd+=' -t cbna_backend:v1 .'
 eval $cmd
 ```
 
+Copy file from pgAdmin Docker contenair to host
+
+```bash
+docker cp 0659194cca59:/var/lib/pgadmin/storage/contact_cbn-alpin.fr/test1 /home/ubuntu
+```
+
+
 # Own Paas serveur with CapRover  🚀
 There are many easy CI/CD platforms that offer generous free minutes for your builds, for example GitHub and GitLab both offer free minutes for private repositories and unlimited free minutes for public repositories.
 ## Prerequisites
