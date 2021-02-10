@@ -5,7 +5,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
-    DEFAULT_FUNDINGS_HEADER, export_year_to_str
+    DEFAULT_FUNDINGS_HEADER, export_year_to_str, delete_column_by_index, \
+    basic_formatting_funding
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
@@ -91,11 +92,21 @@ def export_fundings():
             'code': 'EXPORT_V1_ERROR'
         }), 500
 
+    # Before send data to front
+    # make some conditional format
+    # conditional_formatting_funding(document_created['session'], document_created['spreadsheetId'], document_created['lines'])
+    basic_formatting_funding(document_created['session'], document_created['spreadsheetId'], export_data)
+
+    # delete last column
+    delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 14)
+
     return jsonify({
         'message': 'successfully created google sheet',
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
+        'spreadsheetId': document_created['spreadsheetId'],
+        'session': document_created['session'],
         'shares': shares,
         'annee_ref': annee_ref,
         'annee_max': annee_max,

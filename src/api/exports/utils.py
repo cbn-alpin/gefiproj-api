@@ -1,10 +1,11 @@
+import json
 from datetime import date
 from os import environ, path
 
 import gspread
 import gspread_formatting as gsf
+import requests
 from flask import current_app
-from gspread import Worksheet
 
 
 def export_year_to_str(version: int, value: int):
@@ -31,7 +32,8 @@ DEFAULT_FUNDINGS_HEADER = [
     'Recettes ',
     'Recettes ',
     'Recettes ',
-    'Recettes après '
+    'Recettes après ',
+    'Status'
 ]
 
 DEFAULT_RECEIPTS_HEADER = [
@@ -45,28 +47,189 @@ def get_google_service_account():
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
 
-def set_cells_format(worksheet: Worksheet):
-    requests = [{
-        "repeatCell": {
-            "range": {
-                "startColumnIndex": 5,
-                "endColumnIndex": 6,
-            },
-            "cell": {
-                "userEnteredFormat": {
-                    "numberFormat": {
-                        "type": "DATE",
-                        "pattern": "dd/mm/yyyy"
+def delete_column_by_index(session: str, spreadsheet_id: str, index: int):
+    headers = {'Authorization': f'Bearer {session}'}
+
+    json_data = {
+        "requests": [
+            {
+                "deleteDimension": {
+                    "range": {
+                        "dimension": "COLUMNS",
+                        "startIndex": index
                     }
                 }
             },
-            "fields": "userEnteredFormat.numberFormat"
-        }
-    }]
-    body = {
-        'requests': requests
+        ]
     }
-    return worksheet.batch_update(body)
+
+    r = requests.post(f'https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}:batchUpdate', headers=headers,
+                      data=json.dumps(json_data))
+
+    return r.status_code
+
+
+def conditional_formatting_funding(session: str, spreadsheet_id: str, end_row_index: int):
+    headers = {'Authorization': f'Bearer {session}'}
+
+    json_data = {
+        "requests": [
+            {
+                "addConditionalFormatRule": {
+                    "rule": {
+                        "ranges": [
+                            {
+                                "startRowIndex": 1,
+                                "endRowIndex": end_row_index,
+                                "startColumnIndex": 0,
+                                "endColumnIndex": 13
+                            }
+                        ],
+                        "booleanRule": {
+                            "format": {
+                                "backgroundColor": {
+                                    "red": 0.94,
+                                    "green": 0.60,
+                                    "blue": 0.07
+                                }
+                            },
+                            "condition": {
+                                "type": "CUSTOM_FORMULA",
+                                "values": [
+                                    {
+                                        "userEnteredValue": "=IFS(O2 = \"ATR\", true)"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "addConditionalFormatRule": {
+                    "rule": {
+                        "ranges": [
+                            {
+                                "startRowIndex": 1,
+                                "endRowIndex": end_row_index,
+                                "startColumnIndex": 0,
+                                "endColumnIndex": 13
+                            }
+                        ],
+                        "booleanRule": {
+                            "format": {
+                                "backgroundColor": {
+                                    "red": 1,
+                                    "green": 1,
+                                    "blue": 0.05
+                                }
+                            },
+                            "condition": {
+                                "type": "CUSTOM_FORMULA",
+                                "values": [
+                                    {
+                                        "userEnteredValue": "=IFS(O2 = \"SOLDE\", true)"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+
+    r = requests.post(f'https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}:batchUpdate', headers=headers,
+                      data=json.dumps(json_data))
+
+    return r.status_code
+
+
+def basic_formatting_funding(session: str, spreadsheet_id: str, datas):
+    headers = {'Authorization': f'Bearer {session}'}
+
+    json_data = {"requests": []}
+
+    withe_color = {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 0
+    }
+
+    orange_color = {
+        "red": 0.94,
+        "green": 0.60,
+        "blue": 0.07
+    }
+
+    yellow_color = {
+        "red": 1,
+        "green": 1,
+        "blue": 0.05
+    }
+
+    cell_i = 0
+
+    for data in datas:
+        # current_app.logger.debug(data[len(data)-1])
+        if data[len(data) - 1] == 'ATR':
+            cell_format = {
+                "repeatCell": {
+                    "range": {
+                        "startRowIndex": cell_i,
+                        "endRowIndex": cell_i + 1
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor": orange_color
+                        }
+                    },
+                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+                }
+            }
+        elif data[len(data) - 1] == 'SOLDE':
+            cell_format = {
+                "repeatCell": {
+                    "range": {
+                        "startRowIndex": cell_i,
+                        "endRowIndex": cell_i + 1
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor": yellow_color
+                        }
+                    },
+                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+                }
+            }
+        else:
+            cell_format = {
+                "repeatCell": {
+                    "range": {
+                        "startRowIndex": cell_i,
+                        "endRowIndex": cell_i + 1
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor": withe_color
+                        }
+                    },
+                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+                }
+            }
+
+        cell_i += 1
+
+        json_data["requests"].append(cell_format)
+
+    r = requests.post(f'https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}:batchUpdate', headers=headers,
+                      data=json.dumps(json_data))
+
+    return r.status_code
+
+    # current_app.logger.debug(f'Zero : {datas[0][len(datas[0])-1]}')
+    # current_app.logger.debug(f'Un   : {datas[1][len(datas[0])-1]}')
 
 
 def write_fundings_to_google_docs(document_tile, header_column_names, data, shares):
@@ -76,7 +239,7 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
 
     :param document_tile:
     :param header_column_names: Header column names of the sheet
-    :param data: Data to be exported
+    :param data: Data to be exported minus statut_f (used for background color)
     :param shares: User mails and permissions to share the created document with
     :return:
     """
@@ -85,13 +248,20 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         gc = get_google_service_account()
         google_sheet = gc.create(document_tile)
 
-        for it in shares:
-            google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+        # Stop Sharing Document
+        # => increase quotas limitation : https://developers.google.com/sheets/api/limits
+        # for it in shares:
+        #    google_sheet.share(it['email'], perm_type=it['type'], role=it['permission'])
+        google_sheet.share(value=None, perm_type='anyone', role='writer')
 
         work_sheet = google_sheet.sheet1
+        # Set name current worksheet
+        # google_sheet.worksheet('Projets')
+
         last_column_letter = SHEET_COLUMN_LETTERS[len(header_column_names) - 1]
 
         data.insert(0, header_column_names)
+
         work_sheet.batch_update([{
             'range': f'A1:{last_column_letter}{len(data)}',
             'values': data
@@ -150,7 +320,9 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         gsf.set_column_width(work_sheet, 'E', 200)
         gsf.set_column_width(work_sheet, 'F', 200)
 
-        return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url}
+        return {'title': document_tile, 'lines': len(data), 'url': google_sheet.url, 'spreadsheetId': google_sheet.id,
+                'session': gc.auth.token}
+
     except Exception as e:
         current_app.logger.error(e)
         return None
@@ -178,7 +350,8 @@ def export_funding_item_from_row_proxy(row_proxy):
             row_proxy['recette_a3'],
             row_proxy['recette_a4'],
             row_proxy['recette_a5'],
-            row_proxy['recette_apres']
+            row_proxy['recette_apres'],
+            row_proxy['statut_f']
             ]
 
 
