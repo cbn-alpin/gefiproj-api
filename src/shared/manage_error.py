@@ -1,5 +1,5 @@
 from enum import Enum
-from jwt.exceptions import ExpiredSignatureError
+
 
 class CodeError(Enum):
     VALIDATION_ERROR = 'VALIDATION_ERROR',
@@ -14,7 +14,8 @@ class CodeError(Enum):
     TOKEN_REVOKED_ERROR = "TOKEN_REVOKED_ERROR",
     TOKEN_EXPIRED = "TOKEN_EXPIRED",
     TOKEN_REQUIRED = "TOKEN_REQUIRED",
-    NOT_PERMISSION = "NOT_PERMISSION"
+    NOT_PERMISSION = "NOT_PERMISSION",
+    RECEIPT_PROJECT_CLOSED = "RECEIPT_PROJECT_CLOSED"
 
 
 class TError(Enum):
@@ -48,8 +49,8 @@ class ManageErrorUtils:
     @staticmethod
     def exception(code: CodeError, type: TError, msg: str, code_return: int):
         msg = {
-        'code': code.value,
-        'type': type.value,
-        'message': str(msg),
+            'code': code.value,
+            'type': type.value,
+            'message': str(msg),
         }
         raise Exception(msg, code_return)

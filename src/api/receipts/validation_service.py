@@ -1,29 +1,19 @@
-from src.shared.data_validation_utils import DataValidationUtils
+from flask import current_app
 
-ERROR_CODE = 'VALIDATION_ERROR'
+from src.shared.manage_check_data import ManageCheckDataUtils
 
 
 class ReceiptValidationService:
     @staticmethod
     def validate_post(receipt_data):
-        receipt_keys = ['id_f', 'montant_r', 'annee_r']
-        errors = DataValidationUtils.check_keys(receipt_keys, receipt_data)
+        try:
+            receipt_keys = ['id_f', 'montant_r', 'annee_r']
+            # validation keys
+            ManageCheckDataUtils.check_keys(receipt_keys, receipt_data)
+            ManageCheckDataUtils.check_format_value('id_f', receipt_data, "identifiant du financement", 'id_f')
+            ManageCheckDataUtils.check_format_value('annee_r', receipt_data, "année de recette", 'annee_r')
+            ManageCheckDataUtils.check_format_value('montant_r', receipt_data, "montant de recette", 'montant_r')
 
-        errors = DataValidationUtils.check_int_value('id_f', receipt_data, errors)
-        errors = DataValidationUtils.check_int_value('annee_r', receipt_data, errors)
-        errors = DataValidationUtils.check_float_montant('montant_r', receipt_data, errors)
-
-        return errors
-
-
-class InputOutputValidationService:
-    @staticmethod
-    def validate_post(input_output_data):
-        input_output_keys = ['annee_recette_es', 'annee_affectation_es', 'montant_es']
-        errors = DataValidationUtils.check_keys(input_output_keys, input_output_data)
-
-        errors = DataValidationUtils.check_int_value('annee_recette_es', input_output_data, errors)
-        errors = DataValidationUtils.check_int_value('annee_affectation_es', input_output_data, errors)
-        errors = DataValidationUtils.check_input_output_montant('montant_es', input_output_data, errors)
-
-        return errors
+        except ValueError as error:
+            current_app.logger.warning(error)
+            raise

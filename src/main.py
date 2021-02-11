@@ -13,6 +13,8 @@ from src.api.exports.receipts_export_resources import resources as receipts_expo
 from src.api.funders.resources import resources as funders_ressources
 from src.api.fundings.resources import resources as fundings_ressources
 from src.api.projects.resources import resources as projects_ressources
+from src.api.receipts.accountings.resources import resources as receipts_accountings_ressources
+from src.api.receipts.previous.resources import resources as receipts_previous_ressources
 from src.api.receipts.resources import resources as receipts_ressources
 from src.api.receipts_accountings.resources import resources as receipts_accountings_ressources
 from src.api.users.auth_resources import resources as auth_resources
@@ -63,3 +65,4 @@ api.register_blueprint(expenses_ressources)
 api.register_blueprint(fundings_export_ressources)
 api.register_blueprint(receipts_export_ressources)
 api.register_blueprint(receipts_accountings_ressources)
+api.register_blueprint(receipts_previous_ressources)
