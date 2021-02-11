@@ -18,6 +18,8 @@ def get_receipts_accountings():
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
+        return jsonify(error.args[0]), error.args[1]
 
 
 @resources.route('/api/receipts/accountings', methods=['POST'])
@@ -37,6 +39,8 @@ def add_receipt_accounting():
         response = ReceiptAccountingDBService.insert(data)
         return jsonify(response), 201
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]
 
 
@@ -78,4 +82,6 @@ def delete_expense(receipt_accounting_id):
         response = ReceiptAccountingDBService.delete(receipt_accounting_id)
         return jsonify(response), 204
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]

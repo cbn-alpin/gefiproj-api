@@ -26,6 +26,8 @@ def get_input_output(input_output_id):
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
+        return jsonify(error.args[0]), error.args[1]
 
 
 @resources.route('/api/receipts/previous', methods=['GET'])
@@ -42,6 +44,8 @@ def get_input_output_by_filter():
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
+        return jsonify(error.args[0]), error.args[1]
 
 
 @resources.route('/api/receipts/previous', methods=['POST'])
@@ -49,6 +53,7 @@ def get_input_output_by_filter():
 @admin_required
 def add_input_output():
     try:
+        response = None
         current_app.logger.debug('In POST /api/receipts/previous')
         posted_input_output = request.get_json()
         InputOutputValidationService.validate_post(posted_input_output)
@@ -60,10 +65,16 @@ def add_input_output():
         InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es,
                                                            input_output.annee_affectation_es)
         created_input_output = InputOutputDBService.insert(input_output)
-        return jsonify(created_input_output), 201
 
+        response = jsonify(created_input_output), 201
     except ValueError as error:
-        return jsonify(error.args[0]), error.args[1]
+        current_app.logger.error(error)
+        response = jsonify(error.args[0]), error.args[1]
+    except Exception as e:
+        current_app.logger.error(e)
+        response = jsonify(e.args[0]), e.args[1]
+    finally:
+        return response
 
 
 @resources.route('/api/receipts/previous/<int:input_output_id>', methods=['PUT'])
@@ -96,6 +107,8 @@ def update_input_output(input_output_id):
 
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
+        return jsonify(error.args[0]), error.args[1]
 
 
 @resources.route('/api/receipts/previous/<int:id_input_output>', methods=['DELETE'])
@@ -114,4 +127,6 @@ def delete_input_output(id_input_output):
         return json.loads(message), 204
 
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]

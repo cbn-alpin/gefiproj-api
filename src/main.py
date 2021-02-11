@@ -16,7 +16,6 @@ from src.api.projects.resources import resources as projects_ressources
 from src.api.receipts.accountings.resources import resources as receipts_accountings_ressources
 from src.api.receipts.previous.resources import resources as receipts_previous_ressources
 from src.api.receipts.resources import resources as receipts_ressources
-from src.api.receipts_accountings.resources import resources as receipts_accountings_ressources
 from src.api.users.auth_resources import resources as auth_resources
 from src.api.users.resources import resources as users_ressources
 # This project files

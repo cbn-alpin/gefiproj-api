@@ -23,6 +23,8 @@ def get_receipts_by_funding(funding_id):
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
+        return jsonify(error.args[0]), error.args[1]
 
 
 @resources.route('/api/receipts', methods=['POST'])
@@ -40,12 +42,14 @@ def add_receipt():
         # check funding
         FundingDBService.get_funding_by_id(receipt.id_f)
 
-        # check there is no receipt for this funding this yeat
+        # check there is no receipt for this funding this year
         ReceiptDBService.get_receipts_of_year_by_funding_id(receipt.id_f, receipt.annee_r)
 
         created_receipt = ReceiptDBService.insert(receipt)
-        return jsonify(created_receipt), 204
+        return jsonify(created_receipt), 201
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]
 
 
@@ -63,28 +67,31 @@ def update_receipt(id_receipt):
 
         posted_receipt = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).load(posted_receipt_data,
                                                                                            unknown=EXCLUDE)
-        receipt = Receipt(**posted_receipt)
+        posted_receipt = Receipt(**posted_receipt)
 
         # check if receipt exists
-        ReceiptDBService.get_receipt_by_id(id_receipt)
+        receipt = ReceiptDBService.get_receipt_by_id(id_receipt)
 
         # check funding
-        FundingDBService.check_funding_exists(existing_receipt['id_f'])
+        FundingDBService.get_funding_by_id(posted_receipt.id_f)
 
-        # check it is the same financement
-        if 'id_f' in existing_receipt \
-                and existing_receipt['id_f'] is not receipt.id_f:
-            return jsonify({
-                'status': 'error',
-                'type': '',
-                'code': 'DIFFERENT_FUNDING',
-                'message': f"Cannot change funding while updating receipt. Original funding was {existing_receipt['id_f']},"
-                           f" provided is {id_receipt}"
-            }), 400
+        # TODO: check business rule cf. Hanh
+        # # check it is the same financement
+        # if 'id_f' in existing_receipt \
+        #         and existing_receipt['id_f'] is not receipt.id_f:
+        #     return jsonify({
+        #         'status': 'error',
+        #         'type': '',
+        #         'code': 'DIFFERENT_FUNDING',
+        #         'message': f"Cannot change funding while updating receipt. Original funding was {existing_receipt['id_f']},"
+        #                    f" provided is {id_receipt}"
+        #     }), 400
 
-        updated_receipt = ReceiptDBService.update(receipt)
+        updated_receipt = ReceiptDBService.update(posted_receipt)
         return jsonify(updated_receipt), 200
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]
 
 
@@ -107,6 +114,8 @@ def delete_receipt(id_receipt):
         id_deleted = ReceiptDBService.delete(id_receipt)
         return jsonify({
             'message': f'Receipt identified by {id_deleted} has been deleted'
-        }), 201
+        }), 204
     except ValueError as error:
+        return jsonify(error.args[0]), error.args[1]
+    except Exception as error:
         return jsonify(error.args[0]), error.args[1]

@@ -1,17 +1,17 @@
-from flask import current_app
-from enum import Enum 
-from src.shared.manage_error import CodeError, ManageErrorUtils, TError
-from sqlalchemy import func, case
-from marshmallow import INCLUDE, EXCLUDE
-from src.shared.entity import Session
+from enum import Enum
 
+from flask import current_app
+from marshmallow import INCLUDE, EXCLUDE
+from sqlalchemy import func, case
+
+from src.api.funders.entities import Funder
+from src.shared.entity import Session
+from src.shared.manage_error import CodeError, ManageErrorUtils, TError
 from .entities import Funding, FundingSchema
 from src.api.projects.entities import Project
 from ..amounts.entities import Amount
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..users.db_services import UserDBService
-from src.api.funders.entities import Funder
-from datetime import datetime
 
 
 class Status(Enum):
@@ -195,13 +195,12 @@ class FundingDBService:
     @staticmethod
     def get_funding_by_id(funding_id: int):
         session = None
-        funding = None
         try:
             session = Session()
             funding = session.query(Funding).filter_by(id_f=funding_id).first()
 
             if funding is None:
-                msg = 'Le financement \'{funding_id}\' n\'existe pas.'.format(funding_id)
+                msg = f'Le financement {funding_id} n\'existe pas.'
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
             
             session.close()
