@@ -649,7 +649,7 @@
 			"name": "receipts",
 			"item": [
 				{
-					"name": "input_outputs",
+					"name": "previous",
 					"item": [
 						{
 							"name": "localhost:5000/api/receipts/previous/1",
@@ -659,7 +659,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NDgwOTEsIm5iZiI6MTYxMjQ0ODA5MSwianRpIjoiOGE4MTIwNTQtMjE3OC00NmM4LTlmMTktYjlkMTA3Yjk5NWQ5IiwiZXhwIjoxNjEyNDQ4NjkxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.cPhu8b_r3awuO3uU-X2ZiL9qd3d6Ze6Rdhe3fbH7tig",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI1MzQxMTUsIm5iZiI6MTYxMjUzNDExNSwianRpIjoiNzU5MGZkZDgtN2U0My00ODE3LWE4Y2EtNjhlZGRlOThiZTI5IiwiZXhwIjoxNjEyNTYyOTE1LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.goA7AGvH_f0VhvEEl7ARnAUoqGe802MFQ3LJA6mV2As",
 											"type": "string"
 										}
 									]
@@ -683,14 +683,14 @@
 							"response": []
 						},
 						{
-							"name": "localhost:5000/api/receipts/previous?filter",
+							"name": "localhost:5000/api/receipts/previous",
 							"request": {
 								"auth": {
 									"type": "bearer",
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NDQ1ODEsIm5iZiI6MTYxMjQ0NDU4MSwianRpIjoiNjAwNThlZGYtNWQxZS00Y2JmLWE2NjUtODAzNGQxZDVmNWI3IiwiZXhwIjoxNjEyNDQ1MTgxLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.e9x2OZ_JQLizDHowjZ3vHR_NVozynH41JFXaceD29xg",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwMzQ5OTIsIm5iZiI6MTYxMzAzNDk5MiwianRpIjoiYmVlYjEyODgtNGRhMS00ZjYwLTkzYmUtZGFhYmJlNDQzYTU1IiwiZXhwIjoxNjEzMDYzNzkyLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.T4DNUYwJLrHqgKFPcFoHKYGRjg3ss4yr78R0pA_wqk0",
 											"type": "string"
 										}
 									]
@@ -710,17 +710,6 @@
 									],
 									"query": [
 										{
-											"key": "annee_recette_es",
-											"value": "2020",
-											"disabled": true
-										},
-										{
-											"key": "annee_recette_es_sup",
-											"value": "2020",
-											"description": "annee_recette_es >= à VALUE",
-											"disabled": true
-										},
-										{
 											"key": "annee_recette_es_inf",
 											"value": "2020",
 											"description": "annee_recette_es <= à VALUE",
@@ -728,7 +717,7 @@
 										},
 										{
 											"key": "annee_affectation_es",
-											"value": "2020",
+											"value": "2018",
 											"disabled": true
 										},
 										{
@@ -766,37 +755,6 @@
 							"response": []
 						},
 						{
-							"name": "localhost:5000/api/receipts/previous/all",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NDk4NTMsIm5iZiI6MTYxMjQ0OTg1MywianRpIjoiMTZhN2VhZDEtNmU1Ni00MDZhLWJmOTUtYTk5MmEzMjE5MjkyIiwiZXhwIjoxNjEyNDUwNDUzLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.UCD76LITRcbFAODJhjdSIdP08rdCSUoK1gAPP6k_BfI",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:5000/api/receipts/previous/all",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"api",
-										"receipts",
-										"previous",
-										"all"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "localhost:5000/api/receipts/previous",
 							"request": {
 								"auth": {
@@ -804,7 +762,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NTExODksIm5iZiI6MTYxMjQ1MTE4OSwianRpIjoiZmMwOGZiMzktMmRmZS00MmIzLTlkMmEtN2VkZjM3M2ExNGZiIiwiZXhwIjoxNjEyNDUxNzg5LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.f3LcZGCnrl_ORTRnmqCPDIot3m23dxZjcE6A3G_C7Qs",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwMzQ5OTIsIm5iZiI6MTYxMzAzNDk5MiwianRpIjoiYmVlYjEyODgtNGRhMS00ZjYwLTkzYmUtZGFhYmJlNDQzYTU1IiwiZXhwIjoxNjEzMDYzNzkyLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.T4DNUYwJLrHqgKFPcFoHKYGRjg3ss4yr78R0pA_wqk0",
 											"type": "string"
 										}
 									]
@@ -813,7 +771,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "    {\r\n        \"annee_affectation_es\": 2017, \r\n        \"annee_recette_es\": 2026,\r\n        \"montant_es\": 802.6\r\n    }",
+									"raw": "    {\r\n        \"annee_affectation_es\": 2020, \r\n        \"annee_recette_es\": 2027,\r\n        \"montant_es\": 802.6\r\n    }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -843,7 +801,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NTExNDQsIm5iZiI6MTYxMjQ1MTE0NCwianRpIjoiYTJhNzNhMTgtYjMyNC00MzdkLThkOTUtNzY0NmU2MjljOWM0IiwiZXhwIjoxNjEyNDUxNzQ0LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.mHGEET8cYR4tITbz1GdZmBqzyqCAFCnM5rmB7u7CTzA",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI3OTcyNzMsIm5iZiI6MTYxMjc5NzI3MywianRpIjoiMDhmYjg5MmUtOGMyNS00ZDI1LWFiOGEtZDc4NGE3YzY3Zjc3IiwiZXhwIjoxNjEyODI2MDczLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.TxKQIp46Uv63PRqonsepjvMGSDAVUl4mLnT_Gcfb5Qw",
 											"type": "string"
 										}
 									]
@@ -852,7 +810,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "    {\r\n        \"annee_affectation_es\": 2025, \r\n        \"annee_recette_es\": 2028,\r\n        \"montant_es\": 802.6\r\n    }",
+									"raw": "    {\r\n        \"annee_affectation_es\": 2022, \r\n        \"annee_recette_es\": 2018,\r\n        \"montant_es\": 13\r\n    }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -860,7 +818,7 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:5000/api/receipts/previous/20",
+									"raw": "localhost:5000/api/receipts/previous/17",
 									"host": [
 										"localhost"
 									],
@@ -869,7 +827,7 @@
 										"api",
 										"receipts",
 										"previous",
-										"20"
+										"17"
 									]
 								}
 							},
@@ -883,7 +841,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI0NzU2MTYsIm5iZiI6MTYxMjQ3NTYxNiwianRpIjoiN2MxMDg5ZmYtODcxYy00MDIwLTlhNGEtZDU1Yzc2MWU5ZDAyIiwiZXhwIjoxNjEyNDc2MjE2LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.WFwm-GKqeKuzTOdaWrHhAe28uqCl94JxIH_Xq5ObtcY",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTI1MzQyOTcsIm5iZiI6MTYxMjUzNDI5NywianRpIjoiOWUwZTA4ZDgtYzM3OS00MmE0LWI5ZTQtZjVjMGU4NGM5NDU2IiwiZXhwIjoxNjEyNTYzMDk3LCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.qfi_KIX_MG-tsrxK4vn17S7tAP6XmcA4982BUcA8eBA",
 											"type": "string"
 										}
 									]
@@ -891,7 +849,7 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "localhost:5000/api/receipts/previous/6",
+									"raw": "localhost:5000/api/receipts/previous/4",
 									"host": [
 										"localhost"
 									],
@@ -900,7 +858,116 @@
 										"api",
 										"receipts",
 										"previous",
-										"6"
+										"4"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "accountings",
+					"item": [
+						{
+							"name": "GET localhost:5000/api/receipts/accountings",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwNDE5NDAsIm5iZiI6MTYxMzA0MTk0MCwianRpIjoiMDhkZGM0MGItNjJlMi00N2I5LWIyYzgtYzdjN2E4NjIwYmQxIiwiZXhwIjoxNjEzMDcwNzQwLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.pH2gyxotWnnavuX7k62xEL0hKL0mmyLjjiLx_hpb6Vo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": ""
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST localhost:5000/api/receipts/accountings",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwNDE5NDAsIm5iZiI6MTYxMzA0MTk0MCwianRpIjoiMDhkZGM0MGItNjJlMi00N2I5LWIyYzgtYzdjN2E4NjIwYmQxIiwiZXhwIjoxNjEzMDcwNzQwLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.pH2gyxotWnnavuX7k62xEL0hKL0mmyLjjiLx_hpb6Vo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": ""
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT localhost:5000/api/receipts/accountings/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwNDE5NDAsIm5iZiI6MTYxMzA0MTk0MCwianRpIjoiMDhkZGM0MGItNjJlMi00N2I5LWIyYzgtYzdjN2E4NjIwYmQxIiwiZXhwIjoxNjEzMDcwNzQwLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.pH2gyxotWnnavuX7k62xEL0hKL0mmyLjjiLx_hpb6Vo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/api/receipts/accountings/1",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"receipts",
+										"accountings",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE localhost:5000/api/receipts/accountings/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTMwNDE5NDAsIm5iZiI6MTYxMzA0MTk0MCwianRpIjoiMDhkZGM0MGItNjJlMi00N2I5LWIyYzgtYzdjN2E4NjIwYmQxIiwiZXhwIjoxNjEzMDcwNzQwLCJpZGVudGl0eSI6InRlc3RpbWFpbGxAbWFpbC5tbCIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyIsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbImFkbWluaXN0cmF0ZXVyIl19fQ.pH2gyxotWnnavuX7k62xEL0hKL0mmyLjjiLx_hpb6Vo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/api/receipts/accountings/1",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"receipts",
+										"accountings",
+										"1"
 									]
 								}
 							},
