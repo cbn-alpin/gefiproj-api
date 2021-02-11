@@ -1,6 +1,7 @@
 from flask import current_app
 
 from src.shared.entity import Session
+from src.shared.manage_error import ManageErrorUtils, CodeError, TError
 from .entities import ReceiptAccounting, ReceiptAccountingSchema
 
 
@@ -98,7 +99,8 @@ class ReceiptAccountingDBService:
             session.close()
 
             if receipt_accounting_existing is not None:
-                raise ValueError(f'La recette comptable de l\'année {year} existe déjà.', 403)
+                msg = f'La recette comptable de l\'année {year} existe déjà.'
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 403)
         except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise
@@ -115,7 +117,8 @@ class ReceiptAccountingDBService:
                 id_rc=receipt_accounting_id).first()
 
             if receipt_accounting_existing is None:
-                raise ValueError(f'La recette comptable n\'existe pas.', 404)
+                msg = f'La recette comptable n\'existe pas.'
+                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
         except (Exception, ValueError) as error:
             current_app.logger.error(error)
             raise

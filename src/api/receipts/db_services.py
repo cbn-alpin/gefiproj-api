@@ -18,7 +18,7 @@ class ReceiptDBService:
             existing_funding = session.query(Funding).filter_by(id_f=funding_id).first()
 
             if existing_funding is None:
-                msg = "le financement n'existe pas"
+                msg = "Le finnacement n\'existe pas."
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
         except (Exception, ValueError) as error:
             current_app.logger.error(error)
@@ -35,7 +35,7 @@ class ReceiptDBService:
             receipts = session.query(Receipt).filter(Receipt.id_f == funding_id, Receipt.annee_r == year).all()
             receipts = ReceiptSchema(many=True).dump(receipts)
             if len(receipts) > 0:
-                msg = f"The funding {funding_id} already has a receipt for the year {year}."
+                msg = f"Le financement {funding_id} a déjà une recette pour l'année {year}."
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, msg, 400)
             return receipts
         except (Exception, ValueError) as error:
@@ -83,7 +83,7 @@ class ReceiptDBService:
             receipt = schema.dump(receipt_object)
 
             if not receipt:
-                msg = f'The receipt with id {receipt_id} does not exist'
+                msg = f'La recette avec id =  {receipt_id} n\'existe pas'
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
 
             return receipt
@@ -149,7 +149,7 @@ class ReceiptDBService:
         if not existing_receipt:
             msg = {
                 'code': 'RECEIPT_NOT_FOUND',
-                'message': f'Receipt with id <{receipt_id}> does not exist.'
+                'message': f'Recette avec id = <{receipt_id}> n\'existe pas.'
             }
 
             return msg
@@ -166,7 +166,7 @@ class ReceiptDBService:
                 .filter(Receipt.id_r == id_receipt).first()
 
             if len(receipt_project_object) > 1 and receipt_project_object[1] is True:
-                msg = f'The receipt with id {id_receipt} cannot be deleted. The associated project is closed'
+                msg = f'La recette avec  {id_receipt} ne peut pas être supprimée. Le projet associé est fermé.'
                 ManageErrorUtils.exception(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 400)
 
         except (Exception, ValueError) as error:

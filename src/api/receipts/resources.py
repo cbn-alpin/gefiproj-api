@@ -113,7 +113,7 @@ def delete_receipt(id_receipt):
         # delete the receipt
         id_deleted = ReceiptDBService.delete(id_receipt)
         return jsonify({
-            'message': f'Receipt identified by {id_deleted} has been deleted'
+            'message': f'Recette identifié par {id_deleted} à été supprimé'
         }), 204
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
