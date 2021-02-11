@@ -33,6 +33,7 @@ def get_expenses():
 
 @resources.route('/api/expenses', methods=['POST'])
 @jwt_required
+@admin_required
 def add_expense():
     """This function created a new funder
 

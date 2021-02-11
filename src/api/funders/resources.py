@@ -33,6 +33,7 @@ def get_all_funders():
 
 @resources.route('/api/funders', methods=['POST'])
 @jwt_required
+@admin_required
 def add_funder():
     """This function created a new funder
 
