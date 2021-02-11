@@ -96,8 +96,8 @@ def update_amount(amount_id: int):
             
         # Validate fields to update
         AmountValidationService.validate(data)
-        # Checks receipt exist
-        ReceiptDBService.get_receipt_by_id(data['id_r'])
+        # Checks amount exist
+        AmountDBService.get_amount_by_id(amount_id)
         # Check project not solde
         AmountDBService.is_project_solde(receipt_id = data['id_r'])
         # Check year unique by receipt

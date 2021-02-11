@@ -34,7 +34,7 @@ class InputOutputDBService:
             existing_input_output = existing_input_output.first()
 
             if existing_input_output is not None:
-                msg = f'L entree sortie ({annee_recette} , {annee_affectation}) existe déjà.'
+                msg = f'L\'entrée sortie ({annee_recette} , {annee_affectation}) existe déjà.'
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 400)
         except (Exception, ValueError) as error:
             current_app.logger.error(error)

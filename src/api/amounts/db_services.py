@@ -43,7 +43,11 @@ class AmountDBService:
         try:
             session = Session()  
             amount = session.query(Amount).filter_by(id_ma=amount_id).first()
-
+            
+            if amount is None:
+                msg = f'Le montant affecté {amount_id} n\'existe pas.'
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
+           
             # Transforming into JSON-serializable objects
             schema = AmountSchema()
             response = schema.dump(amount)
@@ -175,16 +179,6 @@ class AmountDBService:
         finally:
             if session is not None:
                 session.close()      
-    
-    # TODO remove !!!!!!!!!!!!!!!!!!!!
-    @staticmethod
-    def delete_amounts_by_receipt_id(receipt_id: int):
-        session = Session()
-        delete_amounts = Amount.__table__.delete().where(Amount.id_r==receipt_id)
-        session.execute(delete_amounts)
-        
-        session.commit()
-        session.close()
         
     @staticmethod
     def check_unique_amount_by_year_and_receipt_id(year: int, receipt_id: int, amount_id = None):

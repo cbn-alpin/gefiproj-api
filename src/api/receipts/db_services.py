@@ -11,34 +11,28 @@ from ..projects.entities import Project
 
 class ReceiptDBService:
     @staticmethod
-    def check_funding_exists(funding_id):
+    def get_receipts_of_year_by_funding_id(funding_id: int or str, year: int or str, receipt_id: int = None):
         session = None
+        response = None
         try:
             session = Session()
-            existing_funding = session.query(Funding).filter_by(id_f=funding_id).first()
-
-            if existing_funding is None:
-                msg = "Le finnacement n\'existe pas."
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
-        except (Exception, ValueError) as error:
+            if receipt_id is not None:
+                response = session.query(Receipt) \
+                    .filter(Receipt.id_r != receipt_id, Receipt.id_f == funding_id, Receipt.annee_r == year) \
+                    .first()
+            else:
+                response = session.query(Receipt) \
+                    .filter(Receipt.id_f == funding_id, Receipt.annee_r == year) \
+                    .first()
+           
+            if response is not None or len(response) > 0:
+                msg = "L\'année {} de la recette de ce financement est déjà utilisé sur une recette.".format(year)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, msg, 409)
+            return response
+        except Exception as error:
             current_app.logger.error(error)
             raise
-        finally:
-            if session is not None:
-                session.close()
-
-    @staticmethod
-    def get_receipts_of_year_by_funding_id(funding_id: int or str, year: int or str):
-        session = None
-        try:
-            session = Session()
-            receipts = session.query(Receipt).filter(Receipt.id_f == funding_id, Receipt.annee_r == year).all()
-            receipts = ReceiptSchema(many=True).dump(receipts)
-            if len(receipts) > 0:
-                msg = f"Le financement {funding_id} a déjà une recette pour l'année {year}."
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, msg, 400)
-            return receipts
-        except (Exception, ValueError) as error:
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -52,7 +46,8 @@ class ReceiptDBService:
             session = Session()
             receipt_object = session.query(Receipt).filter_by(id_f=funding_id).order_by(Receipt.id_r).all()
 
-            rest_receipt_amount_object = session.query(*[c.label(c.name) for c in Receipt.__table__.c], (
+            session = Session()
+            receipts_object = session.query(*[c.label(c.name) for c in Receipt.__table__.c], (
                     Receipt.montant_r - func.coalesce(func.sum(Amount.montant_ma), 0)).label('difference')) \
                 .join(Amount, Amount.id_r == Receipt.id_r, isouter=True) \
                 .filter(Receipt.id_f == funding_id) \
@@ -61,11 +56,14 @@ class ReceiptDBService:
                 .all()
 
             receipts = []
-            for r in rest_receipt_amount_object:
-                receipts.append(r._asdict())
+            schema = ReceiptSchema(many=True)
+            receipts = schema.dump(receipts_object)
 
             return receipts
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -83,11 +81,14 @@ class ReceiptDBService:
             receipt = schema.dump(receipt_object)
 
             if not receipt:
-                msg = f'La recette avec id =  {receipt_id} n\'existe pas'
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
+                msg = f'La recette n\'existe pas'
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
 
             return receipt
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -95,16 +96,26 @@ class ReceiptDBService:
                 session.close()
 
     @staticmethod
-    def insert(receipt: Receipt):
+    def insert(receipt):
         session = None
+        new_receipt = None
         try:
+            
+            posted_receipt = ReceiptSchema(only=('id_f', 'montant_r', 'annee_r')).load(receipt)
+            receipt = Receipt(**posted_receipt)
+            
             session = Session()
             session.add(receipt)
             session.commit()
 
-            inserted_receipt = ReceiptSchema().dump(receipt)
-            return inserted_receipt
-        except (Exception, ValueError) as error:
+            new_receipt = ReceiptSchema().dump(receipt)
+            return new_receipt
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -112,16 +123,25 @@ class ReceiptDBService:
                 session.close()
 
     @staticmethod
-    def update(receipt: Receipt):
+    def update(receipt):
         session = None
+        updated_receipt = None
         try:
+            data = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).load(receipt)
+            receipt = Receipt(**data)
+
             session = Session()
             session.merge(receipt)
             session.commit()
 
             updated_receipt = ReceiptSchema().dump(receipt)
             return updated_receipt
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -129,49 +149,97 @@ class ReceiptDBService:
                 session.close()
 
     @staticmethod
-    def delete(receipt_id: int) -> int:
-        try:
-            session = Session()
-            session.query(Receipt).filter_by(id_r=receipt_id).delete()
-            session.commit()
-
-            return receipt_id
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
-            raise
-        finally:
-            if session is not None:
-                session.close()
-
-    @staticmethod
-    def check_receipt_exists_by_id(receipt_id: int):
-        existing_receipt = ReceiptDBService.get_receipt_by_id(receipt_id)
-        if not existing_receipt:
-            msg = {
-                'code': 'RECEIPT_NOT_FOUND',
-                'message': f'Recette avec id = <{receipt_id}> n\'existe pas.'
-            }
-
-            return msg
-
-    @staticmethod
-    def is_project_solde(id_receipt):
+    def delete(receipt_id: int, year: int):
         session = None
         try:
             session = Session()
-            receipt_project_object = session.query(Receipt.id_r) \
-                .join(Funding, Funding.id_f == Receipt.id_f) \
-                .join(Project, Project.id_p == Funding.id_p) \
-                .add_columns(Project.statut_p) \
-                .filter(Receipt.id_r == id_receipt).first()
+            delete_amounts = Amount.__table__.delete().where(Amount.id_r==receipt_id)
+            session.execute(delete_amounts)
+            
+            data = session.query(Receipt).filter_by(id_r=receipt_id).delete()
+            session.commit()
 
-            if len(receipt_project_object) > 1 and receipt_project_object[1] is True:
-                msg = f'La recette avec  {id_receipt} ne peut pas être supprimée. Le projet associé est fermé.'
-                ManageErrorUtils.exception(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 400)
-
-        except (Exception, ValueError) as error:
+            return { 'message': 'La recette de l\'année {} a été supprimé'.format(year) }
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
                 session.close()
+
+    @staticmethod
+    def is_project_solde(id_receipt: int = None, funding_id: int = None):
+        session = None
+        try:
+            session = Session()
+            project = None
+            if funding_id is not None:
+                project = session.query(Project) \
+                    .join(Funding, Project.id_p == Funding.id_p, isouter=True) \
+                    .filter(Funding.id_f == funding_id, Project.statut_p == True) \
+                    .first()
+            elif id_receipt is not None:
+                project = session.query(Project) \
+                    .join(Funding, Project.id_p == Funding.id_p, isouter=True) \
+                    .join(Receipt, Funding.id_f == Receipt.id_f, isouter=True) \
+                    .filter(Receipt.id_r == id_receipt, Project.statut_p == True) \
+                    .first()
+
+            if project is not None and project.statut_p == True:
+                msg = 'Le projet {} est soldé. Les actions dans le tableau des recettes relié à ce projet sont interdites.'.format(project.nom_p)
+                ManageErrorUtils.exception(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 403)
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
+
+    @staticmethod
+    def check_sum_value(receipt, receipt_id: int = None): 
+        session = None
+        response = []
+        try:
+            session = Session()     
+            diff = -1
+            if receipt_id is None:
+                # check insert
+                response = session.query(Funding, \
+                    ( Funding.montant_arrete_f - func.coalesce(func.sum(Receipt.montant_r), 0) ).label('difference') ) \
+                    .join(Receipt, Receipt.id_f == Funding.id_f, isouter=True) \
+                    .filter(Funding.id_f == receipt['id_f']) \
+                    .group_by(Funding.id_f).all()
+                diff = (0 if len(response) == 0 else float(response[0][1]))
+            else:
+                # check update
+                response = session.query(Funding, \
+                    ( Funding.montant_arrete_f - func.coalesce(func.sum(Receipt.montant_r), 0) ).label('difference') ) \
+                    .join(Receipt, Receipt.id_r == Funding.id_r, isouter=True) \
+                    .filter(Funding.id_f == receipt['id_f'], Receipt.id_r != receipt_id) \
+                    .group_by(Funding.id_f).all()
+                difference = (float(receipt['montant_r']) if len(response) == 0 else float(response[0][1]))
+                diff = difference - float(receipt['montant_r'])
+            
+            if diff < 0:
+                msg = "Erreur de valeur: la somme des recettes est supérieur au montant de son financement."
+                ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
+
+            session.close()
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()    
+                  
