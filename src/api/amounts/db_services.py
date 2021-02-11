@@ -238,7 +238,7 @@ class AmountDBService:
                     .first()
                 
             if project is not None and project.statut_p == True:
-                msg = "Le projet {} est soldé. Les actions dans les tableaux des montants affectés relié à ce projet sont interdit.".format(project.nom_p)
+                msg = "Le projet {} est soldé. Les actions dans le tableau des montants affectés relié à ce projet sont interdites.".format(project.nom_p)
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
       
             session.close()
