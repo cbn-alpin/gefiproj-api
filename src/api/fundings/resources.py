@@ -68,6 +68,7 @@ def get_fundings_by_funder(funder_id: int):
 
 @resources.route('/api/fundings', methods=['POST'])
 @jwt_required
+@admin_required
 def add_funding():
     """This function created a new funding
 
@@ -81,8 +82,11 @@ def add_funding():
         posted_funding = request.get_json()
         # Check posted data fields
         FundingValidationService.validate(posted_funding)
-        # Checks project exist
+        # Check project exist
         ProjectDBService.get_project_by_id(posted_funding['id_p'])
+        # Check project not solde
+        FundingDBService.is_project_solde(project_id = posted_funding['id_p'])
+
         # Insert
         response = FundingDBService.insert(posted_funding)
         response = jsonify(response), 201
@@ -121,6 +125,9 @@ def update_funding(funding_id: int):
         FundingValidationService.validate(data)
         # Checks if funding exist
         FundingDBService.get_funding_by_id(data['id_f'])
+        # Check project not solde
+        FundingDBService.is_project_solde(project_id = data['id_p'])
+            
         # Checks if sum receipts is < of amount funding
         FundingDBService.check_sum_with_receipt(data)
         
@@ -151,6 +158,8 @@ def delete_funding(funding_id: int):
     try:
         # Check if project exists
         FundingDBService.get_funding_by_id(funding_id)
+        # Check project not solde
+        FundingDBService.is_project_solde(funding_id = funding_id)
         # Delete others entity referenced if exist
         FundingDBService.delete_entities_referenced(funding_id)
 

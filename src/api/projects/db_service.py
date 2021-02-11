@@ -129,19 +129,6 @@ class ProjectDBService:
         finally:
             if session is not None:
                 session.close()
-    
-    @staticmethod
-    def is_project_solde(project):
-        try:
-            if project is not None and project['statut_p'] == Status.STATUS_SOLDE.value:
-                msg = "Le projet {} est soldé. Les actions dans les tableaux financements, recettes et montants affectés relié à ce projet sont interdit.".format(project['nom_p'])
-                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
-        except Exception as error:
-            current_app.logger.error(error)
-            raise
-        except ValueError as error:
-            current_app.logger.error(error)
-            raise
 
     @staticmethod
     def update(project):

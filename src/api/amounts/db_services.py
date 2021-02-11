@@ -6,6 +6,8 @@ from ..receipts.entities import Receipt
 from .entities import Amount, AmountSchema
 from sqlalchemy import func
 from sqlalchemy.orm import join
+from src.api.projects.entities import Project
+from src.api.fundings.entities import Funding
 
 
 class AmountDBService:
@@ -215,3 +217,37 @@ class AmountDBService:
             if session is not None:
                 session.close()      
         
+    @staticmethod
+    def is_project_solde(amount_id: int = None, receipt_id: int = None):
+        session = None
+        try:
+            session = Session()
+            project = None
+            if amount_id is not None:
+                project = session.query(Project) \
+                    .join(Funding, Project.id_p == Funding.id_p, isouter=True) \
+                    .join(Receipt, Funding.id_f == Receipt.id_f, isouter=True) \
+                    .join(Amount, Receipt.id_r == Amount.id_r, isouter=True) \
+                    .filter(Amount.id_ma == amount_id, Project.statut_p == True) \
+                    .first()
+            elif receipt_id is not None:
+                project = session.query(Project) \
+                    .join(Funding, Project.id_p == Funding.id_p, isouter=True) \
+                    .join(Receipt, Funding.id_f == Receipt.id_f, isouter=True) \
+                    .filter(Receipt.id_r == receipt_id, Project.statut_p == True) \
+                    .first()
+                
+            if project is not None and project.statut_p == True:
+                msg = "Le projet {} est soldé. Les actions dans les tableaux des montants affectés relié à ce projet sont interdit.".format(project.nom_p)
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
+      
+            session.close()
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()

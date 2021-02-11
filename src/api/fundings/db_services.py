@@ -6,6 +6,7 @@ from marshmallow import INCLUDE, EXCLUDE
 from src.shared.entity import Session
 
 from .entities import Funding, FundingSchema
+from src.api.projects.entities import Project
 from ..amounts.entities import Amount
 from ..receipts.entities import Receipt, ReceiptSchema
 from ..users.db_services import UserDBService
@@ -283,6 +284,37 @@ class FundingDBService:
                 msg = "Erreur de valeur: la somme des montants des recettes est supérieur au montant arrêté du financement modifié."
                 ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, msg, 422)
 
+            session.close()
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
+
+    @staticmethod
+    def is_project_solde(funding_id: int = None, project_id: int = None):
+        session = None
+        try:
+            session = Session()
+            project = None
+            if funding_id is not None:
+                project = session.query(Project) \
+                    .join(Funding, Project.id_p == Funding.id_p, isouter=True) \
+                    .filter(Funding.id_f == funding_id, Project.statut_p == True) \
+                    .first()
+            elif project_id is not None:
+                project = session.query(Project) \
+                    .filter(Project.id_p == project_id, Project.statut_p == True) \
+                    .first()
+                
+            if project is not None and project.statut_p == True:
+                msg = "Le projet {} est soldé. Les actions dans les tableaux financements relié à ce projet sont interdit.".format(project.nom_p)
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
+      
             session.close()
         except Exception as error:
             current_app.logger.error(error)

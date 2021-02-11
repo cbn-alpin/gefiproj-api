@@ -39,6 +39,7 @@ def get_amounts_by_receipt(receipt_id: int):
 
 @resources.route('/api/amounts', methods=['POST'])
 @jwt_required
+@admin_required
 def add_amount():
     """This function created a new amount
 
@@ -54,7 +55,11 @@ def add_amount():
         AmountValidationService.validate(posted_amount)
         # Check receipt
         ReceiptDBService.get_receipt_by_id(posted_amount['id_r'])
+        # Check project not solde
+        AmountDBService.is_project_solde(receipt_id = posted_amount['id_r'])
+        # Check year unique by receipt
         AmountDBService.check_unique_amount_by_year_and_receipt_id(posted_amount['annee_ma'], posted_amount['id_r'])
+        # Check sum amount value
         AmountDBService.check_sum_value(posted_amount)
         
         response = AmountDBService.insert(posted_amount)
@@ -91,9 +96,13 @@ def update_amount(amount_id: int):
             
         # Validate fields to update
         AmountValidationService.validate(data)
-        # Checks
+        # Checks receipt exist
         ReceiptDBService.get_receipt_by_id(data['id_r'])
+        # Check project not solde
+        AmountDBService.is_project_solde(receipt_id = data['id_r'])
+        # Check year unique by receipt
         AmountDBService.check_unique_amount_by_year_and_receipt_id(data['annee_ma'], data['id_r'], amount_id)
+        # Check sum amount value
         AmountDBService.check_sum_value(data, amount_id)
         
         response = AmountDBService.update(data)
@@ -124,6 +133,8 @@ def delete_amount(amount_id: int):
     try:
         # Check
         amount = AmountDBService.get_amount_by_id(amount_id)
+        # Check project not solde
+        AmountDBService.is_project_solde(amount_id = amount_id)
 
         response = AmountDBService.delete(amount_id, amount['annee_ma'])
         response = jsonify(response), 204
