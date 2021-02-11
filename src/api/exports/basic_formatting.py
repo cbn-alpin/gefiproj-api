@@ -193,6 +193,155 @@ def basic_formatting_funding(session: str, spreadsheet_id: str, datas):
     # current_app.logger.debug(f'Un   : {datas[1][len(datas[0])-1]}')
 
 
+def get_title_button_tabs(line: int):
+    return [
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+1,
+                    "startColumnIndex": 1,
+                    "endColumnIndex": 10
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=CONCATENATE(\"Avant \", MID(A$2,3,2))"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+1,
+                    "startColumnIndex": 2,
+                    "endColumnIndex": 3
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+1,
+                    "startColumnIndex": 3,
+                    "endColumnIndex": 4
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2+1,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 4,
+                    "endColumnIndex": 5
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2+2,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 5,
+                    "endColumnIndex": 6
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2+3,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 6,
+                    "endColumnIndex": 7
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2+4,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 7,
+                    "endColumnIndex": 8
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=MID(A$2+5,3,2)"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 8,
+                    "endColumnIndex": 9
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=CONCATENATE(\"Après \", MID(A$2+5,3,2))"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 9,
+                    "endColumnIndex": 10
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=\"Total\""
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        }
+    ]
+
+
 def get_formatting_button_left_tabs(line: int):
     return [
         {
@@ -515,7 +664,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                 "repeatCell": {
                     "range": {
                         "startRowIndex": 0,
-                        "endRowIndex": max_rows_first_tab,
+                        "endRowIndex": max_rows_first_tab-1,
                         "startColumnIndex": 1,
                         "endColumnIndex": 10
                     },
@@ -538,10 +687,46 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                     "filter": {
                         "range": {
                             "startRowIndex": 0,
-                            "endRowIndex": max_rows_first_tab,
+                            "endRowIndex": max_rows_first_tab-1,
                             "endColumnIndex": 10
                         }
                     }
+                }
+            },
+            {
+                "repeatCell": {
+                    "range": {
+                        "startRowIndex": max_rows_first_tab,
+                        "endRowIndex": max_rows_first_tab+1,
+                        "startColumnIndex": 1,
+                        "endColumnIndex": 10
+                    },
+                    "cell": {
+                        "userEnteredValue": {
+                            "formulaValue": "=SUM(B2:B9)"
+                        }
+                    },
+                    "fields": "userEnteredValue"
+                }
+            },
+            {
+                "repeatCell": {
+                    "range": {
+                        "startRowIndex": max_rows_first_tab,
+                        "endRowIndex": max_rows_first_tab+1
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "horizontalAlignment": "RIGHT",
+                            "verticalAlignment": "MIDDLE",
+                            "wrapStrategy": "WRAP",
+                            "textFormat": {
+                                "fontSize": 11,
+                                "bold": "true"
+                            }
+                        }
+                    },
+                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
                 }
             },
             get_formatting_button_tabs(max_rows_first_tab + 3)[0],
@@ -550,6 +735,15 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
             get_formatting_button_left_tabs(max_rows_first_tab + 4)[0],
             get_formatting_button_left_tabs(max_rows_first_tab + 4)[1],
             get_formatting_button_left_tabs(max_rows_first_tab + 4)[2],
+            get_title_button_tabs(max_rows_first_tab + 4)[0],
+            get_title_button_tabs(max_rows_first_tab + 4)[1],
+            get_title_button_tabs(max_rows_first_tab + 4)[2],
+            get_title_button_tabs(max_rows_first_tab + 4)[3],
+            get_title_button_tabs(max_rows_first_tab + 4)[4],
+            get_title_button_tabs(max_rows_first_tab + 4)[5],
+            get_title_button_tabs(max_rows_first_tab + 4)[6],
+            get_title_button_tabs(max_rows_first_tab + 4)[7],
+            get_title_button_tabs(max_rows_first_tab + 4)[8]
 
         ]
     }

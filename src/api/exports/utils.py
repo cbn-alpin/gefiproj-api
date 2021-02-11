@@ -110,7 +110,7 @@ def get_max_year(year_ref: int, result):
 
 
 def generate_header_first_tab_0(year_ref: int):
-    header_title = ['Année de recette', 'Recettes comptables',
+    header_title = ['Année de recette', 'Recettes de l\'année',
                     f'Montant affecté avant {export_year_to_str_2(year_ref, 0)}']
     i = 0
     for x in range(year_ref, year_ref + 6, 1):
