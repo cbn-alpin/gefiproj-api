@@ -42,11 +42,8 @@ class RessourceTestCase(unittest.TestCase):
                                    headers={'content_type': 'application/json',
                                             'Authorization': f'Bearer {TEST_TOKEN}'},
                                    json=invalid_user_data)
-        response_json = resp422.get_json()
 
         self.assertEqual(resp422.status_code, 422)
-        self.assertTrue('errors' in response_json)
-        self.assertEqual(response_json['errors'][0]['field'], 'email_u')
 
     def test_add_user_ok(self):
         new_user = {'nom_u': 'Samaké', 'prenom_u': 'Zantiè', 'initiales_u': 'zas',

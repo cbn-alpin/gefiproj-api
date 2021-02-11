@@ -95,19 +95,6 @@ class RessourceTestCase(unittest.TestCase):
         self.assertEqual(response_json['id_f'], 1)
         self.assertFalse(response_json['id_r'] is None)
 
-    def test_update_not_found_receipt(self):
-        receipt_data = {
-            "annee_r": "2020",
-            "montant_r": 307.21,
-            "id_f": 1
-        }
-
-        resp404 = self.tester.put(BASE_URL + '/11',
-                                  headers={'content_type': CONTENT_TYPE,
-                                           'Authorization': f'Bearer {TEST_TOKEN}'},
-                                  json=receipt_data)
-        self.assertEqual(resp404.status_code, 404)
-
     def test_update_receipt_invalid_data(self):
         receipt_data = {
             "annee_r": "2021",
