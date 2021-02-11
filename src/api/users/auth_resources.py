@@ -3,12 +3,11 @@ from functools import wraps
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_refresh_token_required, get_jwt_identity, \
     verify_jwt_in_request, get_jwt_claims, jwt_required, get_raw_jwt
-from .. import jwt
 
 from src.api.users.db_services import UserDBService
-from .validation_service import UserValidationService
 from src.shared.manage_error import CodeError, ManageErrorUtils, TError
-from jwt.exceptions import ExpiredSignatureError
+from .validation_service import UserValidationService
+from .. import jwt
 
 resources = Blueprint('auth', __name__)
 
@@ -29,7 +28,7 @@ def admin_required(fn):
             current_app.logger.error(error)
             raise
         except Exception as e:
-            current_app.logger.error(error)
+            current_app.logger.error(e)
             raise
     return wrapper
         

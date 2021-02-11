@@ -1,5 +1,7 @@
 import unittest
 
+from marshmallow import EXCLUDE
+
 from src.api.projects.db_service import ProjectDBService
 from src.api.projects.entities import Project, ProjectSchema
 from src.shared.test_base import DBBaseTestCase
@@ -10,43 +12,25 @@ from src.shared.test_base import DBBaseTestCase
 
 class DBServiceTestCase(DBBaseTestCase):
     def test_insert_project(self):
-        new_project = Project(nom_p='Haut de chèvre', code_p='210001', statut_p=True, id_u=1)
-        inserted_project = ProjectDBService.insert_project(new_project)
+        new_project = {'nom_p': 'Haut de chèvre', 'code_p': '210001', 'statut_p': True, 'id_u': 1}
+        inserted_project = ProjectDBService.insert(new_project)
 
-        project_object = self.db.session.query(Project).filter_by(id_p=new_project.id_p).first()
+        project_object = self.db.session.query(Project).filter_by(id_p=inserted_project.get('id_p')).first()
         project_found = ProjectSchema().dump(project_object)
-        self.assertEqual(inserted_project['id_p'], project_found['id_p'])
-        self.assertEqual(inserted_project['code_p'], project_found['code_p'])
-        self.db.session.query(Project).filter_by(id_p=new_project.id_p).delete()
+        self.assertEqual(inserted_project.get('id_p'), project_found.get('id_p'))
+        self.assertEqual(inserted_project['code_p'], project_found.get('code_p'))
+        self.db.session.query(Project).filter_by(id_p=new_project.get('id_p')).delete()
         self.db.session.commit()
 
     def test_get_project_by_id(self):
-        project = ProjectDBService.get_project_by_id(10)
-        self.assertEqual(project, {})
+        with self.assertRaises(Exception):
+            ProjectDBService.get_project_by_id(10)
 
         new_project = Project(nom_p='Testing', code_p='210077', statut_p=True, id_u=1)
         self.db.session.add(new_project)
         self.db.session.commit()
         project = ProjectDBService.get_project_by_id(new_project.id_p)
         self.assertEqual(project['id_p'], new_project.id_p)
-
-    def test_get_project_by_code_ok(self):
-        new_project = Project(nom_p='X-files', code_p='210009', statut_p=False, id_u=1)
-        self.db.session.add(new_project)
-        self.db.session.commit()
-
-        project = ProjectDBService.get_project_by_code('210009')
-        self.assertEqual(project.get('code_p'), 210009)
-        self.assertEqual(project.get('nom_p'), 'X-files')
-
-    def test_get_project_by_nom_ok(self):
-        new_project = Project(nom_p='THE project', code_p='21007', statut_p=False, id_u=1)
-        self.db.session.add(new_project)
-        self.db.session.commit()
-
-        project = ProjectDBService.get_project_by_nom('THE project')
-        self.assertEqual(project.get('nom_p'), 'THE project')
-        self.assertEqual(project.get('code_p'), 21007)
 
     def test_get_all_projects(self):
         all_projects = ProjectDBService.get_all_projects()
@@ -61,20 +45,24 @@ class DBServiceTestCase(DBBaseTestCase):
         self.assertEqual(len(all_projects), 2)
 
     def test_update_project(self):
-        new_project = Project(nom_p='X-files', code_p='210007', statut_p=False, id_u=1)
-        self.db.session.add(new_project)
+        new_project_object = {'nom_p': 'X-files', 'code_p': '210007', 'statut_p': False, 'id_u': 1}
+        new_project = ProjectSchema(only=('code_p', 'nom_p', 'statut_p', 'id_u', 'id_p')) \
+            .load(new_project_object, unknown=EXCLUDE)
+        pr = Project(**new_project)
+        self.db.session.add(pr)
         self.db.session.commit()
-        id_p = new_project.id_p
 
-        new_project.statut_p = True
-        new_project.nom_p = 'Lazy dog'
-        project = ProjectDBService.update_project(new_project)
+        new_project_object['id_p'] = pr.id_p
+        new_project_object['statut_p'] = True
+        new_project_object['nom_p'] = 'Lazy dog'
 
-        self.assertEqual(project.get('id_p'), id_p)
-        self.assertEqual(project.get('nom_p'), 'Lazy dog')
-        self.assertTrue(project.get('statut_p'))
+        updated_project = ProjectDBService.update(new_project_object)
 
-        self.db.session.query(Project).filter_by(id_p=new_project.id_p).delete()
+        self.assertEqual(updated_project.get('id_p'), pr.id_p)
+        self.assertEqual(updated_project.get('nom_p'), 'Lazy dog')
+        self.assertTrue(updated_project.get('statut_p'))
+
+        self.db.session.query(Project).filter_by(id_p=pr.id_p).delete()
         self.db.session.commit()
 
     # TODO: test the other methods
