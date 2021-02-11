@@ -193,13 +193,66 @@ def basic_formatting_funding(session: str, spreadsheet_id: str, datas):
     # current_app.logger.debug(f'Un   : {datas[1][len(datas[0])-1]}')
 
 
+def get_title_button_left_tabs(line: int, celle: str):
+    return [
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": 1
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=CONCATENATE(\"Montant affecté de \", MID(" + celle + ",3,2), \" vers n\")"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": 1
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=CONCATENATE(\"Montant affecté de n vers \", MID(" + celle + ",3,2))"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 2,
+                    "endRowIndex": line + 3,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": 1
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=CONCATENATE(\"Bilan \", MID(" + celle + ",3,2), \"/n\")"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        }
+    ]
+
+
 def get_title_button_tabs(line: int):
     return [
         {
             "repeatCell": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+1,
+                    "endRowIndex": line + 1,
                     "startColumnIndex": 1,
                     "endColumnIndex": 10
                 },
@@ -215,7 +268,7 @@ def get_title_button_tabs(line: int):
             "repeatCell": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+1,
+                    "endRowIndex": line + 1,
                     "startColumnIndex": 2,
                     "endColumnIndex": 3
                 },
@@ -231,7 +284,7 @@ def get_title_button_tabs(line: int):
             "repeatCell": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+1,
+                    "endRowIndex": line + 1,
                     "startColumnIndex": 3,
                     "endColumnIndex": 4
                 },
@@ -361,7 +414,7 @@ def get_formatting_button_left_tabs(line: int):
             "repeatCell": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+1,
+                    "endRowIndex": line + 1,
                     "startColumnIndex": 11,
                     "endColumnIndex": 17
                 },
@@ -386,7 +439,7 @@ def get_formatting_button_left_tabs(line: int):
             "updateBorders": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+2,
+                    "endRowIndex": line + 2,
                     "startColumnIndex": 11,
                     "endColumnIndex": 17
                 },
@@ -432,7 +485,7 @@ def get_formatting_button_left_tabs(line: int):
             "updateBorders": {
                 "range": {
                     "startRowIndex": line,
-                    "endRowIndex": line+2,
+                    "endRowIndex": line + 2,
                     "startColumnIndex": 17,
                     "endColumnIndex": 1
                 },
@@ -540,8 +593,8 @@ def get_formatting_button_tabs(line: int):
         {
             "updateBorders": {
                 "range": {
-                    "startRowIndex": line+1,
-                    "endRowIndex": line+5,
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 5,
                     "endColumnIndex": 11
                 },
                 "innerVertical": {
@@ -556,6 +609,176 @@ def get_formatting_button_tabs(line: int):
             }
         },
     ]
+
+
+def generate_style_all_tabs(max_rows_first_tab: int):
+    """
+            params : length ligne table
+            params : current first year off tabs
+        """
+    json_data = []
+    k = 0
+    for x in range(0, max_rows_first_tab - 1):
+        json_data.append(get_formatting_button_tabs(max_rows_first_tab + 3 + k)[0])
+        json_data.append(get_formatting_button_tabs(max_rows_first_tab + 3 + k)[1])
+        json_data.append(get_formatting_button_tabs(max_rows_first_tab + 3 + k)[2])
+
+        json_data.append(get_formatting_button_left_tabs(max_rows_first_tab + 4 + k)[0])
+        json_data.append(get_formatting_button_left_tabs(max_rows_first_tab + 4 + k)[1])
+        json_data.append(get_formatting_button_left_tabs(max_rows_first_tab + 4 + k)[2])
+
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[0])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[1])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[2])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[3])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[4])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[5])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[6])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[7])
+        json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[8])
+
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$2')[0])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$2')[1])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$2')[2])
+        k = k + 6
+
+    return json_data
+
+
+def get_one_query_value_first(letter: [], y_cell: int, cel1: int, cel2: int, ligne_max: int, current_year: int):
+    """
+        params : letter == column
+        params : (letter[0], y_cell) : position to update
+        params : Cellule du Titre du Bilan => YY année
+        params : Cellule du Titre du tableau de l'année => YY année
+        params : max ligne
+        params : current first year off table
+        Exemple in for Bilan 2010 in H$31 : =IF(REGEXMATCH(MID($A$31,9,2), H$32), "", INDEX(query($A$1:$J$9 ,"select I where A=2019"),2,0))
+    """
+    return {
+               "repeatCell": {
+                   "range": {
+                       "startRowIndex": y_cell - 1,
+                       "endRowIndex": y_cell,
+                       "startColumnIndex": letter[1] - 1,
+                       "endColumnIndex": letter[1]
+                   },
+                   "cell": {
+                       "userEnteredFormat": {
+                           "horizontalAlignment": "RIGHT",
+                           "verticalAlignment": "MIDDLE",
+                           "textFormat": {
+                               "fontSize": 11,
+                               "bold": "true"
+                           },
+                           "numberFormat": {
+                               "type": "CURRENCY",
+                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                           }
+                       },
+                       "userEnteredValue": {
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1) + ", 9, 2), " + letter[0] + "$" + str(
+                               cel2) + "), \"\", INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + letter[
+                                               2] + " where A=" + str(
+                               current_year) + "\"), 2, 0)) "
+                       }
+                   },
+                   "fields": "userEnteredValue,userEnteredFormat.numberFormat"
+               },
+           },
+
+
+def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int):
+    """
+        params : letter == column
+        params : (letter[0], y_cell) : position to update
+        params : Cellule du Titre du Bilan => YY année
+        params : Cellule du Titre du tableau de l'année => YY année
+        params : max ligne
+        params : current first year off table
+        Exemple in for Bilan 2010 in H$31 : =IF(REGEXMATCH(MID($A$31,9,2), H$32), "", INDEX(query($A$1:$J$9 ,"select I where A=2019"),2,0))
+    """
+    return {
+               "repeatCell": {
+                   "range": {
+                       "startRowIndex": y_cell - 1,
+                       "endRowIndex": y_cell,
+                       "startColumnIndex": letter[1] - 1,
+                       "endColumnIndex": letter[1]
+                   },
+                   "cell": {
+                       "userEnteredFormat": {
+                           "horizontalAlignment": "RIGHT",
+                           "verticalAlignment": "MIDDLE",
+                           "textFormat": {
+                               "fontSize": 11,
+                               "bold": "true"
+                           },
+                           "numberFormat": {
+                               "type": "CURRENCY",
+                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                           }
+                       },
+                       "userEnteredValue": {
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1-1) + ", 9, 2), " + letter[0] + "$" + str(
+                               cel2-1) + "), \"\", INDEX(query($A$1:$J$9 ,\"select G where A="+str(current_year)+"\"),2,0))"
+                       }
+                   },
+                   "fields": "userEnteredValue,userEnteredFormat.numberFormat"
+               },
+           },
+
+
+def get_one_query_total_value(y_cell: int):
+    return {
+               "repeatCell": {
+                   "range": {
+                       "startRowIndex": y_cell - 1,
+                       "endRowIndex": y_cell,
+                       "startColumnIndex": 9,
+                       "endColumnIndex": 10
+                   },
+                   "cell": {
+                       "userEnteredFormat": {
+                           "horizontalAlignment": "RIGHT",
+                           "verticalAlignment": "MIDDLE",
+                           "textFormat": {
+                               "fontSize": 11,
+                               "bold": "true"
+                           },
+                           "numberFormat": {
+                               "type": "CURRENCY",
+                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                           }
+                       },
+                       "userEnteredValue": {
+                           "formulaValue": "=SUM(B" + str(y_cell) + ":I" + str(y_cell) + ")"
+                       }
+                   },
+                   "fields": "userEnteredValue,userEnteredFormat.numberFormat"
+               }
+           },
+
+
+def generate_all_value_for_letter(letter: [], max_rows_first_tab: int, first_year: int):
+    """
+        params : letter == column
+        params : length ligne table
+        params : current first year off tabs
+    """
+    json_data = []
+    k = 0
+    for x in range(0, max_rows_first_tab - 1):
+        json_data.append(get_one_query_value_first(letter, max_rows_first_tab + 6 + k, max_rows_first_tab + 4 + k,
+                                                   max_rows_first_tab + 5 + k, max_rows_first_tab, first_year + x))
+        json_data.append(get_one_query_total_value(max_rows_first_tab + 6 + k))
+
+        json_data.append(get_one_query_value_seconde(letter, max_rows_first_tab + 6 + k + 1, max_rows_first_tab + 4 + k + 1,
+                                                     max_rows_first_tab + 5 + k + 1, first_year + x))
+        json_data.append(get_one_query_total_value(max_rows_first_tab + 6 + k + 1))
+        k = k + 6
+
+    return json_data
 
 
 # Formatting first table for receipt export
@@ -664,7 +887,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                 "repeatCell": {
                     "range": {
                         "startRowIndex": 0,
-                        "endRowIndex": max_rows_first_tab-1,
+                        "endRowIndex": max_rows_first_tab,
                         "startColumnIndex": 1,
                         "endColumnIndex": 10
                     },
@@ -687,7 +910,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                     "filter": {
                         "range": {
                             "startRowIndex": 0,
-                            "endRowIndex": max_rows_first_tab-1,
+                            "endRowIndex": max_rows_first_tab,
                             "endColumnIndex": 10
                         }
                     }
@@ -697,7 +920,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                 "repeatCell": {
                     "range": {
                         "startRowIndex": max_rows_first_tab,
-                        "endRowIndex": max_rows_first_tab+1,
+                        "endRowIndex": max_rows_first_tab + 1,
                         "startColumnIndex": 1,
                         "endColumnIndex": 10
                     },
@@ -713,7 +936,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                 "repeatCell": {
                     "range": {
                         "startRowIndex": max_rows_first_tab,
-                        "endRowIndex": max_rows_first_tab+1
+                        "endRowIndex": max_rows_first_tab + 1
                     },
                     "cell": {
                         "userEnteredFormat": {
@@ -729,21 +952,15 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_t
                     "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
                 }
             },
-            get_formatting_button_tabs(max_rows_first_tab + 3)[0],
-            get_formatting_button_tabs(max_rows_first_tab + 3)[1],
-            get_formatting_button_tabs(max_rows_first_tab + 3)[2],
-            get_formatting_button_left_tabs(max_rows_first_tab + 4)[0],
-            get_formatting_button_left_tabs(max_rows_first_tab + 4)[1],
-            get_formatting_button_left_tabs(max_rows_first_tab + 4)[2],
-            get_title_button_tabs(max_rows_first_tab + 4)[0],
-            get_title_button_tabs(max_rows_first_tab + 4)[1],
-            get_title_button_tabs(max_rows_first_tab + 4)[2],
-            get_title_button_tabs(max_rows_first_tab + 4)[3],
-            get_title_button_tabs(max_rows_first_tab + 4)[4],
-            get_title_button_tabs(max_rows_first_tab + 4)[5],
-            get_title_button_tabs(max_rows_first_tab + 4)[6],
-            get_title_button_tabs(max_rows_first_tab + 4)[7],
-            get_title_button_tabs(max_rows_first_tab + 4)[8]
+            generate_style_all_tabs(max_rows_first_tab),
+            generate_all_value_for_letter(['B', 2, 'C'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['C', 3, 'D'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['D', 4, 'E'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['E', 5, 'F'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['F', 6, 'G'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['G', 7, 'H'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['H', 8, 'I'], max_rows_first_tab, 2016),
+            generate_all_value_for_letter(['I', 9, 'J'], max_rows_first_tab, 2016)
 
         ]
     }

@@ -85,6 +85,7 @@ def insert_empty_data_from_year(year: int):
         0,  # affectation_a3
         0,  # affectation_a4
         0,  # affectation_a5
+        0,  # affectation_a6
         0  # affectation_apres
     ]
 
@@ -419,5 +420,6 @@ def export_receipt_item_from_row_proxy(row_proxy):
     return [
         row_proxy['annee_recette'], row_proxy['montant_recette'], row_proxy['affectation_avant'],
         row_proxy['affectation_a'], row_proxy['affectation_a2'], row_proxy['affectation_a3'],
-        row_proxy['affectation_a4'], row_proxy['affectation_a5'], row_proxy['affectation_apres']
+        row_proxy['affectation_a4'], row_proxy['affectation_a5'],row_proxy['affectation_a6']
+        , row_proxy['affectation_apres']
     ]
