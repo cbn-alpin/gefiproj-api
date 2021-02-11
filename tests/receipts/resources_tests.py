@@ -62,7 +62,7 @@ class RessourceTestCase(unittest.TestCase):
         self.db.session.commit()
 
         receipt_data = {
-            "annee_r": "2020",
+            "annee_r": 2020,
             "montant_r": 719.21,
             "id_f": 1
         }
@@ -78,7 +78,7 @@ class RessourceTestCase(unittest.TestCase):
 
     def test_add_receipt_ok(self):
         receipt_data = {
-            "annee_r": "2020",
+            "annee_r": 2020,
             "montant_r": 719.21,
             "id_f": 1
         }
@@ -89,7 +89,7 @@ class RessourceTestCase(unittest.TestCase):
                                    json=receipt_data)
         response_json = resp200.get_json()
 
-        self.assertEqual(resp200.status_code, 200)
+        self.assertEqual(resp200.status_code, 201)
         self.assertEqual(response_json['annee_r'], 2020)
         self.assertEqual(response_json['montant_r'], 719.21)
         self.assertEqual(response_json['id_f'], 1)
@@ -110,7 +110,7 @@ class RessourceTestCase(unittest.TestCase):
 
     def test_update_receipt_ok(self):
         receipt_data = {
-            "annee_r": "2021",
+            "annee_r": 2021,
             "montant_r": 307.21,
             "id_f": 1
         }
@@ -128,7 +128,7 @@ class RessourceTestCase(unittest.TestCase):
 
     def test_update_receipt_funding_fail(self):
         receipt_data = {
-            "annee_r": "2020",
+            "annee_r": 2020,
             "montant_r": 307.21,
             "id_f": 2
         }
@@ -136,7 +136,7 @@ class RessourceTestCase(unittest.TestCase):
                                   headers={'content_type': CONTENT_TYPE,
                                            'Authorization': f'Bearer {TEST_TOKEN}'},
                                   json=receipt_data)
-        self.assertEqual(resp400.status_code, 400)
+        self.assertEqual(resp400.status_code, 404)
 
     def tearDown(self):
         self.clean_db()
