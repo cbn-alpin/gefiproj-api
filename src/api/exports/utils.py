@@ -13,6 +13,10 @@ def export_year_to_str(version: int, value: int):
         return str(date.today().year + value)[-2:]
 
 
+def export_year_to_str_2(value: int, year_v: int):
+    return str(year_v + value)[-2:]
+
+
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
@@ -40,12 +44,112 @@ DEFAULT_RECEIPTS_HEADER = [
     "Montant affecté à ", "Montant affecté à ", "Montant affecté après "
 ]
 
-ADDITIONNAL_TABLE_ROW_COL_STARTS = ['Montant affecté de {} vers n',
-                                    'Montant affecté de n vers {}',
-                                    'Bilan {}/n']
+ADDITIONNAL_TABLE_ROW_COL_STARTS = ['Montant affecté de ',
+                                    'Montant affecté de n vers  ',
+                                    'Bilan ']
 
 RECEIPT_TABLES_HEADER = ['Recettes comptables {}', 'Bilan des affectations à {}', 'Total recettes affectées {}',
                          'Dépenses {}', 'Bilan comptable {}', "Bilan d'activité {}"]
+
+
+def in_year_range(current_year: int, range_year: []):
+    for year in range_year:
+        if current_year == year:
+            return 1
+
+    return 0
+
+
+def get_all_year_in_result(datats):
+    data_year = []
+    for data in datats:
+        if data[0] != 0:
+            data_year.append(data[0])
+
+    return data_year
+
+
+def get_data_from_year(year: int, datas: []):
+    for data in datas:
+        if data[0] != 0 and year == data[0]:
+            return data
+
+
+def insert_empty_data_from_year(year: int):
+    return [
+        year,
+        0,  # montant_recette
+        0,  # affectation_avant
+        0,  # affectation_a
+        0,  # affectation_a2
+        0,  # affectation_a3
+        0,  # affectation_a4
+        0,  # affectation_a5
+        0  # affectation_apres
+    ]
+
+
+def create_real_data_export(current_year_range: [], year_ref: int, last_year: int, export_data: []):
+    new_export_data = [insert_empty_data_from_year(0)]
+
+    for x in range(year_ref, last_year + 1, 1):
+        if in_year_range(x, current_year_range) == 0:
+            new_export_data.append(insert_empty_data_from_year(x))
+        else:
+            new_export_data.append(get_data_from_year(x, export_data))
+
+    return new_export_data
+
+
+def get_max_year(year_ref: int, result):
+    count = 0
+    for res in result:
+        count += 1
+
+    return year_ref + count - 1
+
+
+def generate_header_first_tab_0(year_ref: int):
+    header_title = ['Année de recette', 'Recettes comptables',
+                    f'Montant affecté avant {export_year_to_str_2(year_ref, 0)}']
+    i = 0
+    for x in range(year_ref, year_ref + 6, 1):
+        header_title.append(f'Montant affecté à {export_year_to_str_2(year_ref, i)}')
+        i += 1
+
+    header_title.append(f'Montant affecté après {export_year_to_str_2(year_ref + 5, 0)}')
+
+    return header_title
+
+
+def generate_header_other_tab(year_ref: int):
+    header_title = [
+        'Année n',
+        f'Avant {export_year_to_str_2(year_ref, 0)}'
+    ]
+
+    i = 0
+    for x in range(year_ref, year_ref + 6, 1):
+        header_title.append(f'{export_year_to_str_2(year_ref, i)}')
+        i += 1
+
+    header_title.append(f'Après {export_year_to_str_2(year_ref, i)}')
+    header_title.append('Total')
+
+    return header_title
+
+
+def generate_header_first_tab_1(year_ref: int, last_year: int):
+    header_title = ['Année de recette', 'Recettes comptables',
+                    f'Montant affecté avant {export_year_to_str_2(year_ref, 0)}']
+    i = 0
+    for x in range(year_ref, last_year + 1, 1):
+        header_title.append(f'Montant affecté à {export_year_to_str_2(year_ref, i)}')
+        i += 1
+
+    header_title.append(f'Montant affecté après {export_year_to_str_2(last_year, 0)}')
+
+    return header_title
 
 
 def get_google_service_account():
@@ -148,7 +252,7 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
         return None
 
 
-def write_rececipts_to_google_docs(document_title, header_column_names, data, shares):
+def write_rececipts_to_google_docs(document_title, header_column_names, data):
     # TODO: use pivot tables https://developers.google.com/sheets/api/samples/pivot-tables
     try:
         data.insert(0, header_column_names)

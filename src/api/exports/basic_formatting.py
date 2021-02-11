@@ -193,8 +193,224 @@ def basic_formatting_funding(session: str, spreadsheet_id: str, datas):
     # current_app.logger.debug(f'Un   : {datas[1][len(datas[0])-1]}')
 
 
+def get_formatting_button_left_tabs(line: int):
+    return [
+        {
+            "updateDimensionProperties": {
+                "range": {
+                    "dimension": "COLUMNS",
+                    "startIndex": 11,
+                    "endIndex": 17
+                },
+                "properties": {
+                    "pixelSize": 160
+                },
+                "fields": "pixelSize"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+1,
+                    "startColumnIndex": 11,
+                    "endColumnIndex": 17
+                },
+                "cell": {
+                    "userEnteredFormat": {
+                        "horizontalAlignment": "RIGHT",
+                        "verticalAlignment": "MIDDLE",
+                        "textFormat": {
+                            "fontSize": 11,
+                            "bold": "true"
+                        },
+                        "numberFormat": {
+                            "type": "CURRENCY",
+                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                        }
+                    }
+                },
+                "fields": "userEnteredFormat.numberFormat"
+            }
+        },
+        {
+            "updateBorders": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+2,
+                    "startColumnIndex": 11,
+                    "endColumnIndex": 17
+                },
+                "top": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "bottom": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "innerHorizontal": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "innerVertical": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                }
+            }
+        },
+        {
+            "updateBorders": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line+2,
+                    "startColumnIndex": 17,
+                    "endColumnIndex": 1
+                },
+                "innerVertical": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                }
+            }
+        },
+    ]
+
+
+def get_formatting_button_tabs(line: int):
+    return [
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line,
+                    "endRowIndex": line + 1
+                },
+                "cell": {
+                    "userEnteredFormat": {
+                        "horizontalAlignment": "LEFT",
+                        "verticalAlignment": "MIDDLE",
+                        "wrapStrategy": "WRAP",
+                        "textFormat": {
+                            "fontSize": 12,
+                            "bold": "true"
+                        }
+                    }
+                },
+                "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+            },
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2
+                },
+                "cell": {
+                    "userEnteredFormat": {
+                        "horizontalAlignment": "LEFT",
+                        "verticalAlignment": "MIDDLE",
+                        "wrapStrategy": "WRAP",
+                        "textFormat": {
+                            "fontSize": 11,
+                            "bold": "true"
+                        }
+                    }
+                },
+                "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+            }
+        },
+        {
+            "updateBorders": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 5,
+                    "endColumnIndex": 10
+                },
+                "top": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "bottom": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "innerHorizontal": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                },
+                "innerVertical": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                }
+            }
+        },
+        {
+            "updateBorders": {
+                "range": {
+                    "startRowIndex": line+1,
+                    "endRowIndex": line+5,
+                    "endColumnIndex": 11
+                },
+                "innerVertical": {
+                    "style": "SOLID",
+                    "width": 1,
+                    "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0
+                    }
+                }
+            }
+        },
+    ]
+
+
 # Formatting first table for receipt export
-def basic_formatting_receipt(session: str, spreadsheet_id: str):
+def basic_formatting_receipt(session: str, spreadsheet_id: str, max_rows_first_tab: int):
     headers = {'Authorization': f'Bearer {session}'}
 
     json_data = {
@@ -223,8 +439,8 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str):
                 "updateBorders": {
                     "range": {
                         "startRowIndex": 0,
-                        "endRowIndex": 8,
-                        "endColumnIndex": 9
+                        "endRowIndex": max_rows_first_tab,
+                        "endColumnIndex": 10
                     },
                     "top": {
                         "style": "SOLID",
@@ -268,8 +484,8 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str):
                 "updateBorders": {
                     "range": {
                         "startRowIndex": 0,
-                        "endRowIndex": 8,
-                        "endColumnIndex": 10
+                        "endRowIndex": max_rows_first_tab,
+                        "endColumnIndex": 11
                     },
                     "innerVertical": {
                         "style": "SOLID",
@@ -287,7 +503,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str):
                     "range": {
                         "dimension": "COLUMNS",
                         "startIndex": 0,
-                        "endIndex": 9
+                        "endIndex": 16
                     },
                     "properties": {
                         "pixelSize": 160
@@ -299,9 +515,9 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str):
                 "repeatCell": {
                     "range": {
                         "startRowIndex": 0,
-                        "endRowIndex": 8,
+                        "endRowIndex": max_rows_first_tab,
                         "startColumnIndex": 1,
-                        "endColumnIndex": 9
+                        "endColumnIndex": 10
                     },
                     "cell": {
                         "userEnteredFormat": {
@@ -322,1508 +538,19 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str):
                     "filter": {
                         "range": {
                             "startRowIndex": 0,
-                            "endRowIndex": 1
+                            "endRowIndex": max_rows_first_tab,
+                            "endColumnIndex": 10
                         }
                     }
                 }
             },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 11,
-                        "endRowIndex": 12
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 13
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 16,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 16,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateDimensionProperties": {
-                    "range": {
-                        "dimension": "COLUMNS",
-                        "startIndex": 10,
-                        "endIndex": 16
-                    },
-                    "properties": {
-                        "pixelSize": 160
-                    },
-                    "fields": "pixelSize"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 13,
-                        "endRowIndex": 14,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 14,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 14,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 12,
-                        "endRowIndex": 14,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 17,
-                        "endRowIndex": 18
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 19
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 22,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 22,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 19,
-                        "endRowIndex": 20,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 20,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 20,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 18,
-                        "endRowIndex": 20,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 23,
-                        "endRowIndex": 24
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 25
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 28,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 28,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 25,
-                        "endRowIndex": 26,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 26,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 26,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 24,
-                        "endRowIndex": 26,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 29,
-                        "endRowIndex": 30
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 31
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 34,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 34,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 31,
-                        "endRowIndex": 32,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 32,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 32,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 30,
-                        "endRowIndex": 32,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 35,
-                        "endRowIndex": 36
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 37
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 40,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 40,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 37,
-                        "endRowIndex": 38,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 38,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 38,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 36,
-                        "endRowIndex": 38,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 41,
-                        "endRowIndex": 42
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 43
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 46,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 46,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 43,
-                        "endRowIndex": 44,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 44,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 44,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 42,
-                        "endRowIndex": 44,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 47,
-                        "endRowIndex": 48
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 12,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 49
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "LEFT",
-                            "verticalAlignment": "MIDDLE",
-                            "wrapStrategy": "WRAP",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 52,
-                        "endColumnIndex": 9
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 52,
-                        "endColumnIndex": 10
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "repeatCell": {
-                    "range": {
-                        "startRowIndex": 49,
-                        "endRowIndex": 50,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "cell": {
-                        "userEnteredFormat": {
-                            "horizontalAlignment": "RIGHT",
-                            "verticalAlignment": "MIDDLE",
-                            "textFormat": {
-                                "fontSize": 11,
-                                "bold": "true"
-                            },
-                            "numberFormat": {
-                                "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
-                            }
-                        }
-                    },
-                    "fields": "userEnteredFormat.numberFormat"
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 50,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 16
-                    },
-                    "top": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "bottom": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerHorizontal": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 50,
-                        "startColumnIndex": 9,
-                        "endColumnIndex": 12
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            },
-            {
-                "updateBorders": {
-                    "range": {
-                        "startRowIndex": 48,
-                        "endRowIndex": 50,
-                        "startColumnIndex": 10,
-                        "endColumnIndex": 17
-                    },
-                    "innerVertical": {
-                        "style": "SOLID",
-                        "width": 1,
-                        "color": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0
-                        }
-                    }
-                }
-            }
+            get_formatting_button_tabs(max_rows_first_tab + 3)[0],
+            get_formatting_button_tabs(max_rows_first_tab + 3)[1],
+            get_formatting_button_tabs(max_rows_first_tab + 3)[2],
+            get_formatting_button_left_tabs(max_rows_first_tab + 4)[0],
+            get_formatting_button_left_tabs(max_rows_first_tab + 4)[1],
+            get_formatting_button_left_tabs(max_rows_first_tab + 4)[2],
+
         ]
     }
 
