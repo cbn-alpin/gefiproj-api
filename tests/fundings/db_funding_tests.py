@@ -12,7 +12,7 @@ from src.shared.test_base import DBBaseTestCase
 
 class DBServiceTestCase(DBBaseTestCase):
     def test_get_funding_by_project(self):
-        funding = FundingDBService.get_funding_by_project(10)
+        funding = FundingDBService.get_fundings_by_project(10)
         self.assertEqual(funding, [])
 
         new_project = Project(id_p=1, nom_p='auto test', code_p='210077', statut_p=True, id_u=1)
@@ -25,7 +25,7 @@ class DBServiceTestCase(DBBaseTestCase):
         self.db.session.add(new_funder)
         self.db.session.add(new_funding)
         self.db.session.commit()
-        fundings = FundingDBService.get_funding_by_project(new_funding.id_p)
+        fundings = FundingDBService.get_fundings_by_project(new_funding.id_p)
         self.assertEqual(fundings[-1]['id_p'], new_funding.id_p)
         self.assertEqual(fundings[-1]['statut_f'], new_funding.statut_f)
         self.assertEqual(fundings[-1]['montant_arrete_f'], new_funding.montant_arrete_f)

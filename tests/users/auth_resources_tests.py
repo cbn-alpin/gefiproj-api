@@ -51,7 +51,7 @@ class RessourceTestCase(unittest.TestCase):
     def test_add_user_ok(self):
         new_user = {'nom_u': 'Samaké', 'prenom_u': 'Zantiè', 'initiales_u': 'zas',
                     'email_u': 'zantie.samake@mail.ml',
-                    'password_u': 'zan@password', 'active_u': True, 'roles': []}
+                    'password_u': 'zan@password', 'active_u': True, 'roles': ['consultant']}
         resp201 = self.tester.post('/api/auth/register',
                                    headers={'content_type': 'application/json',
                                             'Authorization': f'Bearer {TEST_TOKEN}'},

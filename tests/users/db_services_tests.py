@@ -1,6 +1,6 @@
 import unittest
 
-from src.api.user_role.user_role import UserRole
+from src.api.user_role.entities import UserRole
 from src.api.users.db_services import UserDBService
 from src.api.users.entities import RevokedToken
 from src.shared.test_base import DBBaseTestCase
@@ -24,14 +24,9 @@ class UserDBServicesTestCase(DBBaseTestCase):
         roles = UserDBService.get_user_role_names_by_user_id_or_email('')
         self.assertEqual(roles, [])
 
-    def test_check_user_exists_by_id(self):
-        user = UserDBService.check_user_exists_by_id(1)
-        print(type(user))
-
     def test_revoked_token(self):
-        revoked_token = UserDBService.revoke_token("token to revoke s id")
-
-        self.assertEqual(revoked_token['jti'], "token to revoke s id")
+        message = UserDBService.revoke_token("token to revoke s id")
+        self.assertEqual(message, {"message": "Déconnexion réussie"})
 
     def test_is_token_revoked(self):
         revoked_token = RevokedToken('hyper revoked jti')

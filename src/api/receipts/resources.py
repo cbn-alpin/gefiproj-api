@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from marshmallow import EXCLUDE
@@ -8,7 +10,6 @@ from .validation_service import ReceiptValidationService, InputOutputValidationS
 from ..amounts.db_services import AmountDBService
 from ..fundings.db_services import FundingDBService
 from ..users.auth_resources import admin_required
-import json
 
 resources = Blueprint('receipts', __name__)
 
@@ -90,7 +91,7 @@ def update_receipt(id_receipt):
         }), 404
 
     # check funding
-    FundingDBService.check_funding_exists(existing_receipt['id_f'])
+    FundingDBService.get_funding_by_id(existing_receipt['id_f'])
 
     # check it is the same financement
     if 'id_f' in existing_receipt \
@@ -140,6 +141,7 @@ def delete_receipt(id_receipt):
         'message': f'Receipt identified by {id_deleted} has been deleted'
     }), 204
 
+
 @resources.route('/api/receipts/previous/<int:input_output_id>', methods=['GET'])
 @jwt_required
 def get_input_output(input_output_id):
@@ -148,7 +150,7 @@ def get_input_output(input_output_id):
         # Checks
         # check if input_output exists
         existing_input_output = InputOutputDBService.check_input_output_exists(input_output_id)
-        if  existing_input_output is None:
+        if existing_input_output is None:
             return jsonify({
                 'status': 'error',
                 'type': 'Not found error',
@@ -160,6 +162,7 @@ def get_input_output(input_output_id):
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
 
+
 @resources.route('/api/receipts/previous', methods=['GET'])
 @jwt_required
 def get_input_output_by_filter():
@@ -167,30 +170,31 @@ def get_input_output_by_filter():
         current_app.logger.debug('In GET /api/receipts/previous?properties')
         query_param = request.args
         response = InputOutputDBService.get_input_output_by_filter(query_param)
-        if len(response) == 0 :
+        if len(response) == 0:
             return jsonify({
-                        'status': 'error',
-                        'type': 'Not found error',
-                        'code': 'INPUT_OUTPUT_NOT_FOUND',
-                        'message': f'Il n\'y a pas d\'entrée sorties satisfaisants vos critères '
-                    }), 404
+                'status': 'error',
+                'type': 'Not found error',
+                'code': 'INPUT_OUTPUT_NOT_FOUND',
+                'message': f'Il n\'y a pas d\'entrée sorties satisfaisants vos critères '
+            }), 404
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
+
 
 @resources.route('/api/receipts/previous/all', methods=['GET'])
 @jwt_required
 def get_all_input_output():
     try:
         current_app.logger.debug('In GET /api/receipts/previous/all')
-        response = InputOutputDBService.get_input_output_by_filter() #No filter
-        if len(response) == 0 :
+        response = InputOutputDBService.get_input_output_by_filter()  # No filter
+        if len(response) == 0:
             return jsonify({
-                        'status': 'error',
-                        'type': 'Not found error',
-                        'code': 'INPUT_OUTPUT_NOT_FOUND',
-                        'message': f'Il n\'y a pas d\'entrée sorties satisfaisants vos critères '
-                    }), 404
+                'status': 'error',
+                'type': 'Not found error',
+                'code': 'INPUT_OUTPUT_NOT_FOUND',
+                'message': f'Il n\'y a pas d\'entrée sorties satisfaisants vos critères '
+            }), 404
         return jsonify(response), 200
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
@@ -211,12 +215,14 @@ def add_input_output():
         }), 422
 
     try:
-        posted_input_output = InputOutputSchema(only=('annee_recette_es', 'annee_affectation_es', 'montant_es')).load(posted_input_output, unknown=EXCLUDE)
+        posted_input_output = InputOutputSchema(only=('annee_recette_es', 'annee_affectation_es', 'montant_es')).load(
+            posted_input_output, unknown=EXCLUDE)
         input_output = InputOutput(**posted_input_output)
 
         # check if new input_output unique
-        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es, input_output.annee_affectation_es)
-        if  unique_input_output is not None:
+        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es,
+                                                                                 input_output.annee_affectation_es)
+        if unique_input_output is not None:
             return jsonify({
                 'status': 'error',
                 'type': 'Not found error',
@@ -248,12 +254,14 @@ def update_input_output(input_output_id):
                 'errors': validation_errors
             }), 422
 
-        posted_input_output = InputOutputSchema(only=('id_es', 'annee_recette_es', 'annee_affectation_es', 'montant_es')).load(posted_input_output, unknown=EXCLUDE)
+        posted_input_output = InputOutputSchema(
+            only=('id_es', 'annee_recette_es', 'annee_affectation_es', 'montant_es')).load(posted_input_output,
+                                                                                           unknown=EXCLUDE)
         input_output = InputOutput(**posted_input_output)
 
         # check if input_output exists
         existing_input_output = InputOutputDBService.check_input_output_exists(input_output_id)
-        if  existing_input_output is None:
+        if existing_input_output is None:
             return jsonify({
                 'status': 'error',
                 'type': 'Not found error',
@@ -262,8 +270,10 @@ def update_input_output(input_output_id):
             }), 404
 
         # check if new input_output unique
-        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es, input_output.annee_affectation_es,input_output_id)
-        if  unique_input_output is not None:
+        unique_input_output = InputOutputDBService.check_input_output_uniqueness(input_output.annee_recette_es,
+                                                                                 input_output.annee_affectation_es,
+                                                                                 input_output_id)
+        if unique_input_output is not None:
             return jsonify({
                 'status': 'error',
                 'type': 'Not found error',
@@ -272,7 +282,7 @@ def update_input_output(input_output_id):
             }), 400
 
         updated_input_output = InputOutputDBService.update(input_output)
-        return jsonify(updated_input_output) , 200
+        return jsonify(updated_input_output), 200
 
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]
@@ -287,7 +297,7 @@ def delete_input_output(id_input_output):
 
         # check if input_output exists
         existing_input_output = InputOutputDBService.check_input_output_exists(id_input_output)
-        if  existing_input_output is None:
+        if existing_input_output is None:
             return jsonify({
                 'status': 'error',
                 'type': 'Not found error',
@@ -297,8 +307,8 @@ def delete_input_output(id_input_output):
 
         # delete the input_output
         id_deleted = InputOutputDBService.delete(id_input_output)
-        message = '{"message" : "Entrée sorties {'+str(id_deleted)+'} a été supprimée."}'
-        return json.loads(message) , 204
+        message = '{"message" : "Entrée sorties {' + str(id_deleted) + '} a été supprimée."}'
+        return json.loads(message), 204
 
     except ValueError as error:
         return jsonify(error.args[0]), error.args[1]

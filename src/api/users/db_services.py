@@ -1,19 +1,19 @@
 from enum import Enum
+
 import numpy as np
 from flask import current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, decode_token
 from marshmallow import EXCLUDE
-
-from src.shared.entity import Session
 from sqlalchemy import or_, and_
+
+from src.api.projects.entities import Project
+from src.shared.entity import Session
+from src.shared.manage_error import ManageErrorUtils, CodeError, TError
 from .entities import User, UserSchema, RevokedToken, RevokedTokenSchema
 from ..projects.db_service import ProjectDBService
-from ..user_role.db_services import UserRoleDBService
 from ..role_acces.entities import RoleAccess, RoleAccessSchema
+from ..user_role.db_services import UserRoleDBService
 from ..user_role.entities import UserRole
-
-from src.shared.manage_error import ManageErrorUtils, CodeError, TError
-from src.api.projects.entities import Project
 
 
 class Role(Enum):
@@ -392,8 +392,8 @@ class UserDBService:
             if revoked_token.get('jti') is None:
                 msg = "Une erreur est survenu lorsque de la déconnexion"
                 ManageErrorUtils.exception(CodeError.LOGOUT_ERROR, TError.LOGOUT, msg, 400)
-            else: 
-                response = {"message": "Déconnexion réussit"}
+            else:
+                response = {"message": "Déconnexion réussie"}
                 
             return response
         except Exception as error:

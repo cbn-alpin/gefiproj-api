@@ -1,6 +1,6 @@
 import unittest
 
-from src.api.fundings.entities import Funding, FundingSchema
+from src.api.fundings.entities import Funding
 
 
 class EntitiesTestCase(unittest.TestCase):
@@ -10,6 +10,7 @@ class EntitiesTestCase(unittest.TestCase):
         self.assertEqual(funding.id_financeur, 1)
         self.assertEqual(funding.montant_arrete_f, 10)
         self.assertEqual(funding.statut_f, 'ANTR')
+
 
 if __name__ == '__main__':
     unittest.main()
