@@ -200,7 +200,7 @@ class FundingDBService:
             funding = session.query(Funding).filter_by(id_f=funding_id).first()
 
             if funding is None:
-                msg = f'Le financement {funding_id} n\'existe pas.'
+                msg = f'Le financement n\'existe pas.'
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
             
             session.close()
@@ -224,7 +224,7 @@ class FundingDBService:
             session.commit()
             
             session.close()
-            return {'message': f'Le financement \'{funding_id}\' a été supprimé'.format(funding_id)}
+            return {'message': f'Le financement a été supprimé'.format(funding_id)}
         except Exception as error:
             session.rollback()
             current_app.logger.error(f"FundingDBService - delete : {error}")

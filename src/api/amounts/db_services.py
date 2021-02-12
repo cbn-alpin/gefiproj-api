@@ -45,7 +45,7 @@ class AmountDBService:
             amount = session.query(Amount).filter_by(id_ma=amount_id).first()
             
             if amount is None:
-                msg = f'Le montant affecté {amount_id} n\'existe pas.'
+                msg = f'Le montant affecté n\'existe pas.'
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
            
             # Transforming into JSON-serializable objects

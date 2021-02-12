@@ -41,7 +41,7 @@ class ExpenseDBService:
                 response = session.query(Expense).filter_by(annee_d=year).first()
  
             if response is not None:
-                msg = "Le dépense de l\'année '{} est déjà utilisé sur une autre dépense".format(year)
+                msg = "La dépense de l\'année '{}' est déjà utilisé sur une autre dépense".format(year)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
 
             session.close()
@@ -120,7 +120,7 @@ class ExpenseDBService:
             session.commit()
              
             session.close()
-            return { 'message': 'Le dépense de l\'année \'{}\' a été supprimé'.format(year) }
+            return { 'message': 'La dépense de l\'année \'{}\' a été supprimé'.format(year) }
         except Exception as error:
             session.rollback()
             current_app.logger.error(f"ExpenseDBService - delete : {error}")
