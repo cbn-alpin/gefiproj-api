@@ -343,7 +343,7 @@ class UserDBService:
         try:
             user = User.find_by_login(data['login'])
             if not user:
-                msg = "L'email {} ou le mot de passe est incorrecte".format(data['login'])
+                msg = "L'email {} et/ou le mot de passe est incorrect".format(data['login'])
                 ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
             if User.verify_hash(data['password'], user.password_u):
                 identity = data['login']
@@ -366,7 +366,7 @@ class UserDBService:
                         'refresh_token': refresh_token
                     }
             else:
-                msg = "L'email {} ou le mot de passe est incorrecte".format(data['login'])
+                msg = "L'email {} ou le mot de passe est incorrect".format(data['login'])
                 ManageErrorUtils.value_error(CodeError.AUTHENTICATION_ERROR, TError.WRONG_AUTHENTICATION, msg, 403)
         
             return response
