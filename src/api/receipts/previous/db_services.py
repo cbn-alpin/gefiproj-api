@@ -122,10 +122,6 @@ class InputOutputDBService:
             if input_outputs is None:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND,
                                              'Cette-es entrée-s sortie-s n\'existe-nt pas', 404)
-            else:
-                if len(input_outputs) == 0:
-                    ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND,
-                                                 'Il n\'y a pas d\'entrée sorties satisfaisants vos critères', 404)
 
             return input_outputs
         except Exception as error:
