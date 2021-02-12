@@ -1,15 +1,14 @@
 from datetime import datetime
 
 from flask import Blueprint, current_app, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
-from src.api.exports.db_services import ExportDBService
-from src.api.exports.utils import DEFAULT_RECEIPTS_HEADER, export_receipt_item_from_row_proxy, \
-    write_rececipts_to_google_docs, generate_header_first_tab_0, get_max_year, \
-    get_all_year_in_result, generate_header_other_tab, create_real_data_export
 from src.api.exports.basic_formatting import basic_formatting_receipt
+from src.api.exports.db_services import ExportDBService
+from src.api.exports.utils import export_receipt_item_from_row_proxy, \
+    write_rececipts_to_google_docs, generate_header_first_tab_0, get_max_year, \
+    get_all_year_in_result, create_real_data_export
 from src.api.exports.validation_service import ExportValidationService
-from src.api.users.auth_resources import admin_required
 
 resources = Blueprint('exports_receipts', __name__)
 
@@ -48,7 +47,7 @@ def export_receipets():
 
     if not len(export_data):
         return jsonify({
-            'message': 'Aucun donnée à exporter',
+            'message': 'Aucune donnée à exporter',
             'title': None,
             'lines': 0,
             'url': None,
@@ -77,10 +76,11 @@ def export_receipets():
         }), 500
 
     # basic formatting
-    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'], annee_ref,  len(new_export_data))
+    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'], annee_ref,
+                             len(new_export_data))
 
     return jsonify({
-        'message': 'La création du document Google Sheet a été crée successivement',
+        'message': 'Le document Google Sheet a été crée avec succès',
         # 'spreadsheetId': document_created['spreadsheetId'],
         # 'session': document_created['session'],
         # 'title': document_created['title'],

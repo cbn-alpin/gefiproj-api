@@ -3,13 +3,12 @@ from datetime import datetime
 from flask import current_app, Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from src.api.exports.basic_formatting import delete_column_by_index, \
+    basic_formatting_funding
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
     DEFAULT_FUNDINGS_HEADER, export_year_to_str
-from src.api.exports.basic_formatting import delete_column_by_index, \
-    basic_formatting_funding
 from src.api.exports.validation_service import ExportValidationService
-from src.api.users.auth_resources import admin_required
 
 resources = Blueprint('exports_fundings', __name__)
 
@@ -63,7 +62,7 @@ def export_fundings():
 
     if not len(export_data):
         return jsonify({
-            'message': 'Aucun donnée à exporter',
+            'message': 'Aucune donnée à exporter',
             'title': None,
             'lines': 0,
             'url': None,
@@ -101,7 +100,7 @@ def export_fundings():
     delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 14)
 
     return jsonify({
-        'message': 'La création du document Google Sheet a été crée successivement',
+        'message': 'Le document Google Sheet a été crée avec succès',
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
