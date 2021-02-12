@@ -15,7 +15,6 @@ resources = Blueprint('exports_fundings', __name__)
 
 @resources.route('/api/export/fundings', methods=['POST'])
 @jwt_required
-@admin_required
 def export_fundings():
     current_app.logger.debug('In POST /api/export/fundings')
 
