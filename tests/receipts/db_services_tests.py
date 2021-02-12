@@ -72,6 +72,15 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
         self.db.session.commit()
 
+    def test_delete(self):
+        receipt = Receipt(1, 200, 2020)
+        self.db.session.add(receipt)
+        self.db.session.commit()
+
+        ReceiptDBService.delete(receipt.id_r, 0)
+        receipt_found = self.db.session.query(Receipt).filter_by(id_r=receipt.id_r).first()
+        self.assertEqual(receipt_found, None)
+
     def tearDown(self):
         super(ReceiptDBServiceTestCase, self).tearDown()
         self.db.session.query(Funding).filter_by(id_f=1).delete()

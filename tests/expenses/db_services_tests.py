@@ -18,6 +18,45 @@ class DBServiceTestCase(DBBaseTestCase):
         self.db.session.query(Expense).filter_by(id_d=expense.get('id_d')).delete()
         self.db.session.commit()
 
+    def test_get_all_expenses(self):
+        self.db.session.bulk_save_objects([
+            Expense(annee_d=2020, montant_d=2345),
+            Expense(annee_d=2021, montant_d=7395)
+        ])
+        self.db.session.commit()
+
+        expenses = ExpenseDBService.get_all_expenses()
+        self.assertEqual(len(expenses), 2)
+
+    def test_update(self):
+        expense = Expense(annee_d=2020, montant_d=2345)
+        self.db.session.add(expense)
+        self.db.session.commit()
+
+        expense.annee_d = 2019
+        expense_object = ExpenseSchema().dump(expense)
+        expense = ExpenseDBService.update(expense_object)
+
+        self.assertEqual(expense['annee_d'], 2019)
+
+    def test_delete(self):
+        expense = Expense(annee_d=2020, montant_d=2345)
+        self.db.session.add(expense)
+        self.db.session.commit()
+
+        ExpenseDBService.delete(expense.id_d, 2020)
+        expense_found = self.db.session.query(Expense).filter_by(id_d=expense.id_d).first()
+        self.assertEqual(expense_found, None)
+
+    def test_get_expense_by_id(self):
+        expense = Expense(annee_d=2020, montant_d=2345)
+        self.db.session.add(expense)
+        self.db.session.commit()
+
+        expense_found = ExpenseDBService.get_expense_by_id(expense.id_d)
+        self.assertEqual(expense_found['annee_d'], 2020)
+        self.assertEqual(expense_found['montant_d'], 2345)
+
 
 if __name__ == '__main__':
     unittest.main()

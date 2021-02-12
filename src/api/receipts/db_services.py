@@ -242,4 +242,3 @@ class ReceiptDBService:
         finally:
             if session is not None:
                 session.close()    
-                  
