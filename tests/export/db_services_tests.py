@@ -14,6 +14,8 @@ class MyTestCase(DBBaseTestCase):
             export_data.append(export_funding_item_from_row_proxy(res))
         self.assertEqual([], export_data)
 
+    def test_get_bilan_financier_recettes_comptables(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

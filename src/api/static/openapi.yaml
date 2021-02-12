@@ -1505,11 +1505,11 @@ definitions:
             type:
               type: string
               description: type de partage
-              example: user
+              example: user, group
             permission:
               type: string
               description: permission de l'utisateur sur le document
-              example: writer
+              example: writer, reader
       entete:
         type: array
         items:

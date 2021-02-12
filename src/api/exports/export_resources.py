@@ -5,7 +5,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
-    DEFAULT_FUNDINGS_HEADER, export_year_to_str, delete_column_by_index, \
+    DEFAULT_FUNDINGS_HEADER, export_year_to_str
+from src.api.exports.basic_formatting import delete_column_by_index, \
     basic_formatting_funding
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
@@ -104,7 +105,9 @@ def export_fundings():
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
-        'spreadsheetId': document_created['spreadsheetId'],
+        # 'spreadsheetId': document_created['spreadsheetId'],
+        # 'session': document_created['session'],
+        # 'spreadsheetId': document_created['spreadsheetId'],
         'session': document_created['session'],
         'shares': shares,
         'annee_ref': annee_ref,

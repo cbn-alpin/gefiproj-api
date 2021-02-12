@@ -5,7 +5,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import DEFAULT_RECEIPTS_HEADER, export_receipt_item_from_row_proxy, \
-    write_fundings_to_google_docs
+    write_rececipts_to_google_docs, generate_header_first_tab_0, get_max_year, \
+    get_all_year_in_result, generate_header_other_tab, create_real_data_export
+from src.api.exports.basic_formatting import basic_formatting_receipt
 from src.api.exports.validation_service import ExportValidationService
 from src.api.users.auth_resources import admin_required
 
@@ -28,18 +30,7 @@ def export_receipets():
 
     annee_ref = post_data['annee_ref']
 
-    # default values
-    header_column_names = DEFAULT_RECEIPTS_HEADER
-    shares = [{'email': get_jwt_identity(), 'type': 'user', 'permission': 'writer'}]
     file_name = f'Export recettes année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
-
-    # overrides if available
-    if 'entete' in post_data:
-        header_column_names = post_data['entete']
-    if 'partages' in post_data:
-        shares = post_data['partages']
-    if 'nom_fichier' in post_data:
-        file_name = post_data['nom_fichier']
 
     result = ExportDBService.get_bilan_financier(annee_ref)
 
@@ -65,7 +56,17 @@ def export_receipets():
             'annee_ref': annee_ref,
         }), 200
 
-    document_created = write_fundings_to_google_docs(file_name, header_column_names, export_data, shares)
+    # get max year
+    annee_max = get_max_year(annee_ref, export_data)
+    # default values
+    header_column_names = generate_header_first_tab_0(annee_ref)
+
+    current_year_range = get_all_year_in_result(export_data)
+    new_export_data = create_real_data_export(current_year_range, annee_ref, annee_max, export_data)
+
+    document_created = write_rececipts_to_google_docs(file_name, header_column_names, new_export_data)
+
+    # return jsonify(document_created)
 
     if not document_created:
         return jsonify({
@@ -75,11 +76,16 @@ def export_receipets():
             'code': 'EXPORT_V1_ERROR'
         }), 500
 
+    # basic formatting
+    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'],annee_ref,  len(new_export_data))
+
     return jsonify({
         'message': 'successfully created google sheet',
-        'title': document_created['title'],
-        'lines': document_created['lines'],
+        # 'spreadsheetId': document_created['spreadsheetId'],
+        # 'session': document_created['session'],
+        # 'title': document_created['title'],
+        # 'lines': document_created['lines'],
         'url': document_created['url'],
-        'shares': shares,
+        # 'shares': shares,
         'annee_ref': annee_ref,
     }), 200
