@@ -1025,7 +1025,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
 
 
 def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int, ligne_max: int):
-    if current_year + 5 == current_year + ligne_max - 1:
+    if current_year + 5 == current_year + ligne_max - 2:
         return {
                    "repeatCell": {
                        "range": {
