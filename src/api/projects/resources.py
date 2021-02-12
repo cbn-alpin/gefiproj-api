@@ -4,7 +4,7 @@ from ..users.auth_resources import admin_required
 
 from .db_service import ProjectDBService
 from .validation_service import ProjectValidationService
-from ..fundings.db_services import FundingDBService
+from ..fundings.db_services import FundingDBService, Status
 from ..users.db_services import UserDBService
 
 resources = Blueprint('projects', __name__)
@@ -120,7 +120,10 @@ def update_project(project_id: int):
         ProjectDBService.check_unique_code_and_name(posted_data['code_p'], posted_data['nom_p'], project_id)
         # Check if user with id_u exists
         UserDBService.get_user_by_id(posted_data['id_u'])
-        
+        # Check if project solde don't have funding not solde
+        if posted_data['statut_p'] == Status.STATUS_SOLDE.value:
+            FundingDBService.check_project_not_have_funding(project_id)
+            
         response = ProjectDBService.update(posted_data)
         response = jsonify(response), 200
     except ValueError as error:

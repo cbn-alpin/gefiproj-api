@@ -324,3 +324,28 @@ class FundingDBService:
         finally:
             if session is not None:
                 session.close()
+    
+    @staticmethod
+    def check_fundings_not_solde_by_project(project_id: int, name: str):
+        session = None
+        try:
+            session = Session()
+            fundings = []
+            fundings = session.query(Funding) \
+                .filter(Funding.id_p == project_id, Funding.statut_f == Status.STATUS_SOLDE.value) \
+                .all()
+            
+            if fundings is not None or len(fundings) > 0:
+                msg = "Le projet {} ne peut pas soldé car celui-ci possède {} financements non soldé.".format(name, len(fundings))
+                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
+      
+            session.close()
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            current_app.logger.error(error)
+            raise
+        finally:
+            if session is not None:
+                session.close()
