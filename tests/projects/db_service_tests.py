@@ -65,7 +65,31 @@ class DBServiceTestCase(DBBaseTestCase):
         self.db.session.query(Project).filter_by(id_p=pr.id_p).delete()
         self.db.session.commit()
 
-    # TODO: test the other methods
+    def test_delete(self):
+        project = Project(24000, 'Kyber Faust', False, 1)
+        self.db.session.add(project)
+        self.db.session.commit()
+
+        ProjectDBService.delete(project.id_p, '')
+
+        project_found = self.db.session.query(Project).filter_by(id_p=project.id_p).first()
+        self.assertEqual(project_found, None)
+
+    def test_check_unique_code_and_name(self):
+        project = Project(23000, 'Hyper V', False, 1)
+        self.db.session.add(project)
+        self.db.session.commit()
+
+        project_found = ProjectDBService.check_unique_code_and_name('23901', 'Hyper v', 2)
+        self.assertEqual(project_found, None)
+
+    def test_check_unique_code_and_name_by_id(self):
+        project = Project(23000, 'Hyper V', False, 1)
+        self.db.session.add(project)
+        self.db.session.commit()
+
+        project_found = ProjectDBService.check_unique_code_and_name('23901', 'Hyper v', None)
+        self.assertEqual(project_found, None)
 
 
 if __name__ == '__main__':

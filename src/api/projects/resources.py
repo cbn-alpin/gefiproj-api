@@ -115,14 +115,14 @@ def update_project(project_id: int):
         # Check forms
         ProjectValidationService.validate_form(posted_data)
         # Check if project exists
-        ProjectDBService.get_project_by_id(project_id)
+        project = ProjectDBService.get_project_by_id(project_id)
         # Check if code_p or nom_p are already in use
         ProjectDBService.check_unique_code_and_name(posted_data['code_p'], posted_data['nom_p'], project_id)
         # Check if user with id_u exists
         UserDBService.get_user_by_id(posted_data['id_u'])
         # Check if project solde don't have funding not solde
-        if posted_data['statut_p'] == Status.STATUS_SOLDE.value:
-            FundingDBService.check_project_not_have_funding(project_id)
+        if posted_data['statut_p'] == True:
+            FundingDBService.check_fundings_not_solde_by_project(project_id, project['nom_p'])
             
         response = ProjectDBService.update(posted_data)
         response = jsonify(response), 200

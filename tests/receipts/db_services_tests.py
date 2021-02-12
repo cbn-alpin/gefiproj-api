@@ -40,7 +40,6 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         receipt.annee_r = '2019'
         receipt.montant_r = '3093.19'
         receipt_object = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).dump(receipt)
-        print(receipt_object)
         updated_receipt = ReceiptDBService.update(receipt_object)
 
         self.assertEqual(updated_receipt['id_r'], receipt.id_r)
@@ -72,6 +71,15 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.assertTrue('difference' in receipts_of_funding_1[0])
         self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
         self.db.session.commit()
+
+    def test_delete(self):
+        receipt = Receipt(1, 200, 2020)
+        self.db.session.add(receipt)
+        self.db.session.commit()
+
+        ReceiptDBService.delete(receipt.id_r, 0)
+        receipt_found = self.db.session.query(Receipt).filter_by(id_r=receipt.id_r).first()
+        self.assertEqual(receipt_found, None)
 
     def tearDown(self):
         super(ReceiptDBServiceTestCase, self).tearDown()
