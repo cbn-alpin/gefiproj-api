@@ -23,7 +23,7 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.db.session.commit()
 
     def test_insert_receipt(self):
-        receipt = Receipt(id_f=1, annee_r=2020, montant_r=699.3)
+        receipt = {'id_f': 1, 'annee_r': 2020, 'montant_r': 699.3}
         receipt = ReceiptDBService.insert(receipt)
 
         self.assertEqual(receipt['id_f'], 1)
@@ -39,7 +39,9 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
 
         receipt.annee_r = '2019'
         receipt.montant_r = '3093.19'
-        updated_receipt = ReceiptDBService.update(receipt)
+        receipt_object = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).dump(receipt)
+        print(receipt_object)
+        updated_receipt = ReceiptDBService.update(receipt_object)
 
         self.assertEqual(updated_receipt['id_r'], receipt.id_r)
         self.assertEqual(updated_receipt['id_f'], 1)
@@ -47,21 +49,6 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.assertEqual(updated_receipt['montant_r'], 3093.19)
         self.db.session.query(Receipt).filter_by(id_r=receipt.id_r).delete()
         self.db.session.commit()
-
-    # def test_check_receipt_exists_by_id(self):
-    #     exists_not_found = ReceiptDBService.check_receipt_exists_by_id(13)
-    #     print(exists_not_found)
-    #     self.assertEqual(exists_not_found['code'], 'RECEIPT_NOT_FOUND')
-    #
-    #     receipt = Receipt(id_f=1, annee_r=2021, montant_r='3779')
-    #     self.db.session.add(receipt)
-    #     self.db.session.commit()
-    #     receipt = ReceiptSchema().dump(receipt)
-    #
-    #     exists_ok = ReceiptDBService.check_receipt_exists_by_id(receipt['id_r'])
-    #     self.assertEqual(exists_ok, None)
-    #     self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
-    #     self.db.session.commit()
 
     def test_get_receipt_by_id(self):
         receipt = Receipt(id_f=1, annee_r=2018, montant_r='79')
@@ -85,36 +72,6 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         self.assertTrue('difference' in receipts_of_funding_1[0])
         self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
         self.db.session.commit()
-
-    # def test_is_project_solde(self):
-    #     receipt = Receipt(id_f=1, annee_r=2020, montant_r=8784)
-    #     self.db.session.add(receipt)
-    #     self.db.session.commit()
-    #     receipt = ReceiptSchema().dump(receipt)
-    #
-    #     is_solde = ReceiptDBService.is_project_solde(receipt['id_r'])
-    #
-    #     self.assertTrue(is_solde)
-    #     self.db.session.query(Receipt).filter_by(id_r=receipt['id_r']).delete()
-    #     self.db.session.commit()
-
-    # TODO: test delete
-
-    # def test_get_receipts_of_year_by_funding_id(self):
-    #     receipts = ReceiptDBService.get_receipts_of_year_by_funding_id(1, 2020)
-    #     self.assertEqual(receipts, [])
-    #
-    #     # add a receipt with year 2020 and id_f 1
-    #     mocked_receipt = Receipt(1, 3700, 2020)
-    #     self.db.session.add(mocked_receipt)
-    #     self.db.session.commit()
-    #
-    #     receipts = ReceiptDBService.get_receipts_of_year_by_funding_id(1, 2020)
-    #
-    #     self.assertEqual(receipts[0].get('id_r'), mocked_receipt.id_r)
-    #     self.assertEqual(receipts[0].get('annee_r'), mocked_receipt.annee_r)
-    #     self.db.session.query(Receipt).filter_by(id_r=mocked_receipt.id_r).delete()
-    #     self.db.session.commit()
 
     def tearDown(self):
         super(ReceiptDBServiceTestCase, self).tearDown()
