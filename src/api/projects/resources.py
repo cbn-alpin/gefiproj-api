@@ -122,7 +122,7 @@ def update_project(project_id: int):
         UserDBService.get_user_by_id(posted_data['id_u'])
         # Check if project solde don't have funding not solde
         if posted_data['statut_p'] == Status.STATUS_SOLDE.value:
-            FundingDBService.check_project_not_have_funding(project_id)
+            FundingDBService.check_fundings_not_solde_by_project(project_id)
             
         response = ProjectDBService.update(posted_data)
         response = jsonify(response), 200
