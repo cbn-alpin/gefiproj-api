@@ -81,10 +81,10 @@ def export_receipets():
 
     return jsonify({
         'message': 'successfully created google sheet',
-        'spreadsheetId': document_created['spreadsheetId'],
-        'session': document_created['session'],
-        'title': document_created['title'],
-        'lines': document_created['lines'],
+        # 'spreadsheetId': document_created['spreadsheetId'],
+        # 'session': document_created['session'],
+        # 'title': document_created['title'],
+        # 'lines': document_created['lines'],
         'url': document_created['url'],
         # 'shares': shares,
         'annee_ref': annee_ref,

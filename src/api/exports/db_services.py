@@ -47,12 +47,14 @@ class ExportDBService:
                                      {'annee_ref': annee_ref}
                                      )
             montant_d = None
+
             for r in result:
-                montant_d = r['montant_d']
-                if montant_d:
-                    return 0
-                else:
-                    return montant_d
+                montant_d = r[0]
+
+            if montant_d is not None:
+                return montant_d
+            else:
+                return 0
 
         except Exception as se:
             current_app.logger.error(se, exc_info=True)
@@ -70,7 +72,42 @@ class ExportDBService:
             result = session.execute("select montant_d from depense where annee_d=:annee_ref",
                                      {'annee_ref': annee_ref}
                                      )
-            return result
+            montant_d = None
+
+            for r in result:
+                montant_d = r[0]
+
+            if montant_d is not None:
+                return montant_d
+            else:
+                return 0
+
+        except Exception as se:
+            current_app.logger.error(se, exc_info=True)
+            return None
+        finally:
+            if session:
+                session.close()
+
+    @staticmethod
+    def get_bilan_financier_n(annee_ref):
+        session = None
+
+        try:
+            session = Session()
+            result = session.execute("SELECT COALESCE(sum(aff.montant), 0) FROM affectations_sur() aff WHERE aff.annee_affectation = :annee_ref AND aff.annee_recette < :annee_ref",
+                                     {'annee_ref': annee_ref}
+                                     )
+            coalesce = None
+
+            for r in result:
+                coalesce = r[0]
+
+            if coalesce is not None:
+                return coalesce
+            else:
+                return 0
+
         except Exception as se:
             current_app.logger.error(se, exc_info=True)
             return None

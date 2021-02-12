@@ -37,6 +37,7 @@ Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le
 - Pour pouvoir exporter des bilans vers Google Sheet il faut récuperer le fichier `google-credentials.json` depuis le 
 dossier Google Drive Configuration/config.yml. Vous devez ensuite le placer dans le dossier `config/` du projet
 
+Lien d'aide à la création du fichier `google-credentials.json` : https://cloud.google.com/docs/authentication/getting-started
 - Lancer les tests avec 
 ```shell
 python -m unittest discover -v -s tests/ -p '*_tests.py'

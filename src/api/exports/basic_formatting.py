@@ -285,11 +285,23 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                     "endColumnIndex": 12
                 },
                 "cell": {
+                    "userEnteredFormat": {
+                        "horizontalAlignment": "RIGHT",
+                        "verticalAlignment": "MIDDLE",
+                        "textFormat": {
+                            "fontSize": 11,
+                            "bold": "true"
+                        },
+                        "numberFormat": {
+                            "type": "CURRENCY",
+                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                        }
+                    },
                     "userEnteredValue": {
-                        "formulaValue": "="+f'{ExportDBService.get_bilan_financier_recettes_comptables(annee_ref)}'
+                        "formulaValue": "=" + f'{ExportDBService.get_bilan_financier_recettes_comptables(annee_ref)}'
                     }
                 },
-                "fields": "userEnteredValue"
+                "fields": "userEnteredFormat.numberFormat,userEnteredValue"
             }
         },
         {
@@ -303,6 +315,22 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                 "cell": {
                     "userEnteredValue": {
                         "formulaValue": "=CONCATENATE(\"Bilan des affectations à \", MID(" + celle + ",9,2))"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 12,
+                    "endColumnIndex": 13
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=J" + str(line + 4)
                     }
                 },
                 "fields": "userEnteredValue"
@@ -327,6 +355,22 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
         {
             "repeatCell": {
                 "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 13,
+                    "endColumnIndex": 14
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=L" + str(line + 2) + "+M" + str(line + 2)
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
                     "startRowIndex": line,
                     "endRowIndex": line + 1,
                     "startColumnIndex": 14,
@@ -338,6 +382,34 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                     }
                 },
                 "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 14,
+                    "endColumnIndex": 15
+                },
+                "cell": {
+                    "userEnteredFormat": {
+                        "horizontalAlignment": "RIGHT",
+                        "verticalAlignment": "MIDDLE",
+                        "textFormat": {
+                            "fontSize": 11,
+                            "bold": "true"
+                        },
+                        "numberFormat": {
+                            "type": "CURRENCY",
+                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                        }
+                    },
+                    "userEnteredValue": {
+                        "formulaValue": "=" + f'{ExportDBService.get_bilan_financier_depenses(annee_ref)}'
+                    }
+                },
+                "fields": "userEnteredFormat.numberFormat,userEnteredValue"
             }
         },
         {
@@ -359,6 +431,22 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
         {
             "repeatCell": {
                 "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 15,
+                    "endColumnIndex": 16
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=L" + str(line + 2) + "-0" + str(line + 2)
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
                     "startRowIndex": line,
                     "endRowIndex": line + 1,
                     "startColumnIndex": 16,
@@ -367,6 +455,22 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                 "cell": {
                     "userEnteredValue": {
                         "formulaValue": "=CONCATENATE(\"Bilan d'activité \", MID(" + celle + ",9,2))"
+                    }
+                },
+                "fields": "userEnteredValue"
+            }
+        },
+        {
+            "repeatCell": {
+                "range": {
+                    "startRowIndex": line + 1,
+                    "endRowIndex": line + 2,
+                    "startColumnIndex": 16,
+                    "endColumnIndex": 17
+                },
+                "cell": {
+                    "userEnteredValue": {
+                        "formulaValue": "=N" + str(line + 2) + "-O" + str(line + 2)
                     }
                 },
                 "fields": "userEnteredValue"
@@ -766,18 +870,40 @@ def generate_style_all_tabs(max_rows_first_tab: int, annee_ref: int):
         json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[7])
         json_data.append(get_title_button_tabs(max_rows_first_tab + 4 + k)[8])
 
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[0])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[1])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[2])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[0])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[1])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 5 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[2])
 
         # Right tabs
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[3])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[4])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[5])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[6])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[7])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[8])
-        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$'+str(max_rows_first_tab + 4 + k), annee_ref+x)[9])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[3])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[4])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[5])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[6])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[7])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[8])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[9])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[10])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[11])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[12])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[13])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[14])
+        json_data.append(get_title_button_left_tabs(max_rows_first_tab + 4 + k, 'A$' + str(max_rows_first_tab + 4 + k),
+                                                    annee_ref + x)[15])
 
         k = k + 6
 
@@ -870,7 +996,7 @@ def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, c
            },
 
 
-def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int):
+def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: int):
     return {
                "repeatCell": {
                    "range": {
@@ -893,7 +1019,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int):
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=999999"
+                           "formulaValue": "=" + f'{ExportDBService.get_bilan_financier_n(annee_ref)}'
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -901,7 +1027,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int):
            },
 
 
-def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int):
+def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int):
     return {
                "repeatCell": {
                    "range": {
@@ -924,7 +1050,10 @@ def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int):
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=888888"
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + letter[
+                               0] + "$" + str(
+                               cel2 - 1) + "), 0, INDEX(query($A$1:$J$9 ,\"select sum(G) where A>" + str(
+                               current_year-1) + "\"),2,0))"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1012,22 +1141,26 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
                 json_data.append(
                     get_one_query_value_seconde_sql_cell_1(
                         [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
-                        , max_rows_first_tab + 6 + k + 1)
+                        , max_rows_first_tab + 6 + k + 1, year_ref)
                 )
             elif x == 1:
                 json_data.append(
                     get_one_query_value_seconde(
-                    [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
-                    , max_rows_first_tab + 6 + k + 1
-                    , max_rows_first_tab + 4 + k + 1
-                    , max_rows_first_tab + 5 + k + 1
-                    , year_ref + 0)
+                        [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
+                        , max_rows_first_tab + 6 + k + 1
+                        , max_rows_first_tab + 4 + k + 1
+                        , max_rows_first_tab + 5 + k + 1
+                        , year_ref + 0)
                 )
             elif x == len(SHEET_COLUMN_LETTERS_TINY) - 2:
                 json_data.append(
                     get_one_query_value_seconde_sql_cell_2(
                         [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
-                        , max_rows_first_tab + 6 + k + 1)
+                        , max_rows_first_tab + 6 + k + 1
+                        , max_rows_first_tab + 4 + k + 1
+                        , max_rows_first_tab + 5 + k + 1
+                        , year_ref + j
+                    )
                 )
             else:
                 json_data.append(
@@ -1068,8 +1201,8 @@ def get_one_query_diff_value(letter: [], ligne: int, y_cell: int, current_year: 
                    "range": {
                        "startRowIndex": y_cell - 1,
                        "endRowIndex": y_cell,
-                       "startColumnIndex": ligne+1,
-                       "endColumnIndex": ligne+2
+                       "startColumnIndex": ligne + 1,
+                       "endColumnIndex": ligne + 2
                    },
                    "cell": {
                        "userEnteredFormat": {
@@ -1085,10 +1218,12 @@ def get_one_query_diff_value(letter: [], ligne: int, y_cell: int, current_year: 
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell-4) + ", 9, 2), " + letter[0] + "$" + str(
-                               y_cell-3) + "), INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + letter[
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell - 4) + ", 9, 2), " + letter[
+                               0] + "$" + str(
+                               y_cell - 3) + "), INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + letter[
                                                1] + " where A=" + str(
-                               current_year) + "\"), 2, 0),"+letter[0] + str(y_cell-1) + " - " + letter[0] + str(y_cell-2) + ")"
+                               current_year) + "\"), 2, 0)," + letter[0] + str(y_cell - 1) + " - " + letter[0] + str(
+                               y_cell - 2) + ")"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1108,7 +1243,7 @@ def generate_all_value_for_letter_last_ligne(max_rows_first_tab: int, current_ye
         for y in range(0, len(SHEET_COLUMN_LETTERS_TINY_2) - 1):
             json_data.append(
                 get_one_query_diff_value(
-                    [SHEET_COLUMN_LETTERS_TINY_2[y], SHEET_COLUMN_LETTERS_TINY_2[y+1]],
+                    [SHEET_COLUMN_LETTERS_TINY_2[y], SHEET_COLUMN_LETTERS_TINY_2[y + 1]],
                     y,
                     max_rows_first_tab + 6 + k + 2,
                     current_year + x,
