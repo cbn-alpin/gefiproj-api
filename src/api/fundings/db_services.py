@@ -332,7 +332,7 @@ class FundingDBService:
             session = Session()
             fundings = []
             fundings = session.query(Funding) \
-                .filter(Funding.id_p == project_id, Funding.statut_f == "SOLDE") \
+                .filter(Funding.id_p == project_id, Funding.statut_f != "SOLDE") \
                 .all()
             
             if fundings is not None or len(fundings) > 0:
