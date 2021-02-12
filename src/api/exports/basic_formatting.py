@@ -953,7 +953,7 @@ def get_one_query_value_first(letter: [], y_cell: int, cel1: int, cel2: int, lig
            },
 
 
-def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int):
+def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int, ligne_max: int):
     """
         params : letter == column
         params : (letter[0], y_cell) : position to update
@@ -985,10 +985,7 @@ def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, c
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + letter[
-                               0] + "$" + str(
-                               cel2 - 1) + "), \"\", INDEX(query($A$1:$J$9 ,\"select G where A=" + str(
-                               current_year) + "\"),2,0))"
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + letter[0] + "$" + str(cel2 - 1) + "), \"\", INDEX(query($A$1:$J$" + str(ligne_max) + " ,\"select G where A=" + str(current_year) + "\"),2,0))"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1150,7 +1147,7 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
                         , max_rows_first_tab + 6 + k + 1
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
-                        , year_ref + 0)
+                        , year_ref + 0, max_rows_first_tab)
                 )
             elif x == len(SHEET_COLUMN_LETTERS_TINY) - 2:
                 json_data.append(
@@ -1169,7 +1166,7 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
                         , max_rows_first_tab + 6 + k + 1
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
-                        , year_ref + j)
+                        , year_ref + j, max_rows_first_tab)
                 )
                 j += 1
 
@@ -1218,12 +1215,8 @@ def get_one_query_diff_value(letter: [], ligne: int, y_cell: int, current_year: 
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell - 4) + ", 9, 2), " + letter[
-                               0] + "$" + str(
-                               y_cell - 3) + "), INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + letter[
-                                               1] + " where A=" + str(
-                               current_year) + "\"), 2, 0)," + letter[0] + str(y_cell - 1) + " - " + letter[0] + str(
-                               y_cell - 2) + ")"
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell - 4) + ", 9, 2), " + letter[0] + "$" + str(y_cell - 3) + "), INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + letter[1]
+                               + " where A=" + str(current_year) + "\"), 2, 0)," + letter[0] + str(y_cell - 1) + " - " + letter[0] + str(y_cell - 2) + ")"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
