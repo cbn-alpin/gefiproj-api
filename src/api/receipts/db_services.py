@@ -192,7 +192,7 @@ class ReceiptDBService:
 
             if project is not None and project.statut_p == True:
                 msg = 'Le projet {} est soldé. Les actions dans le tableau des recettes relié à ce projet sont interdites.'.format(project.nom_p)
-                ManageErrorUtils.exception(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 403)
+                ManageErrorUtils.value_error(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 403)
         except Exception as error:
             current_app.logger.error(error)
             raise
