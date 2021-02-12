@@ -1024,38 +1024,69 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
            },
 
 
-def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int):
-    return {
-               "repeatCell": {
-                   "range": {
-                       "startRowIndex": y_cell - 1,
-                       "endRowIndex": y_cell,
-                       "startColumnIndex": letter[1] - 1,
-                       "endColumnIndex": letter[1]
-                   },
-                   "cell": {
-                       "userEnteredFormat": {
-                           "horizontalAlignment": "RIGHT",
-                           "verticalAlignment": "MIDDLE",
-                           "textFormat": {
-                               "fontSize": 11,
-                               "bold": "true"
+def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int, ligne_max: int):
+    if current_year + 5 == current_year + ligne_max - 2:
+        return {
+                   "repeatCell": {
+                       "range": {
+                           "startRowIndex": y_cell - 1,
+                           "endRowIndex": y_cell,
+                           "startColumnIndex": letter[1] - 1,
+                           "endColumnIndex": letter[1]
+                       },
+                       "cell": {
+                           "userEnteredFormat": {
+                               "horizontalAlignment": "RIGHT",
+                               "verticalAlignment": "MIDDLE",
+                               "textFormat": {
+                                   "fontSize": 11,
+                                   "bold": "true"
+                               },
+                               "numberFormat": {
+                                   "type": "CURRENCY",
+                                   "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               }
                            },
-                           "numberFormat": {
-                               "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                           "userEnteredValue": {
+                               "formulaValue": "=0"
                            }
                        },
-                       "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + letter[
-                               0] + "$" + str(
-                               cel2 - 1) + "), 0, INDEX(query($A$1:$J$9 ,\"select sum(G) where A>" + str(
-                               current_year-1) + "\"),2,0))"
-                       }
+                       "fields": "userEnteredValue,userEnteredFormat.numberFormat"
                    },
-                   "fields": "userEnteredValue,userEnteredFormat.numberFormat"
                },
-           },
+    else:
+        return {
+                   "repeatCell": {
+                       "range": {
+                           "startRowIndex": y_cell - 1,
+                           "endRowIndex": y_cell,
+                           "startColumnIndex": letter[1] - 1,
+                           "endColumnIndex": letter[1]
+                       },
+                       "cell": {
+                           "userEnteredFormat": {
+                               "horizontalAlignment": "RIGHT",
+                               "verticalAlignment": "MIDDLE",
+                               "textFormat": {
+                                   "fontSize": 11,
+                                   "bold": "true"
+                               },
+                               "numberFormat": {
+                                   "type": "CURRENCY",
+                                   "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               }
+                           },
+                           "userEnteredValue": {
+                               "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + letter[
+                                   0] + "$" + str(
+                                   cel2 - 1) + "), 0, INDEX(query($A$1:$J$" + str(
+                                   ligne_max) + " ,\"select sum(G) where A>" + str(
+                                   current_year - 1) + "\"),2,0))"
+                           }
+                       },
+                       "fields": "userEnteredValue,userEnteredFormat.numberFormat"
+                   },
+               },
 
 
 def get_one_query_total_value(y_cell: int):
@@ -1157,6 +1188,7 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
                         , year_ref + j
+                        , max_rows_first_tab
                     )
                 )
             else:

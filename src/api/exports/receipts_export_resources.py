@@ -77,7 +77,7 @@ def export_receipets():
         }), 500
 
     # basic formatting
-    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'],annee_ref,  len(new_export_data))
+    basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'], annee_ref,  len(new_export_data))
 
     return jsonify({
         'message': 'successfully created google sheet',

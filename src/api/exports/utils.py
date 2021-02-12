@@ -95,14 +95,30 @@ def insert_empty_data_from_year(year: int):
     ]
 
 
+def generate_array_year_real(year_ref: int, max_year: int):
+    years = []
+    for x in range(year_ref, max_year + 1, 1):
+        years.append(x)
+
+    return years
+
+
 def create_real_data_export(current_year_range: [], year_ref: int, last_year: int, export_data: []):
     new_export_data = [insert_empty_data_from_year(0)]
 
+    # Add if some data is empty for a range  - before
     for x in range(year_ref, last_year + 1, 1):
         if in_year_range(x, current_year_range) == 0:
             new_export_data.append(insert_empty_data_from_year(x))
         else:
             new_export_data.append(get_data_from_year(x, export_data))
+
+    # Add if some data is empty for a range  - after range
+    year_range_in_header = generate_array_year_real(year_ref, last_year)
+
+    for x in range(year_ref, year_ref + 6, 1):
+        if in_year_range(x, year_range_in_header) == 0:
+            new_export_data.append(insert_empty_data_from_year(x))
 
     return new_export_data
 
