@@ -40,7 +40,6 @@ class ReceiptDBServiceTestCase(DBBaseTestCase):
         receipt.annee_r = '2019'
         receipt.montant_r = '3093.19'
         receipt_object = ReceiptSchema(only=('id_r', 'id_f', 'montant_r', 'annee_r')).dump(receipt)
-        print(receipt_object)
         updated_receipt = ReceiptDBService.update(receipt_object)
 
         self.assertEqual(updated_receipt['id_r'], receipt.id_r)
