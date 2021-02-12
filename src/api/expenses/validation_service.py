@@ -16,6 +16,6 @@ class ExpenseValidationService:
             ManageCheckDataUtils.check_not_none('annee_d', expense, 'année de la dépense')
             ManageCheckDataUtils.check_not_none('montant_d', expense, 'montant de la dépense')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"ExpenseValidationService - validate : {error}")
             raise
 

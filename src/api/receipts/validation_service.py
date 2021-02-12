@@ -19,5 +19,5 @@ class ReceiptValidationService:
             ManageCheckDataUtils.check_not_none('montant_r', receipt, 'montant de la recette')
             ManageCheckDataUtils.check_not_none('id_f', receipt, 'id du financement')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"ReceiptValidationService - validate_post : {error}")
             raise

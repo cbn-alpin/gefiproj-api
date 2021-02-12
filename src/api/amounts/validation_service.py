@@ -19,5 +19,5 @@ class AmountValidationService:
             ManageCheckDataUtils.check_not_none('montant_ma', amount, 'montant du montant affecté')
             ManageCheckDataUtils.check_not_none('id_r', amount, 'id de la recette')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"AmountValidationService - validate : {error}")
             raise

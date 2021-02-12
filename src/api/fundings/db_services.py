@@ -56,10 +56,10 @@ class FundingDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_fundings_by_project : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_fundings_by_project : {error}")
             raise
         finally:
             if session is not None:
@@ -78,10 +78,10 @@ class FundingDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_project_not_have_funding : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_project_not_have_funding : {error}")
             raise
         finally:
             if session is not None:
@@ -105,10 +105,10 @@ class FundingDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_funding_by_funder : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_funding_by_funder : {error}")
             raise
         finally:
             if session is not None:
@@ -136,11 +136,11 @@ class FundingDBService:
             return new_funding
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -169,11 +169,11 @@ class FundingDBService:
             return updated_funding
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -186,10 +186,10 @@ class FundingDBService:
                 msg = 'Ce financement ne peut pas être modifier car vous n\'êtes ni administrateur ni responsable du projet.'
                 ManageErrorUtils.exception(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 403)
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - can_update : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - can_update : {error}")
             raise
         
     @staticmethod
@@ -200,16 +200,16 @@ class FundingDBService:
             funding = session.query(Funding).filter_by(id_f=funding_id).first()
 
             if funding is None:
-                msg = f'Le financement {funding_id} n\'existe pas.'
+                msg = f'Le financement n\'existe pas.'
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
             
             session.close()
             return funding
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_funding_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - get_funding_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -224,14 +224,14 @@ class FundingDBService:
             session.commit()
             
             session.close()
-            return {'message': f'Le financement \'{funding_id}\' a été supprimé'.format(funding_id)}
+            return {'message': f'Le financement a été supprimé'.format(funding_id)}
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -255,11 +255,11 @@ class FundingDBService:
             session.close()
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - delete_entities_referenced : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - delete_entities_referenced : {error}")
             raise
         finally:
             if session is not None:
@@ -285,10 +285,10 @@ class FundingDBService:
 
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_sum_with_receipt : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_sum_with_receipt : {error}")
             raise
         finally:
             if session is not None:
@@ -316,10 +316,10 @@ class FundingDBService:
       
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - is_project_solde : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - is_project_solde : {error}")
             raise
         finally:
             if session is not None:
@@ -341,10 +341,10 @@ class FundingDBService:
       
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_fundings_not_solde_by_project : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FundingDBService - check_fundings_not_solde_by_project : {error}")
             raise
         finally:
             if session is not None:

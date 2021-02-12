@@ -20,10 +20,10 @@ class ExpenseDBService:
             session.close()
             return expenses
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - get_all_expenses : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - get_all_expenses : {error}")
             raise
         finally:
             if session is not None:
@@ -41,16 +41,16 @@ class ExpenseDBService:
                 response = session.query(Expense).filter_by(annee_d=year).first()
  
             if response is not None:
-                msg = "Le dépense de l\'année '{} est déjà utilisé sur une autre dépense".format(year)
+                msg = "La dépense de l\'année '{}' est déjà utilisé sur une autre dépense".format(year)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
 
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - check_unique_year : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - check_unique_year : {error}")
             raise
         finally:
             if session is not None:
@@ -74,11 +74,11 @@ class ExpenseDBService:
             return new_expense
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -101,11 +101,11 @@ class ExpenseDBService:
             return update_funder
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -120,14 +120,14 @@ class ExpenseDBService:
             session.commit()
              
             session.close()
-            return { 'message': 'Le dépense de l\'année \'{}\' a été supprimé'.format(year) }
+            return { 'message': 'La dépense de l\'année \'{}\' a été supprimé'.format(year) }
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -150,10 +150,10 @@ class ExpenseDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - get_expense_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ExpenseDBService - get_expense_by_id : {error}")
             raise
         finally:
             if session is not None:

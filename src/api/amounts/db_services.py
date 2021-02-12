@@ -27,10 +27,10 @@ class AmountDBService:
             session.close()
             return amounts
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - get_amount_by_receipt_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - get_amount_by_receipt_id : {error}")
             raise
         finally:
             if session is not None:
@@ -45,7 +45,7 @@ class AmountDBService:
             amount = session.query(Amount).filter_by(id_ma=amount_id).first()
             
             if amount is None:
-                msg = f'Le montant affecté {amount_id} n\'existe pas.'
+                msg = f'Le montant affecté n\'existe pas.'
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.UPDATE_ERROR, msg, 404)
            
             # Transforming into JSON-serializable objects
@@ -55,10 +55,10 @@ class AmountDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - get_amount_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - get_amount_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -81,11 +81,11 @@ class AmountDBService:
             return new_amount
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -108,11 +108,11 @@ class AmountDBService:
             return updated_amount
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -130,11 +130,11 @@ class AmountDBService:
             return { 'message': 'Le montant affecté de l\'année {} a été supprimé'.format(year) }
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -171,10 +171,10 @@ class AmountDBService:
 
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - check_sum_value : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - check_sum_value : {error}")
             raise
         finally:
             if session is not None:
@@ -202,10 +202,10 @@ class AmountDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - check_unique_amount_by_year_and_receipt_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - check_unique_amount_by_year_and_receipt_id : {error}")
             raise
         finally:
             if session is not None:
@@ -237,10 +237,10 @@ class AmountDBService:
       
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - is_project_solde : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"AmountDBService - is_project_solde : {error}")
             raise
         finally:
             if session is not None:

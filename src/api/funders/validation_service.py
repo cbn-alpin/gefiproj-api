@@ -13,5 +13,5 @@ class FunderValidationService:
             ManageCheckDataUtils.check_format_value('nom_financeur', funder, str, 'nom du financeur')
             ManageCheckDataUtils.check_string_lenght('nom_financeur', 'nom du financeur', funder, 2, 250)
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"FunderValidationService - validate : {error}")
             raise

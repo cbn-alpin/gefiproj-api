@@ -46,5 +46,5 @@ class FundingValidationService:
             ManageCheckDataUtils.check_date_is_after_another('date_arrete_f', 'date_solde_f', funding, 'date arrêté ou commande', 'date de solde')
             ManageCheckDataUtils.check_date_is_after_another('date_arrete_f', 'date_limite_solde_f', funding, 'date arrêté ou commande', 'date limite de solde')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"FundingValidationService - validate : {error}")
             raise

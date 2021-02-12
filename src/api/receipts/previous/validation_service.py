@@ -26,5 +26,5 @@ class InputOutputValidationService:
                     message = "montant_es must be a double precision number != 0. Ex: 173.59 or -89.23"
                     ManageErrorUtils.value_error(CodeError.VALIDATION_ERROR, TError.VALUE_ERROR, message, 422)
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"InputOutputValidationService - validate_post : {error}")
             raise
