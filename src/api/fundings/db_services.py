@@ -336,7 +336,7 @@ class FundingDBService:
                 .all()
             
             if fundings is not None or len(fundings) > 0:
-                msg = "Le projet {} ne peut pas soldé car celui-ci possède {} financements non soldé.".format(name, len(fundings))
+                msg = "Le projet {} ne peut pas être soldé car celui-ci possède un ou plusieurs financements non soldés.".format(name)
                 ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
       
             session.close()
