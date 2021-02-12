@@ -102,7 +102,7 @@ class ProjectDBService:
                 session.close()
 
     @staticmethod
-    def get_project_by_id(project_id: int, is_solde: bool = None):
+    def get_project_by_id(project_id: int):
         session = None
         project = None
         try:
@@ -114,10 +114,7 @@ class ProjectDBService:
 
             if project_object is None:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_WARNING, TError.DATA_NOT_FOUND, 'Le projet n\'existe pas', 404)
-            if is_solde == True and project_object is not None and project_object.statut_p == True:
-                msg = "Le projet {} est soldé. Les modifications sur ce projet sont interdites.".format(project_object.nom_p)
-                ManageErrorUtils.value_error(CodeError.NOT_PERMISSION, TError.STATUS_SOLDE, msg, 403)
-      
+
             # Transforming into JSON-serializable objects
             schema = ProjectSchema(exclude=['id_u'])
             project = schema.dump(project_object)
