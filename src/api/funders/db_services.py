@@ -20,10 +20,10 @@ class FunderDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - get_all_funders : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - get_all_funders : {error}")
             raise
         finally:
             if session is not None:
@@ -46,10 +46,10 @@ class FunderDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - get_funder_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - get_funder_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -75,10 +75,10 @@ class FunderDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - check_unique_funder_name : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - check_unique_funder_name : {error}")
             raise
         finally:
             if session is not None:
@@ -101,11 +101,11 @@ class FunderDBService:
             return new_funder
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -128,11 +128,11 @@ class FunderDBService:
             return update_funder
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -150,11 +150,11 @@ class FunderDBService:
             return { 'message': 'Le financeur \'{}\' a été supprimé'.format(nom) }
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -177,10 +177,10 @@ class FunderDBService:
 
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - check_funder_referenced_in_funding : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"FunderDBService - check_funder_referenced_in_funding : {error}")
             raise
         finally:
             if session is not None:

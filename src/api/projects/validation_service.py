@@ -20,7 +20,7 @@ class ProjectValidationService:
             ManageCheckDataUtils.check_not_none('code_p', project, 'code projet')
             ManageCheckDataUtils.check_not_none('id_u', project, 'responsable')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"ProjectValidationService - validate_form : {error}")
             raise
 
     @staticmethod
@@ -33,5 +33,5 @@ class ProjectValidationService:
                 # offset validation
                 ManageCheckDataUtils.check_format_value('offset', query_params, int, 'offset')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"ProjectValidationService - validate_get_all : {error}")
             raise

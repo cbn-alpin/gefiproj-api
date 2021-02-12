@@ -18,10 +18,10 @@ class ReceiptAccountingDBService:
             response = schema.dump(receipts_accountings_object)
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - get_receipts_accountings : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - get_receipts_accountings : {error}")
             raise
         finally:
             if session is not None:
@@ -43,11 +43,11 @@ class ReceiptAccountingDBService:
             return inserted_amount
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -70,11 +70,11 @@ class ReceiptAccountingDBService:
             return update_receipt_accounting
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -94,11 +94,11 @@ class ReceiptAccountingDBService:
             return response
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -120,10 +120,10 @@ class ReceiptAccountingDBService:
                 msg = 'La recette comptable de l\'année {} existe déjà.'.format(year)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 403)
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - check_unique_year : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - check_unique_year : {error}")
             raise
         finally:
             if session is not None:
@@ -147,10 +147,10 @@ class ReceiptAccountingDBService:
             session.close()
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - get_receipt_accounting_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptAccountingDBService - get_receipt_accounting_by_id : {error}")
             raise
         finally:
             if session is not None:

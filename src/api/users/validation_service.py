@@ -15,7 +15,7 @@ class UserValidationService:
             ManageCheckDataUtils.check_format_value('password', data, str, 'mot de passe')
             ManageCheckDataUtils.check_not_none('password', data, 'mot de passe')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"UserValidationService - validate_login : {error}")
             raise
 
     @staticmethod
@@ -25,7 +25,7 @@ class UserValidationService:
             ManageCheckDataUtils.check_keys(['new_password'], data)
             ManageCheckDataUtils.check_string_lenght('new_password', 'mot de passe', data, 5)
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"UserValidationService - validate_change_pwd : {error}")
             raise
 
     @staticmethod
@@ -38,7 +38,7 @@ class UserValidationService:
             # validate_update
             UserValidationService.validate_update(user)
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"UserValidationService - validate_post : {error}")
             raise
         
     @staticmethod
@@ -64,5 +64,5 @@ class UserValidationService:
             ManageCheckDataUtils.check_not_none('initiales_u', user, 'initiales')
             ManageCheckDataUtils.check_not_none('email_u', user, 'email')
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"UserValidationService - validate_update : {error}")
             raise

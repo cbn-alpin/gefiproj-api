@@ -13,5 +13,5 @@ class ReceiptAccountingValidationService:
             ManageCheckDataUtils.check_format_value('annee_rc', receipt_accounting_data, int, "année recette")
             ManageCheckDataUtils.check_format_value('montant_rc', receipt_accounting_data, float, "montant recette")
         except ValueError as error:
-            current_app.logger.warning(error)
+            current_app.logger.error(f"ReceiptAccountingValidationService - validate_post : {error}")
             raise

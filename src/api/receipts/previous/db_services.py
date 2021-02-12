@@ -15,12 +15,15 @@ class InputOutputDBService:
             if existing_input_output is None:
                 msg = "L'entrée sortie n'existe pas"
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            current_app.logger.error(f"InputOutputDBService - check_input_output_exists : {error}")
+            raise
+        except ValueError as error:
+            current_app.logger.error(f"InputOutputDBService - check_input_output_exists : {error}")
             raise
         finally:
             if session is not None:
-                session.close()
+                session.close()    
 
     @staticmethod
     def check_input_output_uniqueness(annee_recette, annee_affectation, input_output_id=None):
@@ -36,12 +39,15 @@ class InputOutputDBService:
             if existing_input_output is not None:
                 msg = f'L\'entrée sortie ({annee_recette} , {annee_affectation}) existe déjà.'
                 ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 400)
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            current_app.logger.error(f"InputOutputDBService - check_input_output_uniqueness : {error}")
+            raise
+        except ValueError as error:
+            current_app.logger.error(f"InputOutputDBService - check_input_output_uniqueness : {error}")
             raise
         finally:
             if session is not None:
-                session.close()
+                session.close()    
 
     @staticmethod
     def get_input_output_by_id(input_output_id: int):
@@ -58,12 +64,15 @@ class InputOutputDBService:
                                              'Cette entrée sortie n\'existe pas', 404)
 
             return input_output
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            current_app.logger.error(f"InputOutputDBService - get_input_output_by_id : {error}")
+            raise
+        except ValueError as error:
+            current_app.logger.error(f"InputOutputDBService - get_input_output_by_id : {error}")
             raise
         finally:
             if session is not None:
-                session.close()
+                session.close()    
 
     @staticmethod
     def get_input_output_by_filter(query_param=None):
@@ -119,12 +128,15 @@ class InputOutputDBService:
                                                  'Il n\'y a pas d\'entrée sorties satisfaisants vos critères', 404)
 
             return input_outputs
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            current_app.logger.error(f"InputOutputDBService - get_input_output_by_filter : {error}")
+            raise
+        except ValueError as error:
+            current_app.logger.error(f"InputOutputDBService - get_input_output_by_filter : {error}")
             raise
         finally:
             if session is not None:
-                session.close()
+                session.close()    
 
     @staticmethod
     def insert(input_output: InputOutput):
@@ -140,8 +152,13 @@ class InputOutputDBService:
                 session.commit()
                 inserted_input_output = InputOutputSchema().dump(input_output)
             return inserted_input_output
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - insert : {error}")
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -157,13 +174,18 @@ class InputOutputDBService:
 
             updated_input_output = InputOutputSchema().dump(input_output)
             return updated_input_output
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - update : {error}")
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - update : {error}")
             raise
         finally:
             if session is not None:
                 session.close()
-
+                
     @staticmethod
     def delete(input_output_id: int) -> int:
         session = None
@@ -173,8 +195,13 @@ class InputOutputDBService:
             session.commit()
 
             return input_output_id
-        except (Exception, ValueError) as error:
-            current_app.logger.error(error)
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - delete : {error}")
+            raise
+        except ValueError as error:
+            session.rollback()
+            current_app.logger.error(f"InputOutputDBService - delete : {error}")
             raise
         finally:
             if session is not None:

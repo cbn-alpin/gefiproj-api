@@ -27,11 +27,11 @@ class UserRoleDBService:
             return response
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - insert_user_role : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - insert_user_role : {error}")
             raise
         finally:
             if session is not None:
@@ -57,11 +57,11 @@ class UserRoleDBService:
             return response
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - update_user_role : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - update_user_role : {error}")
             raise
         finally:
             if session is not None:
@@ -80,11 +80,11 @@ class UserRoleDBService:
             session.close()
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - delete_user_role : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - delete_user_role : {error}")
             raise
         finally:
             if session is not None:
@@ -107,10 +107,10 @@ class UserRoleDBService:
                 
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - get_user_role : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserRoleDBService - get_user_role : {error}")
             raise
         finally:
             if session is not None:

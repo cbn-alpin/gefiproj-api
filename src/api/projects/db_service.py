@@ -38,10 +38,10 @@ class ProjectDBService:
 
             return project
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - check_unique_code_and_name : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - check_unique_code_and_name : {error}")
             raise
         finally:
             if session is not None:
@@ -65,11 +65,11 @@ class ProjectDBService:
             return new_project
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -92,10 +92,10 @@ class ProjectDBService:
             session.close()
             return projects
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - get_all_projects : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - get_all_projects : {error}")
             raise
         finally:
             if session is not None:
@@ -121,10 +121,10 @@ class ProjectDBService:
             session.close()
             return project
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - get_project_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - get_project_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -148,11 +148,11 @@ class ProjectDBService:
             return update_project   
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -170,11 +170,11 @@ class ProjectDBService:
             return {'message': 'Le projet \'{}\' a été supprimé'.format(nom_p)}
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ProjectDBService - delete : {error}")
             raise
         finally:
             if session is not None:

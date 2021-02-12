@@ -30,10 +30,10 @@ class ReceiptDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, msg, 409)
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipts_of_year_by_funding_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipts_of_year_by_funding_id : {error}")
             raise
         finally:
             if session is not None:
@@ -61,10 +61,10 @@ class ReceiptDBService:
 
             return receipts
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipts_by_funding_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipts_by_funding_id : {error}")
             raise
         finally:
             if session is not None:
@@ -86,10 +86,10 @@ class ReceiptDBService:
 
             return receipt
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipt_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - get_receipt_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -112,11 +112,11 @@ class ReceiptDBService:
             return new_receipt
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -138,11 +138,11 @@ class ReceiptDBService:
             return updated_receipt
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -162,11 +162,11 @@ class ReceiptDBService:
             return { 'message': 'La recette de l\'année {} a été supprimé'.format(year) }
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - delete : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - delete : {error}")
             raise
         finally:
             if session is not None:
@@ -194,10 +194,10 @@ class ReceiptDBService:
                 msg = 'Le projet {} est soldé. Les actions dans le tableau des recettes relié à ce projet sont interdites.'.format(project.nom_p)
                 ManageErrorUtils.value_error(CodeError.RECEIPT_PROJECT_CLOSED, TError.DELETE_ERROR, msg, 403)
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - is_project_solde : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - is_project_solde : {error}")
             raise
         finally:
             if session is not None:
@@ -234,10 +234,10 @@ class ReceiptDBService:
 
             session.close()
         except Exception as error:
-            current_app.logger.error('check_sum_value : {}'.format(error))
+            current_app.logger.error(f"ReceiptDBService - check_sum_value : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"ReceiptDBService - check_sum_value : {error}")
             raise
         finally:
             if session is not None:

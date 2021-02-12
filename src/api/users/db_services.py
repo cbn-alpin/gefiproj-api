@@ -60,10 +60,10 @@ class UserDBService:
             
             return users
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_all_users : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_all_users : {error}")
             raise
         finally:
             if session is not None:
@@ -118,10 +118,10 @@ class UserDBService:
             
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_user_by_id : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_user_by_id : {error}")
             raise
         finally:
             if session is not None:
@@ -144,10 +144,10 @@ class UserDBService:
 
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_user_by_email : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_user_by_email : {error}")
             raise
         finally:
             if session is not None:
@@ -177,10 +177,10 @@ class UserDBService:
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 409)
             return user_object
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - check_unique_mail_and_initiales : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - check_unique_mail_and_initiales : {error}")
             raise
         finally:
             if session is not None:
@@ -211,11 +211,11 @@ class UserDBService:
             return new_user
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - insert : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - insert : {error}")
             raise
         finally:
             if session is not None:
@@ -260,11 +260,11 @@ class UserDBService:
             return update_user
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - update : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - update : {error}")
             raise
         finally:
             if session is not None:
@@ -288,11 +288,11 @@ class UserDBService:
             return {'message': 'Le mot de passe du mail \'{}\' a été bien modifié'.format(email_u)}
         except Exception as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - change_pwd : {error}")
             raise
         except ValueError as error:
             session.rollback()
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - change_pwd : {error}")
             raise
         finally:
             if session is not None:
@@ -313,10 +313,10 @@ class UserDBService:
                 
             return is_responsable
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - is_responsable_of_projet : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - is_responsable_of_projet : {error}")
             raise
 
     @staticmethod
@@ -331,10 +331,10 @@ class UserDBService:
                 
             return is_admin
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - is_admin : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - is_admin : {error}")
             raise
 
     @staticmethod
@@ -371,10 +371,10 @@ class UserDBService:
         
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - auth_login : {error}")
             raise
         except ValueError as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - auth_login : {error}")
             raise
 
     @staticmethod
@@ -397,7 +397,7 @@ class UserDBService:
                 
             return response
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - revoke_token : {error}")
             raise
         finally:
             if session is not None:
@@ -413,7 +413,7 @@ class UserDBService:
             token = session.query(RevokedToken).filter_by(jti=jti).first()
             token = RevokedTokenSchema().dump(token)
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error(f"UserDBService - get_revoked_token_by_jti : {error}")
             raise
         finally:
             if session:
