@@ -20,6 +20,9 @@ def export_year_to_str_2(value: int, year_v: int):
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
+SHEET_COLUMN_LETTERS_TINY = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+SHEET_COLUMN_LETTERS_TINY_2 = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+
 DEFAULT_FUNDINGS_HEADER = [
     'Code projet',
     'Nom projet',
