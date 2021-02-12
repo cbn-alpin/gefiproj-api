@@ -25,7 +25,7 @@ class ReceiptDBService:
                     .filter(Receipt.id_f == funding_id, Receipt.annee_r == year) \
                     .first()
            
-            if response is not None or len(response) > 0:
+            if response is not None:
                 msg = "L\'année {} de la recette de ce financement est déjà utilisé sur une recette.".format(year)
                 ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DUPLICATION_VALUE_ERROR, msg, 409)
             return response
@@ -222,7 +222,7 @@ class ReceiptDBService:
                 # check update
                 response = session.query(Funding, \
                     ( Funding.montant_arrete_f - func.coalesce(func.sum(Receipt.montant_r), 0) ).label('difference') ) \
-                    .join(Receipt, Receipt.id_r == Funding.id_r, isouter=True) \
+                    .join(Receipt, Receipt.id_f == Funding.id_f, isouter=True) \
                     .filter(Funding.id_f == receipt['id_f'], Receipt.id_r != receipt_id) \
                     .group_by(Funding.id_f).all()
                 difference = (float(receipt['montant_r']) if len(response) == 0 else float(response[0][1]))
@@ -234,7 +234,7 @@ class ReceiptDBService:
 
             session.close()
         except Exception as error:
-            current_app.logger.error(error)
+            current_app.logger.error('check_sum_value : {}'.format(error))
             raise
         except ValueError as error:
             current_app.logger.error(error)

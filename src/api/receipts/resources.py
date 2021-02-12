@@ -54,7 +54,7 @@ def add_receipt():
     except ValueError as error:
         response = jsonify(error.args[0]), error.args[1]
     except Exception as error:
-        response = jsonify({'message': 'Une erreur est survenue lors de la\'enregistrement de la recette'}), 500
+        response = jsonify({'message': 'Une erreur est survenue lors de l\'enregistrement de la recette'}), 500
     finally:
         return response
 
