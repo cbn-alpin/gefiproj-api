@@ -38,7 +38,9 @@ class RessourceTestCase(unittest.TestCase):
         self.db.session.commit()
 
     def test_get_expenses(self):
-        self.db.session.add(Expense(2020, 2020))
+        self.db.session.query(Expense).delete()
+        expense = Expense(2020, 2020)
+        self.db.session.add(expense)
         self.db.session.commit()
         resp200 = self.tester.get('/api/expenses',
                                   headers={'content_type': 'application/json',
@@ -47,11 +49,11 @@ class RessourceTestCase(unittest.TestCase):
 
         self.assertEqual(resp200.status_code, 200)
         self.assertEqual(len(response_json), 1)
-        self.db.session.query(Expense).filter_by(annee_d=2020).delete()
+        self.db.session.query(Expense).filter_by(id_d=expense.id_d).delete()
         self.db.session.commit()
 
     def test_update_expense(self):
-        expense = Expense(2020, 2020)
+        expense = Expense(2022, 2020)
         self.db.session.add(expense)
         self.db.session.commit()
 
