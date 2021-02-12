@@ -14,7 +14,6 @@ resources = Blueprint('receipts_previous', __name__)
 
 @resources.route('/api/receipts/previous/<int:input_output_id>', methods=['GET'])
 @jwt_required
-@admin_required
 def get_input_output(input_output_id):
     try:
         current_app.logger.debug('In GET /api/receipts/previous/<int:input_output_id>')

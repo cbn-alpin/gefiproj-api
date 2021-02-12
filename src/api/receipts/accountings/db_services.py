@@ -9,14 +9,18 @@ class ReceiptAccountingDBService:
     @staticmethod
     def get_receipts_accountings():
         session = None
+        response = []
         try:
             session = Session()
             receipts_accountings_object = session.query(ReceiptAccounting).all()
 
             schema = ReceiptAccountingSchema(many=True)
-            receipts_accountings = schema.dump(receipts_accountings_object)
-            return receipts_accountings
-        except (Exception, ValueError) as error:
+            response = schema.dump(receipts_accountings_object)
+            return response
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -27,7 +31,6 @@ class ReceiptAccountingDBService:
     def insert(receipt_accounting):
         session = None
         try:
-
             posted_receipt_accounting = ReceiptAccountingSchema(only=('id_rc', 'montant_rc', 'annee_rc')).load(
                 receipt_accounting)
             data = ReceiptAccounting(**posted_receipt_accounting)
@@ -38,7 +41,12 @@ class ReceiptAccountingDBService:
 
             inserted_amount = ReceiptAccountingSchema().dump(data)
             return inserted_amount
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -60,7 +68,12 @@ class ReceiptAccountingDBService:
             update_expense = ReceiptAccountingSchema().dump(data)
             session.close()
             return update_receipt_accounting
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -79,7 +92,12 @@ class ReceiptAccountingDBService:
                 'message': f'La recette comptable de l\'année {receipt_accounting.annee_rc} a été supprimé.'
             }
             return response
-        except (Exception, ValueError) as error:
+        except Exception as error:
+            session.rollback()
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
+            session.rollback()
             current_app.logger.error(error)
             raise
         finally:
@@ -92,16 +110,19 @@ class ReceiptAccountingDBService:
         try:
             session = Session()
             if receipt_accounting_id is not None:
-                receipt_accounting_existing = session.query(ReceiptAccounting).filter(
-                    ReceiptAccounting.id_rc != receipt_accounting_id, ReceiptAccounting.annee_rc == year).first()
+                receipt_accounting_existing = session.query(ReceiptAccounting) \
+                    .filter(ReceiptAccounting.id_rc != receipt_accounting_id, ReceiptAccounting.annee_rc == year).first()
             else:
                 receipt_accounting_existing = session.query(ReceiptAccounting).filter_by(annee_rc=year).first()
             session.close()
 
             if receipt_accounting_existing is not None:
-                msg = f'La recette comptable de l\'année {year} existe déjà.'
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 403)
-        except (Exception, ValueError) as error:
+                msg = 'La recette comptable de l\'année {} existe déjà.'.format(year)
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.UNIQUE_CONSTRAINT_ERROR, msg, 403)
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
@@ -109,25 +130,28 @@ class ReceiptAccountingDBService:
                 session.close()
 
     @staticmethod
-    def check_exist_receipt_accounting(receipt_accounting_id: int):
+    def get_receipt_accounting_by_id(receipt_accounting_id: int):
         session = None
+        response = None
         try:
             session = Session()
-            receipt_accounting_existing = session.query(ReceiptAccounting).filter_by(
-                id_rc=receipt_accounting_id).first()
+            receipt_accounting_existing = session.query(ReceiptAccounting) \
+                .filter_by(id_rc=receipt_accounting_id).first()
 
             if receipt_accounting_existing is None:
                 msg = f'La recette comptable n\'existe pas.'
-                ManageErrorUtils.exception(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
-        except (Exception, ValueError) as error:
+                ManageErrorUtils.value_error(CodeError.DB_VALIDATION_ERROR, TError.DATA_NOT_FOUND, msg, 404)
+            
+            schema = ReceiptAccountingSchema()
+            response = schema.dump(receipt_accounting_existing)
+            session.close()
+            return response
+        except Exception as error:
+            current_app.logger.error(error)
+            raise
+        except ValueError as error:
             current_app.logger.error(error)
             raise
         finally:
             if session is not None:
                 session.close()
-
-        session = Session()
-        receipt_accounting_existing = session.query(ReceiptAccounting).filter_by(id_rc=receipt_accounting_id).first()
-
-        if receipt_accounting_existing is None:
-            raise ValueError(f'La recette comptable n\'existe pas.', 404)

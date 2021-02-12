@@ -82,6 +82,8 @@ def add_funding():
         posted_funding = request.get_json()
         # Check posted data fields
         FundingValidationService.validate(posted_funding)
+        # Check funder exist
+        FunderDBService.get_funder_by_id(posted_funding['id_financeur'])
         # Check project exist
         ProjectDBService.get_project_by_id(posted_funding['id_p'])
         # Check project not solde
@@ -125,6 +127,8 @@ def update_funding(funding_id: int):
         FundingValidationService.validate(data)
         # Checks if funding exist
         FundingDBService.get_funding_by_id(data['id_f'])
+        # Check funder exist
+        FunderDBService.get_funder_by_id(data['id_financeur'])
         # Check project not solde
         FundingDBService.is_project_solde(project_id = data['id_p'])
             
