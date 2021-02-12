@@ -115,7 +115,7 @@ def update_project(project_id: int):
         # Check forms
         ProjectValidationService.validate_form(posted_data)
         # Check if project exists
-        ProjectDBService.get_project_by_id(project_id)
+        ProjectDBService.get_project_by_id(project_id, is_solde = True)
         # Check if code_p or nom_p are already in use
         ProjectDBService.check_unique_code_and_name(posted_data['code_p'], posted_data['nom_p'], project_id)
         # Check if user with id_u exists
