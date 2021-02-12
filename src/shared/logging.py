@@ -12,13 +12,13 @@ from src.shared import config
 def setup():
     cfg = config.get()
 
-    storage_log_file_path = path.join(path.dirname(path.abspath(__file__)), "gefiproj-api/var/log/api.log")
+    storage_log_file_path = path.join(path.dirname(path.abspath(__file__)), cfg['logging']['pathes']['storage'])
     log_path = Path(storage_log_file_path)
     if not log_path.is_file():
         log_path.parent.mkdir(parents=True, exist_ok=True)
         log_path.touch(exist_ok=True)
 
-    cfg_log_file_path = path.join(path.dirname(path.abspath(__file__)), "gefiproj-api/config/logging.yml")
+    cfg_log_file_path = path.join(path.dirname(path.abspath(__file__)), cfg['logging']['pathes']['config'])
     with open(cfg_log_file_path, 'rt') as file:
         content = file.read()
         content = content.format(logfilepath=storage_log_file_path)

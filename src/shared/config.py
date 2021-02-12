@@ -5,10 +5,6 @@ from os import path, environ
 import yaml
 
 environ['TC_ROOT_DIR'] = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../../'))
-print(environ['TC_ROOT_DIR'])
-
-
-# environ['TC_ROOT_DIR'] = "gefiproj-api/"
 
 
 def create_json_config_file():
