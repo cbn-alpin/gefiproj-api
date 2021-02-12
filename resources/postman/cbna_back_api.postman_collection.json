@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ed86b392-b0f3-469d-82ae-784b65bf69f5",
+		"_postman_id": "68c2c1bc-c207-43ef-8da5-27582de67afd",
 		"name": "cbna_back",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -157,7 +157,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "expenses",
@@ -207,7 +208,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "export",
@@ -282,7 +284,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"annee_ref\": 2020,\n\t\"partages\": [{\"email\": \"cash.develop223@gmail.com\", \"type\": \"user\", \"permission\": \"writer\"}],\n\t\"nom_fichier\": \"Bilan financier du 3 février 2020\"\n}",
+							"raw": "{\n\t\"annee_ref\": 2020,\n\t\"partages\": [{\"email\": \"mehdi.khadir@gmail.com\", \"type\": \"user\", \"permission\": \"writer\"}]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -304,7 +306,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "fundings",
@@ -452,7 +455,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Projects",
@@ -473,7 +477,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/api/projects/1",
+							"raw": "localhost:5000/api/projects/1?",
 							"host": [
 								"localhost"
 							],
@@ -643,7 +647,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "receipts",
@@ -864,7 +869,9 @@
 							},
 							"response": []
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "accountings",
@@ -973,7 +980,9 @@
 							},
 							"response": []
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "localhost:5000/api/receipts",
@@ -1065,7 +1074,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "users",
@@ -1222,7 +1232,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "localhost:5000/status",
@@ -1242,5 +1253,6 @@
 			},
 			"response": []
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
