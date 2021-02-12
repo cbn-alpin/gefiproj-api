@@ -24,7 +24,7 @@ def export_fundings():
     validation_errors = ExportValidationService.validate(post_data)
     if len(validation_errors) > 0:
         return jsonify({
-            'message': 'A validation error occurred',
+            'message': 'Une erreur est survenue lors de la validation des données',
             'errors': validation_errors
         }), 422
 
@@ -51,7 +51,7 @@ def export_fundings():
 
     if not result:
         return jsonify({
-            'message': 'Error while getting fundings to export',
+            'message': 'Une erreur est survenue lors de l\'export des financements',
             'type': 'EXPORT',
             'code': 'GET_FUNDING_EXPORT_ERROR',
             'status': 'error'
@@ -63,7 +63,7 @@ def export_fundings():
 
     if not len(export_data):
         return jsonify({
-            'message': 'No data to export',
+            'message': 'Aucun donnée à exporter',
             'title': None,
             'lines': 0,
             'url': None,
@@ -86,7 +86,7 @@ def export_fundings():
 
     if not document_created:
         return jsonify({
-            'message': 'Error while Google sheet document creation',
+            'message': 'Une erreur est survenue lors de la création du document Google sheet',
             'status': 'error',
             'type': 'EXPORT',
             'code': 'EXPORT_V1_ERROR'
@@ -101,7 +101,7 @@ def export_fundings():
     delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 14)
 
     return jsonify({
-        'message': 'successfully created google sheet',
+        'message': 'La création du document Google Sheet a été crée successivement',
         'title': document_created['title'],
         'lines': document_created['lines'],
         'url': document_created['url'],
