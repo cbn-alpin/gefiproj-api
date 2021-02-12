@@ -1401,7 +1401,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, 
                     },
                     "cell": {
                         "userEnteredValue": {
-                            "formulaValue": "=SUM(B2:B9)"
+                            "formulaValue": "=SUM(B2:B"+str(max_rows_first_tab)+")"
                         }
                     },
                     "fields": "userEnteredValue"
