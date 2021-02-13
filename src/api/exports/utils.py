@@ -173,13 +173,10 @@ def generate_header_first_tab_1(year_ref: int, last_year: int):
 
     return header_title
 
-from src.shared.config import create_json_config_file
-
 
 def get_google_service_account():
     credentials_path = path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json')
-    if not path.exists(credentials_path):
-        create_json_config_file()
+
     return gspread.service_account(filename=path.join(environ['TC_ROOT_DIR'], 'config/google-credentials.json'))
 
 

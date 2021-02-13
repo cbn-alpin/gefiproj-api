@@ -79,8 +79,6 @@ def create_yml_config_file():
 
 def get():
     config_file_path = path.join(environ['TC_ROOT_DIR'], 'config/config.yml')
-    if not path.exists(config_file_path):
-        create_yml_config_file()
 
     with open(config_file_path, 'r') as yml_handle:
         yml_content = yml_handle.read()
