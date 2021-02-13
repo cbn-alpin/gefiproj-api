@@ -438,7 +438,7 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                 },
                 "cell": {
                     "userEnteredValue": {
-                        "formulaValue": "=L" + str(line + 2) + "-0" + str(line + 2)
+                        "formulaValue": "=L" + str(line + 2) + "-O" + str(line + 2)
                     }
                 },
                 "fields": "userEnteredValue"
