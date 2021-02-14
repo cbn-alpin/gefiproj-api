@@ -61,6 +61,7 @@ def export_receipets():
     header_column_names = generate_header_first_tab_0(annee_ref)
 
     current_year_range = get_all_year_in_result(export_data)
+
     new_export_data = create_real_data_export(current_year_range, annee_ref, annee_max, export_data)
 
     document_created = write_rececipts_to_google_docs(file_name, header_column_names, new_export_data)

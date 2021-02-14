@@ -59,11 +59,7 @@ RECEIPT_TABLES_HEADER = ['Recettes comptables {}', 'Bilan des affectations à {}
 
 
 def get_data_total_bilan(data):
-    export_data = data[0]
-    export_data.pop(0)
-    export_data.pop(1)
-    export_data.pop(2)
-    export_data.pop(len(export_data) - 1)
+    export_data = [data[0][3], data[0][4], data[0][5], data[0][6], data[0][7], data[0][8]]
 
     return export_data
 
