@@ -6,7 +6,8 @@ from src.api.exports.db_services import ExportDBService
 # Deleting last column (status) for fundings export
 from sqlalchemy import false, true
 
-from src.api.exports.utils import SHEET_COLUMN_LETTERS_TINY, SHEET_COLUMN_LETTERS_TINY_2
+from src.api.exports.utils import SHEET_COLUMN_LETTERS_TINY, SHEET_COLUMN_LETTERS_TINY_2 \
+    , SHEET_COLUMN_LETTERS_TINY_3
 
 
 def delete_rows_by_index(session: str, spreadsheet_id: str, index: int):
@@ -29,6 +30,16 @@ def delete_rows_by_index(session: str, spreadsheet_id: str, index: int):
                       data=json.dumps(json_data))
 
     return r.status_code
+
+
+def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int, annee_max: int,
+                              max_rows_first_tab: int):
+    if annee_max > annee_ref + 5:
+        get_index = 0
+        for x in range(0, max_rows_first_tab - 1):
+            get_index = get_index + 6
+
+        delete_rows_by_index(session, spreadsheet_id, get_index)
 
 
 def delete_column_by_index(session: str, spreadsheet_id: str, index: int):
@@ -964,8 +975,10 @@ def get_one_query_value_first(letter: [], y_cell: int, cel1: int, cel2: int, lig
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1) + ", 9, 2), " + str(letter[0]) + "$" + str(
-                               cel2) + "), \"\", INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + str(letter[2]) + " where A=" + str(
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1) + ", 9, 2), " + str(
+                               letter[0]) + "$" + str(
+                               cel2) + "), \"\", INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + str(
+                               letter[2]) + " where A=" + str(
                                current_year) + "\"), 2, 0)) "
                        }
                    },
@@ -1006,8 +1019,10 @@ def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, c
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + str(letter[0]) + "$" + str(cel2 - 1) + "), \"\", INDEX(query($A$1:$J$" + str(ligne_max) + " ,\"select " + str(letter[0])
-                               + " where A=" + str(current_year) + "\"),2,0))"
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + str(
+                               letter[2]) + "$" + str(cel2 - 1) + "), \"\", INDEX(query($A$1:$J$" + str(
+                               ligne_max) + " ,\"select " + str(letter[0])
+                                           + " where A=" + str(current_year) + "\"),2,0))"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1038,7 +1053,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=" + f'{ExportDBService.get_bilan_financier_n(annee_ref)}'
+                           "formulaValue": "=9999999"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1046,7 +1061,8 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
            },
 
 
-def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int, ligne_max: int):
+def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, cel2: int, current_year: int,
+                                           ligne_max: int):
     if current_year + 5 == current_year + ligne_max - 2:
         return {
                    "repeatCell": {
@@ -1099,7 +1115,8 @@ def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, c
                                }
                            },
                            "userEnteredValue": {
-                               "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + str(letter[0]) + "$" + str(
+                               "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + str(
+                                   letter[0]) + "$" + str(
                                    cel2 - 1) + "), 0, INDEX(query($A$1:$J$" + str(
                                    ligne_max) + " ,\"select sum(G) where A>" + str(
                                    current_year - 1) + "\"),2,0))"
@@ -1182,20 +1199,27 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
     json_data = []
 
     k = 0
+    right_index = 0
+
     for x_k in range(0, max_rows_first_tab - 1):
+
+        if x_k > len(SHEET_COLUMN_LETTERS_TINY_3) - 1:
+            right_index = len(SHEET_COLUMN_LETTERS_TINY_3) - 1
+        else:
+            right_index = x_k
 
         j = 1
         for x in range(0, len(SHEET_COLUMN_LETTERS_TINY) - 1):
             if x == 0:
                 json_data.append(
                     get_one_query_value_seconde_sql_cell_1(
-                        [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
+                        [SHEET_COLUMN_LETTERS_TINY_3[right_index], (x + 2), SHEET_COLUMN_LETTERS_TINY[x]]
                         , max_rows_first_tab + 6 + k + 1, year_ref)
                 )
             elif x == 1:
                 json_data.append(
                     get_one_query_value_seconde(
-                        [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
+                        [SHEET_COLUMN_LETTERS_TINY_3[right_index], (x + 2), SHEET_COLUMN_LETTERS_TINY[x]]
                         , max_rows_first_tab + 6 + k + 1
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
@@ -1206,7 +1230,7 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
             elif x == len(SHEET_COLUMN_LETTERS_TINY) - 2:
                 json_data.append(
                     get_one_query_value_seconde_sql_cell_2(
-                        [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
+                        [SHEET_COLUMN_LETTERS_TINY_3[right_index], (x + 2), SHEET_COLUMN_LETTERS_TINY[x]]
                         , max_rows_first_tab + 6 + k + 1
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
@@ -1217,11 +1241,12 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
             else:
                 json_data.append(
                     get_one_query_value_seconde(
-                        [SHEET_COLUMN_LETTERS_TINY[x], (x + 2), SHEET_COLUMN_LETTERS_TINY[x + 1]]
+                        [SHEET_COLUMN_LETTERS_TINY_3[right_index], (x + 2), SHEET_COLUMN_LETTERS_TINY[x]]
                         , max_rows_first_tab + 6 + k + 1
                         , max_rows_first_tab + 4 + k + 1
                         , max_rows_first_tab + 5 + k + 1
-                        , year_ref + j, max_rows_first_tab)
+                        , year_ref + j
+                        , max_rows_first_tab)
                 )
                 j += 1
 
@@ -1270,8 +1295,11 @@ def get_one_query_diff_value(letter: [], ligne: int, y_cell: int, current_year: 
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell - 4) + ", 9, 2), " + str(letter[0]) + "$" + str(y_cell - 3) + "), INDEX(query($A$1:$J$" + str(ligne_max) + ", \"select " + str(letter[1])
-                               + " where A=" + str(current_year) + "\"), 2, 0)," + str(letter[0]) + str(y_cell - 1) + " - " + str(letter[0]) + str(y_cell - 2) + ")"
+                           "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(y_cell - 4) + ", 9, 2), " + str(
+                               letter[0]) + "$" + str(y_cell - 3) + "), INDEX(query($A$1:$J$" + str(
+                               ligne_max) + ", \"select " + str(letter[1])
+                                           + " where A=" + str(current_year) + "\"), 2, 0)," + str(letter[0]) + str(
+                               y_cell - 1) + " - " + str(letter[0]) + str(y_cell - 2) + ")"
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1449,7 +1477,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, 
                     },
                     "cell": {
                         "userEnteredValue": {
-                            "formulaValue": "=SUM(B2:B"+str(max_rows_first_tab)+")"
+                            "formulaValue": "=SUM(B2:B" + str(max_rows_first_tab) + ")"
                         }
                     },
                     "fields": "userEnteredValue"

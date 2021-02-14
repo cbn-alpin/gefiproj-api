@@ -24,6 +24,7 @@ SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', '
 
 SHEET_COLUMN_LETTERS_TINY = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 SHEET_COLUMN_LETTERS_TINY_2 = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+SHEET_COLUMN_LETTERS_TINY_3 = ['D', 'E', 'F', 'G', 'H', 'I']
 
 DEFAULT_FUNDINGS_HEADER = [
     'Code projet',
@@ -119,6 +120,16 @@ def create_real_data_export(current_year_range: [], year_ref: int, last_year: in
     for x in range(year_ref, year_ref + 6, 1):
         if in_year_range(x, year_range_in_header) == 0:
             new_export_data.append(insert_empty_data_from_year(x))
+
+    """
+        # remove all rows upper to year_ref + 5
+        # Not working yet and not used finally
+        if last_year > year_ref + 5:
+            k = 6
+            for x in range(year_ref + 6, last_year, 1):
+                new_export_data.pop(k)
+                k += 1
+    """
 
     return new_export_data
 
