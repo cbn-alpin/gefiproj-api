@@ -21,13 +21,7 @@ def export_year_to_str_2(value: int, year_v: int):
 
 def create_right_header_title_bilan_1(annee_ref: int):
 
-    for x in range(0, 7):
-        if x == 6:
-            DEFAULT_RECEIPTS_HEADER[x + 7] = DEFAULT_RECEIPTS_HEADER[x + 7] + export_year_to_str_2(annee_ref, 5)
-        else:
-            DEFAULT_RECEIPTS_HEADER[x + 7] = DEFAULT_RECEIPTS_HEADER[x + 7] + export_year_to_str_2(annee_ref, x)
-
-    return [
+   return [
         "Année de recette"
         , "Recettes de l'année"
         , "Montant affecté avant " + export_year_to_str_2(annee_ref, 0)
