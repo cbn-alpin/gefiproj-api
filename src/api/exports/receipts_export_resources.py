@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 from src.api.exports.basic_formatting import basic_formatting_receipt, test_delete_rows_by_index, delete_column_by_index
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_receipt_item_from_row_proxy, \
-    write_rececipts_to_google_docs, generate_header_first_tab_0, get_max_year, \
+    write_rececipts_to_google_docs, generate_header_first_tab_0, get_data_total_bilan, \
     get_all_year_in_result, create_real_data_export
 from src.api.exports.validation_service import ExportValidationService
 
@@ -75,9 +75,12 @@ def export_receipets():
             'code': 'EXPORT_V1_ERROR'
         }), 500
 
+    # get total_bilan_by_years
+    data_total_bilan = get_data_total_bilan(export_data)
+
     # basic formatting
     basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'], annee_ref,
-                             len(new_export_data))
+                             len(new_export_data), data_total_bilan)
 
     # delete last column
     delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 18)

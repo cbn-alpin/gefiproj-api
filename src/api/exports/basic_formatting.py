@@ -1032,7 +1032,7 @@ def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, c
            },
 
 
-def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: int):
+def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: int, total: int):
     return {
                "repeatCell": {
                    "range": {
@@ -1055,7 +1055,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
                            }
                        },
                        "userEnteredValue": {
-                           "formulaValue": "=9999999"
+                           "formulaValue": "=" + str(total)
                        }
                    },
                    "fields": "userEnteredValue,userEnteredFormat.numberFormat"
@@ -1192,7 +1192,7 @@ def generate_all_value_for_letter_first_line(letter: [], max_rows_first_tab: int
     return json_data
 
 
-def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref: int):
+def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref: int, data_total_bilan: int):
     """
         params : letter == column
         params : length ligne table
@@ -1216,7 +1216,7 @@ def generate_all_value_for_letter_second_line(max_rows_first_tab: int, year_ref:
                 json_data.append(
                     get_one_query_value_seconde_sql_cell_1(
                         [SHEET_COLUMN_LETTERS_TINY_3[right_index], (x + 2), SHEET_COLUMN_LETTERS_TINY[x]]
-                        , max_rows_first_tab + 6 + k + 1, year_ref)
+                        , max_rows_first_tab + 6 + k + 1, year_ref, data_total_bilan[right_index])
                 )
             elif x == 1:
                 json_data.append(
@@ -1335,7 +1335,7 @@ def generate_all_value_for_letter_last_ligne(max_rows_first_tab: int, current_ye
 
 
 # Formatting first table for receipt export
-def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, max_rows_first_tab: int):
+def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, max_rows_first_tab: int, data_total_bilan: []):
     headers = {'Authorization': f'Bearer {session}'}
 
     json_data = {
@@ -1515,7 +1515,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, 
             generate_all_value_for_letter_first_line(['H', 8, 'I'], max_rows_first_tab, annee_ref),
             generate_all_value_for_letter_first_line(['I', 9, 'J'], max_rows_first_tab, annee_ref),
 
-            generate_all_value_for_letter_second_line(max_rows_first_tab, annee_ref),
+            generate_all_value_for_letter_second_line(max_rows_first_tab, annee_ref, data_total_bilan),
 
             generate_all_value_for_letter_last_colombe(max_rows_first_tab),
 

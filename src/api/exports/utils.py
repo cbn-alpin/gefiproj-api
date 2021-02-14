@@ -58,6 +58,16 @@ RECEIPT_TABLES_HEADER = ['Recettes comptables {}', 'Bilan des affectations à {}
                          'Dépenses {}', 'Bilan comptable {}', "Bilan d'activité {}"]
 
 
+def get_data_total_bilan(data):
+    export_data = data[0]
+    export_data.pop(0)
+    export_data.pop(1)
+    export_data.pop(2)
+    export_data.pop(len(export_data) - 1)
+
+    return export_data
+
+
 def in_year_range(current_year: int, range_year: []):
     for year in range_year:
         if current_year == year:
@@ -473,7 +483,6 @@ def write_fundings_to_google_docs(document_tile, header_column_names, data, shar
 
 
 def write_rececipts_to_google_docs(document_title, header_column_names, data):
-    # TODO: use pivot tables https://developers.google.com/sheets/api/samples/pivot-tables
     try:
         data.insert(0, header_column_names)
         sheet_batch_object = build_sheet_batch(data, data[1][0])
@@ -639,6 +648,6 @@ def export_receipt_item_from_row_proxy(row_proxy):
     return [
         row_proxy['annee_recette'], row_proxy['montant_recette'], row_proxy['affectation_avant'],
         row_proxy['affectation_a'], row_proxy['affectation_a2'], row_proxy['affectation_a3'],
-        row_proxy['affectation_a4'], row_proxy['affectation_a5'],row_proxy['affectation_a6']
+        row_proxy['affectation_a4'], row_proxy['affectation_a5'], row_proxy['affectation_a6']
         , row_proxy['affectation_apres']
     ]
