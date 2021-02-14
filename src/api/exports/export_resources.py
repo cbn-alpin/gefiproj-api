@@ -34,10 +34,6 @@ def export_fundings():
     annee_max = 0
 
     shares = [{'email': get_jwt_identity(), 'type': 'user', 'permission': 'writer'}]
-    if version==2:
-        file_name = f'Export financement année {annee_ref} | {annee_max} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
-    else:
-        file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
     # overrides if available
     if 'partages' in post_data:
@@ -46,6 +42,11 @@ def export_fundings():
         file_name = post_data['nom_fichier']
     if 'annee_max' in post_data and version == 2:
         annee_max = post_data['annee_max']
+    
+    if version == 2:
+        file_name = f'Export financement année {annee_ref} | {annee_max} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
+    else:
+        file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
     result = ExportDBService.get_suivi_financement(version, annee_ref, annee_max)
 
