@@ -87,7 +87,7 @@ def export_receipets():
     delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 18)
 
     # delete rows if necessary
-    test_delete_rows_by_index(document_created['session'], document_created['spreadsheetId'], annee_ref, annee_max)
+    test_delete_rows_by_index(document_created['session'], document_created['spreadsheetId'], annee_ref, annee_max, len(new_export_data))
 
     return jsonify({
         'message': 'Le document Google Sheet a été crée avec succès',

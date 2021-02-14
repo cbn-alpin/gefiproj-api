@@ -32,7 +32,7 @@ def delete_rows_by_index(session: str, spreadsheet_id: str, index: int):
     return r.status_code
 
 
-def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int, annee_max: int):
+def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int, annee_max: int, max_rows_first_tab: int):
     if annee_max > annee_ref + 5:
         """
             get_index = 0
@@ -40,7 +40,7 @@ def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int,
                 get_index = get_index + 6
         """
 
-        delete_rows_by_index(session, spreadsheet_id, 53)
+        delete_rows_by_index(session, spreadsheet_id, max_rows_first_tab + 39)
 
 
 def delete_column_by_index(session: str, spreadsheet_id: str, index: int):

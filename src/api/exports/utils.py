@@ -19,6 +19,14 @@ def export_year_to_str_2(value: int, year_v: int):
     return str(year_v + value)[-2:]
 
 
+def create_rigth_header_title_bilan_1(header_column_names: [], annee_ref: int):
+
+    for x in range(7, len(SHEET_COLUMN_LETTERS_TINY) - 1):
+        header_column_names[x] = header_column_names[x] + export_year_to_str_2(annee_ref)
+
+    return []
+
+
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
