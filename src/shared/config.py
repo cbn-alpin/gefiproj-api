@@ -53,7 +53,7 @@ def create_yml_config_file():
             port=environ.get('DATABASE_TEST_PORT'),
             name=environ.get('DATABASE_TEST_NAME'),
             user=environ.get('DATABASE_TEST_USER'),
-            password=environ.get('DATABASE_DEV_PASSWORD'),
+            password=environ.get('DATABASE_TEST_PASSWORD'),
             engine='postgresql'
         ),
         jwt=dict(
