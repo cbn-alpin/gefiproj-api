@@ -20,17 +20,22 @@ def export_year_to_str_2(value: int, year_v: int):
 
 
 def create_right_header_title_bilan_1(annee_ref: int):
-
-   return [
-        "Année de recette"
-        , "Recettes de l'année"
-        , "Montant affecté avant " + export_year_to_str_2(annee_ref, 0)
-        , "Montant affecté à " + export_year_to_str_2(annee_ref, 0)
-        , "Montant affecté à " + export_year_to_str_2(annee_ref, 1)
-        , "Montant affecté à " + export_year_to_str_2(annee_ref, 2)
-        , "Montant affecté à " + export_year_to_str_2(annee_ref, 3)
-        , "Montant affecté à " + export_year_to_str_2(annee_ref, 4)
-        , "Montant affecté après " + export_year_to_str_2(annee_ref, 4)
+    return [
+        'Code projet',
+        'Nom projet',
+        'Financeur',
+        'Responsable',
+        'Date arrêté ou commande',
+        'Date limite de solde',
+        'Montant arrêté ou commande',
+        'Recettes avant ' + export_year_to_str_2(annee_ref, 0),
+        'Recettes ' + export_year_to_str_2(annee_ref, 0),
+        'Recettes ' + export_year_to_str_2(annee_ref, 1),
+        'Recettes ' + export_year_to_str_2(annee_ref, 2),
+        'Recettes ' + export_year_to_str_2(annee_ref, 3),
+        'Recettes ' + export_year_to_str_2(annee_ref, 4),
+        'Recettes après ' + export_year_to_str_2(annee_ref, 4),
+        'Status'
     ]
 
 
