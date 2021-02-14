@@ -35,11 +35,13 @@ def delete_rows_by_index(session: str, spreadsheet_id: str, index: int):
 def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int, annee_max: int,
                               max_rows_first_tab: int):
     if annee_max > annee_ref + 5:
-        get_index = 0
-        for x in range(0, max_rows_first_tab - 1):
-            get_index = get_index + 6
+        """
+            get_index = 0
+            for x in range(0, max_rows_first_tab - 1):
+                get_index = get_index + 6
+        """
 
-        delete_rows_by_index(session, spreadsheet_id, get_index+1)
+        delete_rows_by_index(session, spreadsheet_id, 59)
 
 
 def delete_column_by_index(session: str, spreadsheet_id: str, index: int):

@@ -56,7 +56,7 @@ def export_receipets():
         }), 200
 
     # get max year
-    annee_max = get_max_year(annee_ref, export_data)
+    annee_max = export_data[len(export_data)-1][0]
     # default values
     header_column_names = generate_header_first_tab_0(annee_ref)
 
