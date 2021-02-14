@@ -19,15 +19,25 @@ def export_year_to_str_2(value: int, year_v: int):
     return str(year_v + value)[-2:]
 
 
-def create_right_header_title_bilan_1(header_column_names: [], annee_ref: int):
+def create_right_header_title_bilan_1(annee_ref: int):
 
     for x in range(0, 7):
         if x == 6:
-            header_column_names[x + 7] = header_column_names[x + 7] + export_year_to_str_2(annee_ref, 5)
+            DEFAULT_RECEIPTS_HEADER[x + 7] = DEFAULT_RECEIPTS_HEADER[x + 7] + export_year_to_str_2(annee_ref, 5)
         else:
-            header_column_names[x + 7] = header_column_names[x + 7] + export_year_to_str_2(annee_ref, x)
+            DEFAULT_RECEIPTS_HEADER[x + 7] = DEFAULT_RECEIPTS_HEADER[x + 7] + export_year_to_str_2(annee_ref, x)
 
-    return header_column_names
+    return [
+        "Année de recette"
+        , "Recettes de l'année"
+        , "Montant affecté avant " + export_year_to_str_2(annee_ref, 0)
+        , "Montant affecté à " + export_year_to_str_2(annee_ref, 0)
+        , "Montant affecté à " + export_year_to_str_2(annee_ref, 1)
+        , "Montant affecté à " + export_year_to_str_2(annee_ref, 2)
+        , "Montant affecté à " + export_year_to_str_2(annee_ref, 3)
+        , "Montant affecté à " + export_year_to_str_2(annee_ref, 4)
+        , "Montant affecté après " + export_year_to_str_2(annee_ref, 4)
+    ]
 
 
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
