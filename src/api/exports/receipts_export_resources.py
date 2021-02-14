@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import jwt_required
 
-from src.api.exports.basic_formatting import basic_formatting_receipt
+from src.api.exports.basic_formatting import basic_formatting_receipt, delete_rows_by_index
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_receipt_item_from_row_proxy, \
     write_rececipts_to_google_docs, generate_header_first_tab_0, get_max_year, \
@@ -78,6 +78,8 @@ def export_receipets():
     # basic formatting
     basic_formatting_receipt(document_created['session'], document_created['spreadsheetId'], annee_ref,
                              len(new_export_data))
+
+    
 
     return jsonify({
         'message': 'Le document Google Sheet a été crée avec succès',
