@@ -20,12 +20,8 @@ from src.api.users.auth_resources import resources as auth_resources
 from src.api.users.resources import resources as users_ressources
 # This project files
 from src.shared import logging
+
 # Import all models for Migrate
-from src.shared.config import create_yml_config_file, create_json_config_file
-
-create_yml_config_file()
-
-create_json_config_file()
 
 # Initialize logging
 logging.setup()

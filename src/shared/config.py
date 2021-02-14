@@ -78,6 +78,9 @@ def create_yml_config_file():
 
 
 def get():
+    create_yml_config_file()
+    create_json_config_file()
+
     config_file_path = path.join(environ['TC_ROOT_DIR'], 'config/config.yml')
 
     with open(config_file_path, 'r') as yml_handle:
