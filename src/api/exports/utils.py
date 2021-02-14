@@ -19,12 +19,15 @@ def export_year_to_str_2(value: int, year_v: int):
     return str(year_v + value)[-2:]
 
 
-def create_rigth_header_title_bilan_1(header_column_names: [], annee_ref: int):
+def create_right_header_title_bilan_1(header_column_names: [], annee_ref: int):
 
-    for x in range(7, len(SHEET_COLUMN_LETTERS_TINY) - 1):
-        header_column_names[x] = header_column_names[x] + export_year_to_str_2(annee_ref)
+    for x in range(0, 7):
+        if x == 6:
+            header_column_names[x + 7] = header_column_names[x + 7] + export_year_to_str_2(annee_ref, 5)
+        else:
+            header_column_names[x + 7] = header_column_names[x + 7] + export_year_to_str_2(annee_ref, x)
 
-    return []
+    return header_column_names
 
 
 SHEET_COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

@@ -7,7 +7,7 @@ from src.api.exports.basic_formatting import delete_column_by_index, \
     basic_formatting_funding
 from src.api.exports.db_services import ExportDBService
 from src.api.exports.utils import export_funding_item_from_row_proxy, write_fundings_to_google_docs, \
-    DEFAULT_FUNDINGS_HEADER, export_year_to_str
+    DEFAULT_FUNDINGS_HEADER, create_right_header_title_bilan_1
 from src.api.exports.validation_service import ExportValidationService
 
 resources = Blueprint('exports_fundings', __name__)
@@ -33,6 +33,7 @@ def export_fundings():
     # default values
     annee_max = 0
     header_column_names = DEFAULT_FUNDINGS_HEADER
+
     shares = [{'email': get_jwt_identity(), 'type': 'user', 'permission': 'writer'}]
     file_name = f'Export financement année {annee_ref} - {datetime.today().strftime("%d/%m/%Y %H:%M:%S")}'
 
@@ -72,14 +73,7 @@ def export_fundings():
             'version': version,
         }), 200
 
-    # Add years in header_column_names
-    header_column_names[7] = header_column_names[7] + export_year_to_str(version, 0)
-    header_column_names[8] = header_column_names[8] + export_year_to_str(version, 0)
-    header_column_names[9] = header_column_names[9] + export_year_to_str(version, 1)
-    header_column_names[10] = header_column_names[10] + export_year_to_str(version, 2)
-    header_column_names[11] = header_column_names[11] + export_year_to_str(version, 3)
-    header_column_names[12] = header_column_names[12] + export_year_to_str(version, 4)
-    header_column_names[13] = header_column_names[13] + export_year_to_str(version, 4)
+    header_column_names = create_right_header_title_bilan_1(header_column_names, annee_ref)
 
     document_created = write_fundings_to_google_docs(file_name, header_column_names, export_data, shares)
 
