@@ -40,7 +40,7 @@ def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int,
                 get_index = get_index + 6
         """
 
-        delete_rows_by_index(session, spreadsheet_id, 48)
+        delete_rows_by_index(session, spreadsheet_id, 53)
 
 
 def delete_column_by_index(session: str, spreadsheet_id: str, index: int):
@@ -672,7 +672,7 @@ def get_formatting_button_left_tabs(line: int):
                     "endIndex": 17
                 },
                 "properties": {
-                    "pixelSize": 160
+                    "pixelSize": 180
                 },
                 "fields": "pixelSize"
             }
@@ -1430,7 +1430,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, 
                         "endIndex": 16
                     },
                     "properties": {
-                        "pixelSize": 160
+                        "pixelSize": 180
                     },
                     "fields": "pixelSize"
                 }
