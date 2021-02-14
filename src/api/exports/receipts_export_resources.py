@@ -80,7 +80,7 @@ def export_receipets():
                              len(new_export_data))
 
     # delete last column
-    delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 17)
+    delete_column_by_index(document_created['session'], document_created['spreadsheetId'], 18)
 
     # delete rows if necessary
     test_delete_rows_by_index(document_created['session'], document_created['spreadsheetId'], annee_ref, annee_max, len(new_export_data))

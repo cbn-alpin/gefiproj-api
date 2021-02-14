@@ -39,7 +39,7 @@ def test_delete_rows_by_index(session: str, spreadsheet_id: str, annee_ref: int,
         for x in range(0, max_rows_first_tab - 1):
             get_index = get_index + 6
 
-        delete_rows_by_index(session, spreadsheet_id, get_index)
+        delete_rows_by_index(session, spreadsheet_id, get_index+1)
 
 
 def delete_column_by_index(session: str, spreadsheet_id: str, index: int):
@@ -327,7 +327,7 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                         },
                         "numberFormat": {
                             "type": "CURRENCY",
-                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                            "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                         }
                     },
                     "userEnteredValue": {
@@ -435,7 +435,7 @@ def get_title_button_left_tabs(line: int, celle: str, annee_ref: int):
                         },
                         "numberFormat": {
                             "type": "CURRENCY",
-                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                            "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                         }
                     },
                     "userEnteredValue": {
@@ -694,7 +694,7 @@ def get_formatting_button_left_tabs(line: int):
                         },
                         "numberFormat": {
                             "type": "CURRENCY",
-                            "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                            "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                         }
                     }
                 },
@@ -971,7 +971,7 @@ def get_one_query_value_first(letter: [], y_cell: int, cel1: int, cel2: int, lig
                            },
                            "numberFormat": {
                                "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                            }
                        },
                        "userEnteredValue": {
@@ -1015,7 +1015,7 @@ def get_one_query_value_seconde(letter: [], y_cell: int, cel1: int, cel2: int, c
                            },
                            "numberFormat": {
                                "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                            }
                        },
                        "userEnteredValue": {
@@ -1049,7 +1049,7 @@ def get_one_query_value_seconde_sql_cell_1(letter: [], y_cell: int, annee_ref: i
                            },
                            "numberFormat": {
                                "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                            }
                        },
                        "userEnteredValue": {
@@ -1082,7 +1082,7 @@ def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, c
                                },
                                "numberFormat": {
                                    "type": "CURRENCY",
-                                   "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                                   "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                                }
                            },
                            "userEnteredValue": {
@@ -1111,14 +1111,14 @@ def get_one_query_value_seconde_sql_cell_2(letter: [], y_cell: int, cel1: int, c
                                },
                                "numberFormat": {
                                    "type": "CURRENCY",
-                                   "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                                   "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                                }
                            },
                            "userEnteredValue": {
                                "formulaValue": "=IF(REGEXMATCH(MID($A$" + str(cel1 - 1) + ", 9, 2), " + str(
-                                   letter[0]) + "$" + str(
+                                   letter[2]) + "$" + str(
                                    cel2 - 1) + "), 0, INDEX(query($A$1:$J$" + str(
-                                   ligne_max) + " ,\"select sum(G) where A>" + str(
+                                   ligne_max) + " ,\"select sum(" + str(letter[0]) + ") where A>" + str(
                                    current_year - 1) + "\"),2,0))"
                            }
                        },
@@ -1146,7 +1146,7 @@ def get_one_query_total_value(y_cell: int):
                            },
                            "numberFormat": {
                                "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                            }
                        },
                        "userEnteredValue": {
@@ -1291,7 +1291,7 @@ def get_one_query_diff_value(letter: [], ligne: int, y_cell: int, current_year: 
                            },
                            "numberFormat": {
                                "type": "CURRENCY",
-                               "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                               "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                            }
                        },
                        "userEnteredValue": {
@@ -1449,7 +1449,7 @@ def basic_formatting_receipt(session: str, spreadsheet_id: str, annee_ref: int, 
                             "wrapStrategy": "WRAP",
                             "numberFormat": {
                                 "type": "CURRENCY",
-                                "pattern": "[Black][>0]### ### ### €;[Color15][<=0]0 €;[Red]\"0 €\""
+                                "pattern": "[Black]### ### ### €;[Black][<=0]0 €;"
                             }
                         }
                     },
