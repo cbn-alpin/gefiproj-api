@@ -23,7 +23,6 @@ def create_json_config_file():
 
     with open('config/google-credentials.json', 'w') as outfile:
         json.dump(data, outfile)
-        print('config json created')
 
 
 def create_yml_config_file():
@@ -74,7 +73,6 @@ def create_yml_config_file():
 
     with open('config/config.yml', 'w', encoding='utf-8') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
-        print('config yml created')
 
 
 def get():
