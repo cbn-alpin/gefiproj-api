@@ -167,7 +167,7 @@ RUN export JWT_TEST_TOKEN=${JWT_TEST_TOKEN}
 # Mode Debug
 RUN export FLASK_DEBUG=false
 
-RUN python -m unittest discover -v -s tests/ -p '*_tests.py'
+# RUN python -m unittest discover -v -s tests/ -p '*_tests.py'
 
 EXPOSE 5000
 VOLUME ./config/
