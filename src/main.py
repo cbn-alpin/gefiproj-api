@@ -1,4 +1,5 @@
 # Python libraries
+import os
 
 from flask import render_template, jsonify
 from flask_cors import CORS
@@ -27,7 +28,8 @@ from src.shared import logging
 logging.setup()
 
 # Creating the Flask application
-api = create_api()
+GEFIPROJ_ENV = os.getenv('GEFIPROJ_ENV', 'prod')
+api = create_api(GEFIPROJ_ENV)
 
 # Database migration
 migrate = Migrate(api, db)

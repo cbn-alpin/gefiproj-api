@@ -97,6 +97,8 @@ def get_engine_uri(env):
 
     if env == 'test':
         db_cfg = cfg['test_database']
+    elif env == 'dev':
+        db_cfg = cfg['dev_database']
     else:
         db_cfg = cfg['database']
 
@@ -126,7 +128,3 @@ def get_jwt_expirationt():
     jwt_exp_cfg = cfg['jwt']
 
     return int(jwt_exp_cfg['expires_in'])
-
-
-# print('DB URI:' + get_engine_uri())
-print('LOADDING CONFIG !')
