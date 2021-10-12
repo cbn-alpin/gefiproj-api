@@ -1,7 +1,7 @@
 # gefiproj-api
 Ce dépôt contient le backend du projet GEFIPROJ. https://gefiproj.cbn-alpin.fr/
 
-## Installation et utilisation
+## Installation de l'API
 **⚠️ Attention, le projet fonctionne uniquement sous Python v3.x**
  
 Pour installer ce projet :
@@ -31,43 +31,91 @@ python -m venv cbna_env
 ```shell
 pip install -r requirements.txt
 ```
+## Création du fichier .flaskenv
+- La configuration de l'application utilise des variables d'environnement présentes le fichier `.flaskenv`.
+- Pour créer le fichier .flaskenv vous pouvez copier le fichier d'exemple : `cp sample.flaskenv .flaskenv`
+- Vous pouvez dès à présent compléter les paramètres suivant :
+  - `JWT_SECRET` : un chaîne de texte relativement longue qui sera utilisé comme "secret" lors de la génération d'un JWT. Vous pouvez par exemple utiliser un UUID et le générer avec la commande Linux : `uuidgen`
+- Compléter au fur et à mesure de l'installation de Gefiproj décrite ci-dessous les paramètres manquant.
 
-- Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
-Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le dossier `config/` du projet.  
-- Pour pouvoir exporter des bilans vers Google Sheet il faut récuperer le fichier `google-credentials.json` depuis le 
-dossier Google Drive Configuration/config.yml. Vous devez ensuite le placer dans le dossier `config/` du projet
+## Installation de la base de données
+- La configuration des accès aux base de données se fait via des variables d'environnement `DATABASE_*` du fichier `.flaskenv`.
+- Vous pouvez utiliser et configurer 3 types de bases de données correspondant chacune aux 3 types d'environnement de travail disponible : `dev`, `test` et `prod`.
+- Ces bases peuvent être locales ou sur un serveur distant.
+- Créer les bases de données correspondantes dans Postgresql.
+- Pour chaque base, exécuter dans l'ordre les fichiers SQL présents dans le dossier `resources/database/` et nummérotés de 001 à 004.
+  - Pour la base de `prod`, vous pouvez exécutez aussi les fichiers 005 et 006.
+  - Pour les bases de `dev` et `test`, vous pouvez exécuter en plus les fichiers présents dans `resources/database/samples/`.
 
-Lien d'aide à la création du fichier `google-credentials.json` : https://cloud.google.com/docs/authentication/getting-started
-- Lancer les tests avec 
+
+### Modifier les mots de passe utilisateurs
+Dans la base de données, si vous souhaitez modifier les mots de passe des utilisateurs, il est possible 
+de procéder ainsi pour générer la chaîne cryptée du mot de passe :
+
+- Activer l'environnement virtuel : `source ./cbna_env/bin/activate`
+- Lancer une console Python : `python`
+- Charger la bibliothèque Passlib : `from passlib.hash import pbkdf2_sha256`
+- Créer le mot de passe crypté : `print(pbkdf2_sha256.hash('<mon-mot-de-passe>'))`
+- Copier/coller le hash qui s'affiche dans le code SQL de modification ou de création d'un utilisateur ou directement dans le champ `password_u` de la table `utilisateur`.
+
+## Configuration de l'accès à Google Sheet
+Pour pouvoir exporter des bilans vers Google Sheet, il faut créer un *compte de service* sur *Google Cloud Platform* en suivant ce lien https://console.cloud.google.com/ .
+Il vous faudra créer un projet, un compte et une clé.
+
+Vous pouvez récuperer le fichier `google-credentials.json` soit depuis l'interface de *Google Cloud Platform*, soit depuis le dossier *Google Drive*. Vous devez ensuite le placer dans le dossier `config/` du projet. Lien d'aide à la création du fichier `google-credentials.json` : https://cloud.google.com/docs/authentication/getting-started
+
+Il faut aussi compléter tous les paramètres du fichier `.flaskenv` débutant par `GS_*` à l'aide des informations présentes sur *Google Cloud Platform* > *compte de service*
+
+## Tests unitaires
+Afin de pouvoir lancer les tests unitaires, il faut avoir configuré les paramètres `DATABASE_TEST_*` et `JWT_*` dans le fichier `.flaskenv`.
+**ATTENTION** ⚠️ : assurez vous que les paramètres de la base de données de test sont bien différents de ceux de la production.
+
+### Création d'un JWT Token
+- Lancer l'API à l'aide de Flask comme indiqué ci-dessous.
+- Se rendre sur l'interface de Swagger : http://127.0.0.1:5000/#/Authentification/login
+- Sur le web service POST /api/auth/login, cliquer sur "Try it out"
+- Dans le body, remplacer les valeurs des champs login et password par celle précédement sotcker dans votre base de données pour un utilisateur donné.
+- Cliquer sur "Execute" et le résultat s'affichera dessous.
+  - En cas d'erreur, regarder dans la Console les messages affichés par Flask.
+  - En cas de succès, copier votre JWT Token dans le fichier `.flaskenv` au niveau de la valeur du paramètre `JWT_TEST_TOKEN`.
+
+### Lancement des tests
+- Lancer les tests avec :
 ```shell
-python -m unittest discover -v -s tests/ -p '*_tests.py'
+source .flaskenv && GEFIPROJ_ENV="test" python -m unittest discover -v -s tests/ -p '*_tests.py'
 ```
+La variable d'environnement `GEFIPROJ_ENV` permet de definir le type de base de données qui sera utilisé...
 
-**Note importante** ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
-avec les informations d'une base de donnée autre que celle de la production et un token valide.
- 
 ## Lancement du framwork *Flask* 🚀
 - Exporter des variables sur votre terminal : 
     ```shell
     export FLASK_APP=src/main.py
     ```
-
 - Configurer : 
     ```shell
     set FLASK_APP=src/main.py
     ```
-
 - Mode Debug : 
     ```shell
     export FLASK_DEBUG=true
     ```
-
-- Lancer le projet : 
+- Lancer le projet en utilisant les informations présente dans `.flaskenv` : 
     ```shell
-    flask run
+    GEFIPROJ_ENV="dev" flask run
     ```
+- La variable d'environnement `GEFIPROJ_ENV` permet de controller l'envrionnement de la base de données dans lequel Flask est lancé. Les valeurs possibles sont : `dev`, `test` et `prod`. Les informations de connexion à la base de données seront chargées en conséquence (voir fichier `.flaskenv`).
 
-Vérifier que le projet est lancé en allant sur  `/status` et voir que la reponse est `ok`
+Vérifier que le projet est lancé en allant sur `http://127.0.0.1:5000/#/Authentification/login` et tester les web services.
+
+## TODO
+
+- [ ] Utiliser requirements.txt ou Pipfile (faire un choix)
+- [ ] Faire le point sur l'utilisation de Docker et Travis
+- [ ] Trouver une solution alternative à Caprover à base de container et de fichier Docker-Compose
+- [ ] Indiquer dans le wiki de gefiproj-webapp les termes anglais correspondant aux termes français
+- [ ] Traduire la base de données en anglais
+- [ ] Simplifier la génération du fichier de config à partir des variables d'environnement
+
 
 #  Test Server with Dockerfile
 ```
