@@ -2,6 +2,7 @@ config/config.yml
 config/config.local.yml
 config/google-credentials.json
 .flaskenv
+cbna_env/
 *.ztr-directory
 
 # Byte-compiled / optimized / DLL files
