@@ -1,9 +1,23 @@
 INSERT INTO public.utilisateur (id_u, nom_u, prenom_u, initiales_u, email_u, password_u, active_u)
-VALUES (1, 'monnom', 'super', 'ms', 'testmaill@mail.ml',
-        '$pbkdf2-sha256$29000$fo8xBsD4f6.1FiLEeK/V.g$tAVL90p3.1hZilV7vDVci2hywMdoGrE5nVnFWsmtW4A', true);
+VALUES (
+        1,
+        'monnom',
+        'super',
+        'ms',
+        'testmaill@mail.ml',
+        '$pbkdf2-sha256$29000$QKhVqtX6v1eqlXLOmVOqNQ$H8Cix.p0L.53d8xxZGiOzo/THNXjbAQTC1Nt6ymNpaU', -- gefiproj
+        true
+);
 INSERT INTO public.utilisateur (id_u, nom_u, prenom_u, initiales_u, email_u, password_u, active_u)
-VALUES (4, 'monnom', 'super', 'msu', 'testimaill@mail.ml',
-        '$pbkdf2-sha256$29000$sDYm5BzD2Ns7R8gZg/C.Vw$3z88ckd3MUppg2.c4PNYt168pf4Ts8Sa7rrRpqB7iwE', true);
+VALUES (
+        4,
+        'monnom',
+        'super',
+        'msu',
+        'testimaill@mail.ml',
+        '$pbkdf2-sha256$29000$QKhVqtX6v1eqlXLOmVOqNQ$H8Cix.p0L.53d8xxZGiOzo/THNXjbAQTC1Nt6ymNpaU', -- gefiproj
+        true
+);
 
 INSERT INTO public.financeur (id_financeur, nom_financeur, ref_arret_attributif_financeur)
 VALUES (1, 'MIAGE', null);
