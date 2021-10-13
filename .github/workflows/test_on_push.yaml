@@ -26,7 +26,7 @@ jobs:
         run: echo $GITHUB_WORKSPACE
         shell: bash
       - name: Run tests
-        run: python -m unittest discover -v -s tests/ -p '*_tests.py'
+        run: GEFIPROJ_ENV="test" python -m unittest discover -v -s tests/ -p '*_tests.py'
 
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
