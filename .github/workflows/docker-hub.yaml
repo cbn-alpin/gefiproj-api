@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set IMAGE_NAME env variable
-        run: echo "IMAGE_NAME="cbna/${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
+        run: echo "IMAGE_NAME=cbna/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
         shell: bash
 
       - name: Check out the repo
