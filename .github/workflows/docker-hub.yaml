@@ -7,6 +7,7 @@ on:
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
+  IMAGE_NAME: "cbna/gefiproj-api"
 
 jobs:
 
@@ -15,9 +16,11 @@ jobs:
     environment: gefiprof_api_env
     runs-on: ubuntu-latest
     steps:
-      - name: Set IMAGE_NAME env variable
-        run: echo "IMAGE_NAME=cbna/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-        shell: bash
+       - name: Set IMAGE_NAME env variable
+         run: |
+          echo "IMAGE_NAME_TEST=cbna/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+          echo $IMAGE_NAME_TEST
+         shell: bash
 
       - name: Check out the repo
         uses: actions/checkout@v3
