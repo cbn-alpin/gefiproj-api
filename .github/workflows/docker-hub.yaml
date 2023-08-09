@@ -4,10 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: docker.io
-
 jobs:
 
   push_to_registry:
@@ -16,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set IMAGE_NAME env variable
-        run: echo "IMAGE_NAME=cbna/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+        run: echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
         shell: bash
 
       - name: Set up Docker Buildx
@@ -27,6 +23,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Log in to the Github Packages (Container registry)
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
