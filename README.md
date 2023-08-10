@@ -3,7 +3,7 @@ Ce dépôt contient le backend du projet GEFIPROJ. https://gefiproj.cbn-alpin.fr
 
 ## Installation et utilisation
 **⚠️ Attention, le projet fonctionne uniquement sous Python v3.x**
- 
+
 Pour installer ce projet :
 - Cloner le projet dans votre "workspace" local :
 
@@ -11,58 +11,58 @@ Pour installer ce projet :
 git clone https://github.com/cbn-alpin/gefiproj-api
 ```
 
-- Se deplacer dans le dossier du projet cloné : 
+- Se deplacer dans le dossier du projet cloné :
 
 ```shell
 cd gefiproj-api/
 ```
 
-- Créer un environnement virtuel : 
+- Créer un environnement virtuel :
 ```shell
 python -m venv cbna_env
 ```
 
-- Activer l'environnement virtuel : 
+- Activer l'environnement virtuel :
 ```shell
 . ./cbna_env/bin/activate
 ```
 
-- Installer les dépendances : 
+- Installer les dépendances :
 ```shell
 pip install -r requirements.txt
 ```
 
-- Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier 
-Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le dossier `config/` du projet.  
-- Pour pouvoir exporter des bilans vers Google Sheet il faut récuperer le fichier `google-credentials.json` depuis le 
+- Configurer l'accès à la base de données : vous devez recuperer les configurations dans le drive google dans le dossier
+Configuration/config.yml. Vous devez enregistrer un fichier `config.yml` dans le dossier `config/` du projet.
+- Pour pouvoir exporter des bilans vers Google Sheet il faut récuperer le fichier `google-credentials.json` depuis le
 dossier Google Drive Configuration/config.yml. Vous devez ensuite le placer dans le dossier `config/` du projet
 
 Lien d'aide à la création du fichier `google-credentials.json` : https://cloud.google.com/docs/authentication/getting-started
-- Lancer les tests avec 
+- Lancer les tests avec
 ```shell
 python -m unittest discover -v -s tests/ -p '*_tests.py'
 ```
 
-**Note importante** ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config 
+**Note importante** ⚠️ ️: Pour lancer les tests il faut avoir configuré l'entrée `test_database` et `test_token` dans le fichier de config
 avec les informations d'une base de donnée autre que celle de la production et un token valide.
- 
+
 ## Lancement du framwork *Flask* 🚀
-- Exporter des variables sur votre terminal : 
+- Exporter des variables sur votre terminal :
     ```shell
     export FLASK_APP=src/main.py
     ```
 
-- Configurer : 
+- Configurer :
     ```shell
     set FLASK_APP=src/main.py
     ```
 
-- Mode Debug : 
+- Mode Debug :
     ```shell
     export FLASK_DEBUG=true
     ```
 
-- Lancer le projet : 
+- Lancer le projet :
     ```shell
     flask run
     ```
@@ -110,7 +110,7 @@ docker cp 0659194cca59:/var/lib/pgadmin/storage/contact_cbn-alpin.fr/test1 /home
 # Own Paas serveur with CapRover  🚀
 There are many easy CI/CD platforms that offer generous free minutes for your builds, for example GitHub and GitLab both offer free minutes for private repositories and unlimited free minutes for public repositories.
 ## Prerequisites
-    
+
 ### Configure Firewall
 
 ```bash
@@ -177,3 +177,12 @@ More easy then the API Server, juste have to deploy with GitHub like before and 
 We can backup CapRover configs in order to be able to spin up a clone of this server. Note that your application data (volumes, and images) are not part of this backup.
 
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)
+
+#### Dockerfile
+ - Build the image named `gefiproj-api` with tag `main` : `docker build -t gefiproj-api:main .`
+ - Create .env file from default `.env.sample`: `cp .env.sample .env`
+ - Change `.env` file values
+ - Run image: `docker run --env-file .env --name gefiproj-api -d gefiproj-api:main`
+ - See running container: `docker container ls`
+ - Remove running container: `docker rm --force gefiproj-api`
+ - Access to a terminal inside running container: `docker exec -it gefiproj-api /bin/bash`

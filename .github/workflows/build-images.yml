@@ -8,7 +8,7 @@ jobs:
 
   push_to_registry:
     name: Push Docker image to Docker Hub and Github Packages
-    environment: gefiprof_api_env
+    environment: production
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -49,43 +49,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: "{{defaultContext}}"
-          build-args: |
-            "APP_FOLDER=${{ secrets.APP_FOLDER }}"
-            "DATABASE=${{ secrets.DATABASE }}"
-            "DATABASE_DEV_IP=${{ secrets.DATABASE_DEV_IP }}"
-            "DATABASE_DEV_NAME=${{ secrets.DATABASE_DEV_NAME }}"
-            "DATABASE_DEV_PASSWORD=${{ secrets.DATABASE_DEV_PASSWORD }}"
-            "DATABASE_DEV_PORT=${{ secrets.DATABASE_DEV_PORT }}"
-            "DATABASE_DEV_USER=${{ secrets.DATABASE_DEV_USER }}"
-            "DATABASE_PROD_IP=${{ secrets.DATABASE_PROD_IP }}"
-            "DATABASE_PROD_NAME=${{ secrets.DATABASE_PROD_NAME }}"
-            "DATABASE_PROD_PASSWORD=${{ secrets.DATABASE_PROD_PASSWORD }}"
-            "DATABASE_PROD_PORT=${{ secrets.DATABASE_PROD_PORT }}"
-            "DATABASE_PROD_USER=${{ secrets.DATABASE_PROD_USER }}"
-            "DATABASE_TEST_IP=${{ secrets.DATABASE_TEST_IP }}"
-            "DATABASE_TEST_NAME=${{ secrets.DATABASE_TEST_NAME }}"
-            "DATABASE_TEST_PASSWORD=${{ secrets.DATABASE_TEST_PASSWORD }}"
-            "DATABASE_TEST_PORT=${{ secrets.DATABASE_TEST_PORT }}"
-            "DATABASE_TEST_USER=${{ secrets.DATABASE_TEST_USER }}"
-            "DATABASE_URL=${{ secrets.DATABASE_URL }}"
-            "FLASK_APP=${{ secrets.FLASK_APP }}"
-            "FLASK_DEBUG=${{ secrets.FLASK_DEBUG }}"
-            "FLASK_ENV=${{ secrets.FLASK_ENV }}"
-            "GS_AUTH_PROVIDER=${{ secrets.GS_AUTH_PROVIDER }}"
-            "GS_AUTH_URI=${{ secrets.GS_AUTH_URI }}"
-            "GS_CLIENT=${{ secrets.GS_CLIENT }}"
-            "GS_CLIENT_EMAIL=${{ secrets.GS_CLIENT_EMAIL }}"
-            "GS_CLIENT_ID=${{ secrets.GS_CLIENT_ID }}"
-            "GS_PRIVATE_KEY=${{ secrets.GS_PRIVATE_KEY }}"
-            "GS_PRIVATE_KEY_ID=${{ secrets.GS_PRIVATE_KEY_ID }}"
-            "GS_PROJECT_ID=${{ secrets.GS_PROJECT_ID }}"
-            "GS_TOKEN_URI=${{ secrets.GS_TOKEN_URI }}"
-            "GS_TYPE=${{ secrets.GS_TYPE }}"
-            "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}"
-            "JWT_SECRET=${{ secrets.JWT_SECRET }}"
-            "JWT_TEST_TOKEN=${{ secrets.JWT_TEST_TOKEN }}"
-            "SQL_HOST=${{ secrets.SQL_HOST }}"
-            "SQL_PORT=${{ secrets.SQL_PORT }}"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
