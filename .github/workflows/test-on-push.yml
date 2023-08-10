@@ -8,8 +8,9 @@ on:
       - '*'
 jobs:
   run_tests:
+    name: Run Python tests
+    environment: gefiprof_api_env
     runs-on: [ubuntu-latest]
-
     strategy:
       matrix:
         python-version: [3.8]
