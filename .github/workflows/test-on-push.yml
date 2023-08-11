@@ -7,6 +7,7 @@ on:
     branches:
       - '*'
 jobs:
+
   run_tests:
     name: Run Python tests
     environment: gefiprof_api_env
@@ -66,6 +67,5 @@ jobs:
           SQL_HOST: ${{ secrets.SQL_HOST }}
           SQL_PORT: ${{ secrets.SQL_PORT }}
         run: python -m unittest discover -v -s tests/ -p '*_tests.py'
-
       - name: Get the output time
         run: echo The time was ${{ steps.hello.outputs.time }}
