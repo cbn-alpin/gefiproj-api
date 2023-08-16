@@ -36,7 +36,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 #########
 
 # Pull official base image
-FROM python:3.8.17-slim-bullseye
+FROM python:3.8.17-slim-bookworm
 
 # Set default environment variables
 ENV HOME="/home/app"
@@ -57,7 +57,7 @@ WORKDIR $APP_HOME
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
         apt-get install -y --quiet --no-install-recommends \
-        netcat vim ping curl \
+        netcat vim iputils-ping curl \
     && apt-get -y autoremove \
     && apt-get clean autoclean \
     && rm -fr /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
