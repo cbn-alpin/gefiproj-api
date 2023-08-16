@@ -42,6 +42,12 @@ def get_swagger_docs():
     return render_template('swaggerui.html')
 
 
+@api.route('/health', methods=['GET'])
+def health():
+	# Handle here any business logic for ensuring you're application is healthy (DB connections, etc...)
+    return "Healthy: OK"
+
+
 @api.errorhandler(404)
 def page_not_found(e):
     return jsonify({
