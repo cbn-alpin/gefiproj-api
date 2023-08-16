@@ -179,7 +179,9 @@ We can backup CapRover configs in order to be able to spin up a clone of this se
 [More details here](https://caprover.com/docs/get-started.html#step-3-install-caprover-cli)
 
 #### Dockerfile
- - Build the image named `gefiproj-api` with tag `main` : `docker build -t gefiproj-api:main .`
+ - Build the image named `gefiproj-api` with tag `main` for target:
+   - `production` with : `docker build --target production -t gefiproj-api:main .`
+   - `development` with : `docker build --target development -t gefiproj-api:main .`
  - Create .env file from default `.env.sample`: `cp .env.sample .env`
  - Change `.env` file values
  - Run image: `docker run --env-file .env --name gefiproj-api -d gefiproj-api:main`

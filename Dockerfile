@@ -120,4 +120,4 @@ HEALTHCHECK \
     --timeout=30s \
     --start-period=5s \
     --retries=3 \
-    CMD curl --fail http://localhost:5000/health
+    CMD curl --fail --silent http://localhost:5000/health || exit 1
