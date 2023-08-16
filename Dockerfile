@@ -28,8 +28,6 @@ COPY . /usr/src/app/
 # RUN flake8 --ignore=E501,F401 .
 
 # Install python dependencies
-RUN export FLASK_APP=src/main.py
-RUN set FLASK_APP=src/main.py
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
@@ -101,6 +99,9 @@ VOLUME ./var/log/
 # Development
 FROM base AS development
 
+RUN export FLASK_APP=src/main.py
+RUN set FLASK_APP=src/main.py
+
 CMD flask run -h 0.0.0.0
 
 
@@ -108,7 +109,15 @@ CMD flask run -h 0.0.0.0
 # Production
 FROM base AS production
 
-RUN pip install --no-cache-dir gunicorn==21.2.0
+RUN pip install --no-cache-dir --user gunicorn==21.2.0
 
-CMD [ "gunicorn", "--bind", "0.0.0.0:5000", "manage:app" ]
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:5000/health
+ENV PATH="$PATH:${HOME}/.local/bin"
+
+CMD [ "gunicorn", "--bind", "0.0.0.0:5000", "src.main:api" ]
+
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=30s \
+    --start-period=5s \
+    --retries=3 \
+    CMD curl --fail http://localhost:5000/health
