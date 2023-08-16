@@ -36,7 +36,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 #########
 
 # Pull official base image
-FROM python:3.8.17-slim-bookworm
+FROM python:3.8.17-slim-bullseye
 
 # Set default environment variables
 ENV HOME="/home/app"
