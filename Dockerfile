@@ -1,42 +1,44 @@
-###########
-# BUILDER #
-###########
+#+----------------------------------------------------------------------+
+# BUILDER
 
-# pull official base image
-# FROM python:3.6.3 as builder
-FROM python:3.8.1-slim-buster as builder
+# Pull official base image
+FROM python:3.8.1-slim-bullseye AS builder
 
-# set work directory
+# Set work directory
 WORKDIR /usr/src/app
 
-# set environment variables
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install system dependencies
+# Install system dependencies
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
-    apt-get install -y --quiet --no-install-recommends \
-    gcc libyaml-dev \
+        apt-get install -y --quiet --no-install-recommends \
+        gcc libyaml-dev \
     && apt-get -y autoremove \
     && apt-get clean autoclean \
     && rm -fr /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 
+# Lint
 RUN pip install --upgrade pip
+# TODO: See if we need to install and run Flake8
+# RUN pip install flake8==6.0.0
 COPY . /usr/src/app/
+# RUN flake8 --ignore=E501,F401 .
 
-# install python dependencies
+# Install python dependencies
 RUN export FLASK_APP=src/main.py
 RUN set FLASK_APP=src/main.py
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
-#########
-# FINAL #
-#########
+
+#+----------------------------------------------------------------------+
+# Base
 
 # Pull official base image
-FROM python:3.8.17-slim-bullseye
+FROM python:3.8.17-slim-bullseye AS base
 
 # Set default environment variables
 ENV HOME="/home/app"
@@ -94,4 +96,19 @@ EXPOSE 5000
 VOLUME ./config/
 VOLUME ./var/log/
 
+
+#+----------------------------------------------------------------------+
+# Development
+FROM base AS development
+
 CMD flask run -h 0.0.0.0
+
+
+#+----------------------------------------------------------------------+
+# Production
+FROM base AS production
+
+RUN pip install --no-cache-dir gunicorn==21.2.0
+
+CMD [ "gunicorn", "--bind", "0.0.0.0:5000", "manage:app" ]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:5000/health

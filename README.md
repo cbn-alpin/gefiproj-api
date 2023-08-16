@@ -67,7 +67,7 @@ avec les informations d'une base de donnée autre que celle de la production et 
     flask run
     ```
 
-Vérifier que le projet est lancé en allant sur  `/status` et voir que la reponse est `ok`
+Vérifier que le projet est lancé en allant sur  `/health` et voir que la reponse est `ok`
 
 #  Test Server with Dockerfile
 ```
